@@ -1,0 +1,295 @@
+#!/usr/bin/env python
+import time
+import dbus
+import requests
+import json
+import argparse
+from rich_argparse import RichHelpFormatter
+import asyncio
+from googletrans import Translator
+
+max_lyric_line_len = 60
+old_text = ""
+old_lyric_index = -1
+old_terminal_size = -1
+
+def c_print(text):
+    global max_lyric_line_len, old_text
+    if setting_c_print == "stream":
+        if text == old_text:
+            return
+        print(f'{text}\n')
+        old_text = text
+    elif setting_c_print == "interactive":
+        len_text = len(text)
+        if len_text < max_lyric_line_len:
+            print(" "*max_lyric_line_len, end="\r", flush=True)
+        
+        print(f'{text[:max_lyric_line_len]}', end="\r", flush=True)
+        max_lyric_line_len = len_text
+
+
+#highlight_color #17ff17 , passed_color #6c6c6c
+def d_print(lyric_data, lyric_index, highlight_color=(23, 255, 23), passed_lyric_color=(108, 108, 108)):
+    global old_lyric_index, old_terminal_size
+    highlight_color = f"\033[38;2;{highlight_color[0]};{highlight_color[1]};{highlight_color[2]}m"
+    passed_lyric_color = f"\033[38;2;{passed_lyric_color[0]};{passed_lyric_color[1]};{passed_lyric_color[2]}m"
+    terminal_size = shutil.get_terminal_size()
+    max_lines_in_a_window = terminal_size.lines / 2
+    max_range = lyric_index+int(max_lines_in_a_window/2)
+    if lyric_index != old_lyric_index or terminal_size != old_terminal_size:
+        old_lyric_index = lyric_index # In order to avoid unnecessary screen refreshes
+        old_terminal_size = terminal_size # In order to execute a screen refresh when the terminal size has changed
+        max_len = len(lyric_data)
+        if terminal_size.lines % 4 == 3 or terminal_size.lines % 4 == 2:
+            max_range += 1
+
+        os.system('clear')
+        for x in range(lyric_index-int(max_lines_in_a_window/2), max_range):
+            if x >= max_len:
+                break
+            if x == lyric_index:
+                print(f"{highlight_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns)}\033[0m")
+            elif x < 0:
+                print("".center(terminal_size.columns))
+            elif x < lyric_index:
+                print(f"{passed_lyric_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns)}\033[0m")
+            else:
+                print(lyric_data[x]["lyric_line"].center(terminal_size.columns))
+            if x+1 == max_range:
+                break
+            print("\n", end="")
+
+def e_print(text):
+    terminal_size = shutil.get_terminal_size()
+    os.system('clear')
+    for x in range(0, terminal_size.lines-2):
+        if x == int(terminal_size.lines/2)+1:
+            print(f"{text.center(terminal_size.columns)}")
+        else:
+            print("")
+
+def get_track_data(spotify_metadata):
+    spotify_metadata = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+    ix = spotify_metadata["xesam:url"].rindex("/")
+    artist = str(spotify_metadata["xesam:artist"][0])
+    title = str(spotify_metadata["xesam:title"])
+    return str(spotify_metadata["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+")
+
+def get_track_position(spotify_metadata):
+    position_µs = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position") #microseconds
+    position_ms = position_µs / 1_000.0
+    return int(position_ms)
+
+def lrclib_api_request(artist, title):
+    """ Get Lyrics from lrclib.net """
+    url = f"https://lrclib.net/api/get?artist_name={artist}&track_name={title}"
+    header = {"User-Agent": "requests/*"}
+    response = requests.get(url, headers=header)
+    if response.status_code == 200:
+        body = response.json()
+        if body["syncedLyrics"]:
+            lyric_data_formated = []
+            tmp_lyric_data = body["syncedLyrics"].split("\n")
+            for x in tmp_lyric_data:
+                if x.startswith("["):
+                    sep_between_time_and_lyric = x.index("]")
+                    time = x[0+1:sep_between_time_and_lyric].split(":")
+                    lyric_line = x[sep_between_time_and_lyric+2:]
+                    ms = int(float(time[0])*60*1000 + float(time[1])*1000)
+                    if lyric_line == "":
+                        lyric_line = "♬"   
+                    lyric_data_formated.append({"startTimeMs": ms, "lyric_line": lyric_line})
+            return lyric_data_formated
+    
+        else:
+            return 422 # 422 represent a successful request with some available data but no synced lyric. 
+    elif response.status_code == 404:
+        return 404 # No data available for the requested track
+    
+def sqlite3_request(artist, title, lang_code):
+        cursor.execute("SELECT id, synced_lyric, available_translation, timestamp FROM songs WHERE title=? AND artist=?", (title, artist))
+        song_row = cursor.fetchone()
+        if song_row and "1" in str(song_row[1]) and lang_code in song_row[2]:
+            cursor.execute("SELECT lyric FROM lyrics WHERE song_id=? AND lang_code=?", (song_row[0], lang_code))
+            lyric_row = cursor.fetchone()
+            if lyric_row:
+                return song_row[0], song_row[2], json.loads(lyric_row[0])
+        elif song_row and "0" in str(song_row[1]):
+            """It looks like there is no synced lyric available for this song. We will check again after 24 hours to see if lrclib has provided an update for it."""
+            if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
+                return -1, song_row[2], 422
+        else:
+            return -1, None, None
+    
+def store_lyric_offline(artist, title, lyric_data, lang_code, sql_id=-1):
+    current_timestamp = time.time()
+    if sql_id == -1:
+        cursor.execute("INSERT INTO songs (title, artist, synced_lyric, available_translation, timestamp) VALUES (?, ?, ?, ?, ?)",(title, artist, "0" if lyric_data in (404, 422) else "1", lang_code, current_timestamp))
+        conn.commit()
+        sql_id = cursor.lastrowid
+    else:
+        cursor.execute("SELECT available_translation FROM songs WHERE id=?", (sql_id,))
+        available_languages = cursor.fetchone()[0].split()
+        if available_languages and lang_code not in available_languages:
+            available_languages.append(lang_code)
+            cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=?, timestamp=? WHERE id=?",("0" if lyric_data in (404, 422) else "1", json.dumps(available_languages, ensure_ascii=False, indent=4), current_timestamp, sql_id))
+        else:
+            return
+    if lyric_data not in (404, 422):
+        cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data, ensure_ascii=False, indent=4)))
+        conn.commit()
+        return sql_id
+    else:
+        return -1
+    
+def get_lyric(artist, title, sql_id=-1):
+    if offline_usage:
+        sql_id, lang_code, offline_data = sqlite3_request(artist, title, "orig")
+        if offline_data:
+           return sql_id, lang_code, offline_data
+        
+    lrclib_request = lrclib_api_request(artist, title)
+    if offline_storage:
+        sql_id = store_lyric_offline(artist, title, lrclib_request, "orig")
+    return sql_id, "orig", lrclib_request
+
+def print_synced_lyric(lyric_data, time_pos):
+    len_ly = len(lyric_data)
+    for x in range(0, len_ly):
+        if time_pos > int(lyric_data[x]["startTimeMs"]):
+            if x == len_ly-1 or time_pos < int(lyric_data[x+1]["startTimeMs"]):
+                p_lyric_line = lyric_data[x]["lyric_line"]
+                if p_lyric_line:
+                    if setting_c_print == "default":
+                        d_print(lyric_data, x)
+                    else:
+                        c_print(f'{lyric_data[x]["lyric_line"]}')
+        elif time_pos < int(lyric_data[0]["startTimeMs"]):
+            lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
+
+def translate_lyric(lyric_data, dest='en'):
+    async def googletrans(text, dest='en'):
+        async with Translator() as translator:
+            result = await translator.translate(text, dest=dest)
+            return result
+        
+    trans_cache = ""
+    trans_lyric_data = []
+    for x in lyric_data:
+        trans_cache += x["lyric_line"] + "\n"
+
+    raw_text = asyncio.run(googletrans(trans_cache, dest=dest))
+    trans_tuple = tuple(raw_text.text.split("\n"))
+    for x in range(0, len(lyric_data)):
+        trans_lyric_data.append({"startTimeMs": lyric_data[x]["startTimeMs"], "lyric_line": trans_tuple[x]})
+
+    return trans_lyric_data
+
+
+def main():
+    session_bus = dbus.SessionBus()
+    try:
+        spotify_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
+    except dbus.exceptions.DBusException:
+        print("Spotify is not running")
+        exit()
+    spotify_metadata = dbus.Interface(spotify_bus, "org.freedesktop.DBus.Properties")
+    id = "initial"
+    while True:
+        track_id, artist, title = get_track_data(spotify_metadata)
+        #Fetch lyric only when the track has changed
+        if track_id != id:
+            c_print("↻")
+            sql_id, lang_code, lyric_data = get_lyric(artist, title)
+            id, artist, title = get_track_data(spotify_metadata)
+            if translate == True and dest_lang not in lang_code:
+                if lyric_data not in (404, 422):
+                    lyric_data = translate_lyric(lyric_data, dest=dest_lang)
+                    if offline_storage:
+                        store_lyric_offline(artist, title, lyric_data, dest_lang, sql_id)
+                else:
+                    continue
+
+            elif translate == True and dest_lang in lang_code:
+                _, _, lyric_data = sqlite3_request(artist, title, dest_lang)
+            
+        if lyric_data not in (404, 422):
+            time_pos = get_track_position(spotify_metadata)
+            print_synced_lyric(lyric_data, time_pos)
+        else:
+            if lyric_data == 422:
+                if setting_c_print == "default":
+                    e_print("🔴 422 🔴") # There are partial data available at lrclib, but no synced lyrics for this song.
+                else:
+                    c_print("🔴")
+
+            elif lyric_data == 404:
+                if setting_c_print == "default":
+                    e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
+                else:
+                    c_print("❌")
+
+            time.sleep(1)
+
+        time.sleep(0.2)
+
+if __name__ == "__main__":
+    """ Command line argument parsing """
+    descripton = """Lyrify - Display synchronized lyrics for the current Spotify track using lrclib.net"""
+    RichHelpFormatter.styles.update({
+        "argparse.text": "#6cbf7d bold",
+        "argparse.args": "#6caabf",
+        "argparse.help": "#cbcbcb",
+    })
+    
+    # Initialize parser
+    parser = argparse.ArgumentParser(prog="Lyrify", description=descripton, formatter_class=RichHelpFormatter)    
+    parser.add_argument("-p", "--print", default="default", choices=['stream', 'interactive'], help = "Print the output as stream or interactive (overwrite line)")
+    parser.add_argument("-t", "--translate", metavar="language_code", help = "Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    parser.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
+    args = parser.parse_args()
+
+    if args.print:
+        if "stream" in args.print:
+            setting_c_print = "stream"
+        elif "interactive" in args.print:
+            setting_c_print = "interactive" 
+        else:
+            import shutil, os
+            setting_c_print = "default"
+
+    if args.translate:
+        translate = True
+        dest_lang = args.translate
+    else:
+        translate = False
+
+    if args.store_offline:
+        import sqlite3
+        import os
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        if os.path.exists(script_dir + "/lyrics.db.lock"):
+            with open(script_dir + "/lyrics.db.lock") as f:
+                pid = int(f.read().strip())
+                try:
+                    os.kill(pid, 0)
+                    offline_storage = False
+                    print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is still in use by another process. Fetched lyrics will not be stored to the database for this session.\n")
+                    input("Press Enter to continue...")
+                except ProcessLookupError:
+                    offline_storage = True
+        with open(script_dir + "/lyrics.db.lock", "w") as f:
+            f.write(str(os.getpid()))
+        conn = sqlite3.connect(script_dir + "/lyrics.db")
+        cursor = conn.cursor()
+        offline_usage = True
+    else:
+        offline_storage = False
+        offline_usage = False
+
+    main()
+
+        
+
+
