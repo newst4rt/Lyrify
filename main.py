@@ -77,26 +77,29 @@ def e_print(text):
 
 def get_track_data(spotify_metadata, setting_mode):
     if setting_mode == "dbus":
-        spotify_metadata = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-        ix = spotify_metadata["xesam:url"].rindex("/")
-        artist = str(spotify_metadata["xesam:artist"][0])
-        title = str(spotify_metadata["xesam:title"])
-        return str(spotify_metadata["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+")
+        spotify_metadata_track = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+        ix = spotify_metadata_track["xesam:url"].rindex("/")
+        artist = str(spotify_metadata_track["xesam:artist"][0])
+        title = str(spotify_metadata_track["xesam:title"])
+        track_len = float(spotify_metadata_track["mpris:length"]) #microseconds
+        position_µs = float(spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
+        return str(spotify_metadata_track["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+"), float(position_µs / 1_000.0), float(track_len / 1_000.0)
     
     elif setting_mode == "spotify-api":
         global access_token
-        data = get_track.get_track_data(access_token)
-        if data == 101:
+        track_data = get_track.get_track_data(access_token)
+        if track_data == 101:
             access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
-            data = get_track.get_track_data(access_token)
-            if data == 101:
+            track_data = get_track.get_track_data(access_token)
+            if track_data == 101:
                 e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
                 exit()
-        elif data["item"]:
-            artist = str(data["item"]["artists"][0]["name"])
-            title = str(data["item"]["name"])
-            return str(data["item"]["id"]), artist.replace(" ", "+"), title.replace(" ", "+")
+        elif track_data["item"]:
+            artist = str(track_data["item"]["artists"][0]["name"])
+            title = str(track_data["item"]["name"])
+            return str(track_data["item"]["id"]), artist.replace(" ", "+"), title.replace(" ", "+"), float(track_data["progress_ms"]), float(track_data["item"]["duration_ms"])
 
+"""
 def get_track_position(spotify_metadata, setting_mode):
     if setting_mode == "dbus":
         position_µs = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position") #microseconds
@@ -112,6 +115,7 @@ def get_track_position(spotify_metadata, setting_mode):
                 e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
                 exit()
         return int(track_data["progress_ms"])
+"""
 
 def lrclib_api_request(artist, title):
     """ Get Lyrics from lrclib.net """
@@ -121,7 +125,7 @@ def lrclib_api_request(artist, title):
     if response.status_code == 200:
         body = response.json()
         if body["syncedLyrics"]:
-            lyric_data_formated = []
+            lyric_data = []
             tmp_lyric_data = body["syncedLyrics"].split("\n")
             for x in tmp_lyric_data:
                 if x.startswith("["):
@@ -131,9 +135,12 @@ def lrclib_api_request(artist, title):
                     ms = int(float(time[0])*60*1000 + float(time[1])*1000)
                     if lyric_line == "":
                         lyric_line = "♬"   
-                    lyric_data_formated.append({"startTimeMs": ms, "lyric_line": lyric_line})
-            return lyric_data_formated
-    
+                    lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line})
+
+            if 0 != int(lyric_data[0]["startTimeMs"]):
+                lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
+
+            return lyric_data
         else:
             return 422 # 422 represent a successful request with some available data but no synced lyric. 
     elif response.status_code == 404:
@@ -186,19 +193,13 @@ def get_lyric(artist, title, sql_id=-1):
         sql_id = store_lyric_offline(artist, title, lrclib_request, "orig")
     return sql_id, "orig", lrclib_request
 
-def print_synced_lyric(lyric_data, time_pos):
+def get_syncedlyric_index(lyric_data, time_pos):
     len_ly = len(lyric_data)
     for x in range(0, len_ly):
-        if time_pos > int(lyric_data[x]["startTimeMs"]):
-            if x == len_ly-1 or time_pos < int(lyric_data[x+1]["startTimeMs"]):
-                p_lyric_line = lyric_data[x]["lyric_line"]
-                if p_lyric_line:
-                    if setting_c_print == "default":
-                        d_print(lyric_data, x)
-                    else:
-                        c_print(f'{lyric_data[x]["lyric_line"]}')
-        elif time_pos < int(lyric_data[0]["startTimeMs"]):
-            lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
+        if time_pos >= int(lyric_data[x]["startTimeMs"]):
+            if x == len_ly-1 or time_pos <= int(lyric_data[x+1]["startTimeMs"]):
+                return x
+        
 
 def translate_lyric(lyric_data, dest='en'):
     async def googletrans(text, dest='en'):
@@ -228,7 +229,7 @@ def init_spotify_api():
             globals()[key.strip()] = value.strip()
 
     if CLIENT_ID is None or CLIENT_SECRET is None or REDIRECT_URI is None or REFRESH_TOKEN is None:
-        from utils.spotify import user_authorization
+        from utils.spotify_api import user_authorization
 
 def main():
     if setting_mode == "dbus":
@@ -241,53 +242,72 @@ def main():
         spotify_metadata = dbus.Interface(spotify_bus, "org.freedesktop.DBus.Properties")
     elif setting_mode == "spotify-api":
         global get_track, access_token
-        from utils.spotify import get_track
+        from utils.spotify_api import get_track
         access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
         #spotify_metadata = get_track.get_track_data(access_token)
         spotify_metadata = ""
         
     id = "initial"
+    delta_time = 0
     while True:
-        track_id, artist, title = get_track_data(spotify_metadata, setting_mode)
-        #Fetch lyric only when the track has changed
-        if track_id != id:
-            c_print("↻")
-            sql_id, lang_code, lyric_data = get_lyric(artist, title)
-            id, artist, title = get_track_data(spotify_metadata, setting_mode)
-            if translate == True and dest_lang not in lang_code:
+        current_time = time.time() * 1000 # Between current lyric line and upcoming lyric line we compare the time and use it as cooldown to avoid multiple useless requests.
+        if current_time >= delta_time+50:
+            track_id, artist, title, time_pos, track_len = get_track_data(spotify_metadata, setting_mode)
+
+            #Fetch lyric only when the track has changed
+            if track_id != id:
+                c_print("↻")
+                id = track_id
+                delta_time = 0
+                sql_id, lang_code, lyric_data = get_lyric(artist, title)      
                 if lyric_data not in (404, 422):
-                    lyric_data = translate_lyric(lyric_data, dest=dest_lang)
-                    if offline_storage:
-                        store_lyric_offline(artist, title, lyric_data, dest_lang, sql_id)
+                    len_lyric_data = len(lyric_data)
+                    if translate == True and dest_lang not in lang_code:
+                        lyric_data = translate_lyric(lyric_data, dest=dest_lang)
+                        if offline_storage:
+                            store_lyric_offline(artist, title, lyric_data, dest_lang, sql_id)
+                    elif translate == True and dest_lang in lang_code:
+                        _, _, lyric_data = sqlite3_request(artist, title, dest_lang)
                 else:
                     continue
-
-            elif translate == True and dest_lang in lang_code:
-                _, _, lyric_data = sqlite3_request(artist, title, dest_lang)
-            
-        if lyric_data not in (404, 422):
-            time_pos = get_track_position(spotify_metadata, setting_mode)
-            print_synced_lyric(lyric_data, time_pos)
-        else:
-            if lyric_data == 422:
-                if setting_c_print == "default":
-                    e_print("🔴 422 🔴") # There are partial data available at lrclib, but no synced lyrics for this song.
+                
+            if lyric_data not in (404, 422):
+                sl_index = get_syncedlyric_index(lyric_data, time_pos)
+                if len_lyric_data > sl_index+1:
+                    delta = (lyric_data[sl_index+1]["startTimeMs"] - time_pos)
                 else:
-                    c_print("🔴")
+                    delta = (track_len - time_pos)
 
-            elif lyric_data == 404:
+                if delta > 3000:
+                    delta = 3000
+                current_time = time.time() * 1000
+                delta_time = current_time+delta
+
                 if setting_c_print == "default":
-                    e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
+                    d_print(lyric_data, sl_index)
                 else:
-                    c_print("❌")
+                    c_print(f'{lyric_data[sl_index]["lyric_line"]}')
+            else:
+                delta_time = current_time+4000
+                if lyric_data == 422:
+                    if setting_c_print == "default":
+                        e_print("🔴 422 🔴") # There are partial data available at lrclib, but no synced lyrics for this song.
+                    else:
+                        c_print("🔴")
 
-            time.sleep(1)
+                elif lyric_data == 404:
+                    if setting_c_print == "default":
+                        e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
+                    else:
+                        c_print("❌")
 
-        time.sleep(0.2)
+                time.sleep(1)
+
+            time.sleep(0.2)
 
 if __name__ == "__main__":
     """ Command line argument parsing """
-    descripton = """Lyrify - Display synchronized lyrics for the current Spotify track using lrclib.net"""
+    descripton = """Lyrify - Display synchronized lyrics from your current song track in Spotify using lrclib.net"""
     RichHelpFormatter.styles.update({
         "argparse.text": "#6cbf7d bold",
         "argparse.args": "#6caabf",

@@ -2,7 +2,6 @@ import http.server
 import socketserver
 import urllib.parse
 import webbrowser
-import threading
 import base64
 import requests
 
@@ -14,13 +13,10 @@ class SpotifyAuthHandler(http.server.SimpleHTTPRequestHandler):
 
         if "code" in query:
             SpotifyAuthHandler.auth_code = query["code"][0]
-
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
             self.wfile.write(b"<h1>Successful!</h1><p>You can close the window now.</p>")
-            # How to stop the Server?
-            threading.Thread(target=self.server.shutdown, daemon=True).start()
         else:
             self.send_response(400)
             self.end_headers()
@@ -40,7 +36,7 @@ def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str):
     with socketserver.TCPServer(("", port), SpotifyAuthHandler) as httpd:
         print(f"Open Spotify Login in the Browser ...")
         webbrowser.open(auth_url)
-        httpd.serve_forever()
+        httpd.handle_request()
         return SpotifyAuthHandler.auth_code
 
 def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI: str):
@@ -55,19 +51,6 @@ def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI:
     if response.status_code == 200:
         body = response.json()
         return body["access_token"], body.get("refresh_token")
-    
-def get_access_token(refresh_token: str):
-    basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
-    params = {"grant_type": "refresh_token",
-              "refresh_token": refresh_token
-              }
-    headers = {"Content-Type": "application/x-www-form-urlencoded", 
-            "Authorization": f"Basic {basic_auth}"}
-
-    response = requests.post("https://accounts.spotify.com/api/token", data=params, headers=headers)
-    if response.status_code == 200:
-        body = response.json()
-        return body['access_token']
     
 if __name__ == "utils.spotify.user_authorization":
         print("It looks like you didn't configured the Spotify API credentials yet.")
