@@ -8,6 +8,12 @@ from rich_argparse import RichHelpFormatter
 import asyncio
 from googletrans import Translator
 
+CLIENT_ID = None
+CLIENT_SECRET = None
+REDIRECT_URI = None
+REFRESH_TOKEN = None
+access_token = None
+
 max_lyric_line_len = 60
 old_text = ""
 old_lyric_index = -1
@@ -69,17 +75,43 @@ def e_print(text):
         else:
             print("")
 
-def get_track_data(spotify_metadata):
-    spotify_metadata = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-    ix = spotify_metadata["xesam:url"].rindex("/")
-    artist = str(spotify_metadata["xesam:artist"][0])
-    title = str(spotify_metadata["xesam:title"])
-    return str(spotify_metadata["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+")
+def get_track_data(spotify_metadata, setting_mode):
+    if setting_mode == "dbus":
+        spotify_metadata = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+        ix = spotify_metadata["xesam:url"].rindex("/")
+        artist = str(spotify_metadata["xesam:artist"][0])
+        title = str(spotify_metadata["xesam:title"])
+        return str(spotify_metadata["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+")
+    
+    elif setting_mode == "spotify-api":
+        global access_token
+        data = get_track.get_track_data(access_token)
+        if data == 101:
+            access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
+            data = get_track.get_track_data(access_token)
+            if data == 101:
+                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
+                exit()
+        elif data["item"]:
+            artist = str(data["item"]["artists"][0]["name"])
+            title = str(data["item"]["name"])
+            return str(data["item"]["id"]), artist.replace(" ", "+"), title.replace(" ", "+")
 
-def get_track_position(spotify_metadata):
-    position_µs = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position") #microseconds
-    position_ms = position_µs / 1_000.0
-    return int(position_ms)
+def get_track_position(spotify_metadata, setting_mode):
+    if setting_mode == "dbus":
+        position_µs = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position") #microseconds
+        position_ms = position_µs / 1_000.0
+        return int(position_ms)
+    elif setting_mode == "spotify-api":
+        global access_token
+        track_data = get_track.get_track_data(access_token)
+        if track_data == 101:
+            access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
+            track_data = get_track.get_track_data(access_token)
+            if track_data == 101:
+                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
+                exit()
+        return int(track_data["progress_ms"])
 
 def lrclib_api_request(artist, title):
     """ Get Lyrics from lrclib.net """
@@ -186,23 +218,42 @@ def translate_lyric(lyric_data, dest='en'):
 
     return trans_lyric_data
 
+def init_spotify_api():
+    with open(".env") as f:
+        for line in f:
+            if line.startswith('#') or not line.strip():
+                continue
+            key, value = line.strip().split('=', 1)
+            value = value.strip().strip('"').strip("'")
+            globals()[key.strip()] = value.strip()
+
+    if CLIENT_ID is None or CLIENT_SECRET is None or REDIRECT_URI is None or REFRESH_TOKEN is None:
+        from utils.spotify import user_authorization
 
 def main():
-    session_bus = dbus.SessionBus()
-    try:
-        spotify_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
-    except dbus.exceptions.DBusException:
-        print("Spotify is not running")
-        exit()
-    spotify_metadata = dbus.Interface(spotify_bus, "org.freedesktop.DBus.Properties")
+    if setting_mode == "dbus":
+        session_bus = dbus.SessionBus()
+        try:
+            spotify_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
+        except dbus.exceptions.DBusException:
+            print("Spotify is not running")
+            exit()
+        spotify_metadata = dbus.Interface(spotify_bus, "org.freedesktop.DBus.Properties")
+    elif setting_mode == "spotify-api":
+        global get_track, access_token
+        from utils.spotify import get_track
+        access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
+        #spotify_metadata = get_track.get_track_data(access_token)
+        spotify_metadata = ""
+        
     id = "initial"
     while True:
-        track_id, artist, title = get_track_data(spotify_metadata)
+        track_id, artist, title = get_track_data(spotify_metadata, setting_mode)
         #Fetch lyric only when the track has changed
         if track_id != id:
             c_print("↻")
             sql_id, lang_code, lyric_data = get_lyric(artist, title)
-            id, artist, title = get_track_data(spotify_metadata)
+            id, artist, title = get_track_data(spotify_metadata, setting_mode)
             if translate == True and dest_lang not in lang_code:
                 if lyric_data not in (404, 422):
                     lyric_data = translate_lyric(lyric_data, dest=dest_lang)
@@ -215,7 +266,7 @@ def main():
                 _, _, lyric_data = sqlite3_request(artist, title, dest_lang)
             
         if lyric_data not in (404, 422):
-            time_pos = get_track_position(spotify_metadata)
+            time_pos = get_track_position(spotify_metadata, setting_mode)
             print_synced_lyric(lyric_data, time_pos)
         else:
             if lyric_data == 422:
@@ -245,10 +296,19 @@ if __name__ == "__main__":
     
     # Initialize parser
     parser = argparse.ArgumentParser(prog="Lyrify", description=descripton, formatter_class=RichHelpFormatter)    
+    parser.add_argument("-m", "--mode", default="dbus", choices=['dbus', 'spotify-api'], help = "Set the mode how lyrics should be get.")
     parser.add_argument("-p", "--print", default="default", choices=['stream', 'interactive'], help = "Print the output as stream or interactive (overwrite line)")
     parser.add_argument("-t", "--translate", metavar="language_code", help = "Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     parser.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
     args = parser.parse_args()
+
+    if args.mode:
+        if "dbus" in args.mode:
+            setting_mode = "dbus"
+        elif "spotify-api" in args.mode:
+            init_spotify_api()
+            setting_mode = "spotify-api"
+
 
     if args.print:
         if "stream" in args.print:
