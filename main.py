@@ -92,12 +92,15 @@ def get_track_data(spotify_metadata, setting_mode):
             access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
             track_data = get_track.get_track_data(access_token)
             if track_data == 101:
-                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
+                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Try again or use --init spotify.")
                 exit()
         elif track_data["item"]:
             artist = str(track_data["item"]["artists"][0]["name"])
             title = str(track_data["item"]["name"])
             return str(track_data["item"]["id"]), artist.replace(" ", "+"), title.replace(" ", "+"), float(track_data["progress_ms"]), float(track_data["item"]["duration_ms"])
+        elif track_data == 200:
+            print("🚫 ERROR 🚫\n\nNo internet connection available.")
+            exit()
 
 """
 def get_track_position(spotify_metadata, setting_mode):
@@ -121,30 +124,35 @@ def lrclib_api_request(artist, title):
     """ Get Lyrics from lrclib.net """
     url = f"https://lrclib.net/api/get?artist_name={artist}&track_name={title}"
     header = {"User-Agent": "requests/*"}
-    response = requests.get(url, headers=header)
-    if response.status_code == 200:
-        body = response.json()
-        if body["syncedLyrics"]:
-            lyric_data = []
-            tmp_lyric_data = body["syncedLyrics"].split("\n")
-            for x in tmp_lyric_data:
-                if x.startswith("["):
-                    sep_between_time_and_lyric = x.index("]")
-                    time = x[0+1:sep_between_time_and_lyric].split(":")
-                    lyric_line = x[sep_between_time_and_lyric+2:]
-                    ms = int(float(time[0])*60*1000 + float(time[1])*1000)
-                    if lyric_line == "":
-                        lyric_line = "♬"   
-                    lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line})
+    try:
+        response = requests.get(url, headers=header)
+        if response.status_code == 200:
+            body = response.json()
+            if body["syncedLyrics"]:
+                lyric_data = []
+                tmp_lyric_data = body["syncedLyrics"].split("\n")
+                for x in tmp_lyric_data:
+                    if x.startswith("["):
+                        sep_between_time_and_lyric = x.index("]")
+                        time = x[0+1:sep_between_time_and_lyric].split(":")
+                        lyric_line = x[sep_between_time_and_lyric+2:]
+                        ms = int(float(time[0])*60*1000 + float(time[1])*1000)
+                        if lyric_line == "":
+                            lyric_line = "♬"   
+                        lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line})
 
-            if 0 != int(lyric_data[0]["startTimeMs"]):
-                lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
+                if 0 != int(lyric_data[0]["startTimeMs"]):
+                    lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
 
-            return lyric_data
-        else:
-            return 422 # 422 represent a successful request with some available data but no synced lyric. 
-    elif response.status_code == 404:
-        return 404 # No data available for the requested track
+                return lyric_data
+            else:
+                return 422 # 422 represent a successful request with some available data but no synced lyric. 
+        elif response.status_code == 404:
+            return 404 # No data available for the requested track
+        
+    except requests.exceptions.ConnectionError:
+        """It looks like there is no internet connection. We will try it later again."""
+        return 200
     
 def sqlite3_request(artist, title, lang_code):
         cursor.execute("SELECT id, synced_lyric, available_translation, timestamp FROM songs WHERE title=? AND artist=?", (title, artist))
@@ -158,6 +166,17 @@ def sqlite3_request(artist, title, lang_code):
             """It looks like there is no synced lyric available for this song. We will check again after 24 hours to see if lrclib has provided an update for it."""
             if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
                 return -1, song_row[2], 422
+            else:
+                lrclib_request = lrclib_api_request(artist, title)
+                if offline_storage and lrclib_request not in (200,):
+                    cursor.execute("UPDATE songs SET timestamp=? WHERE id=?",(time.time(), song_row[0]))
+                    conn.commit()
+                    if lrclib_request not in (404, 422):
+                        cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(song_row[0], "orig", json.dumps(lrclib_request, ensure_ascii=False, indent=4)))
+                        conn.commit()
+
+                
+                return song_row[0], "orig", lrclib_request
         else:
             return -1, None, None
     
@@ -182,16 +201,18 @@ def store_lyric_offline(artist, title, lyric_data, lang_code, sql_id=-1):
     else:
         return -1
     
-def get_lyric(artist, title, sql_id=-1):
+def get_lyric(artist, title, dest_lang):
     if offline_usage:
-        sql_id, lang_code, offline_data = sqlite3_request(artist, title, "orig")
+        sql_id, lang_code, offline_data = sqlite3_request(artist, title, dest_lang)
         if offline_data:
            return sql_id, lang_code, offline_data
         
     lrclib_request = lrclib_api_request(artist, title)
-    if offline_storage:
-        sql_id = store_lyric_offline(artist, title, lrclib_request, "orig")
-    return sql_id, "orig", lrclib_request
+    if offline_storage and lrclib_request not in (200,):
+        sql_id = store_lyric_offline(artist, title, lrclib_request, dest_lang)
+        return sql_id, "orig", lrclib_request
+    
+    return -1, None, lrclib_request
 
 def get_syncedlyric_index(lyric_data, time_pos):
     len_ly = len(lyric_data)
@@ -259,8 +280,8 @@ def main():
                 c_print("↻")
                 id = track_id
                 delta_time = 0
-                sql_id, lang_code, lyric_data = get_lyric(artist, title)      
-                if lyric_data not in (404, 422):
+                sql_id, lang_code, lyric_data = get_lyric(artist, title, dest_lang)      
+                if lyric_data not in (404, 422, 200):
                     len_lyric_data = len(lyric_data)
                     if translate == True and dest_lang not in lang_code:
                         lyric_data = translate_lyric(lyric_data, dest=dest_lang)
@@ -271,7 +292,7 @@ def main():
                 else:
                     continue
                 
-            if lyric_data not in (404, 422):
+            if lyric_data not in (404, 422, 200):
                 sl_index = get_syncedlyric_index(lyric_data, time_pos)
                 if len_lyric_data > sl_index+1:
                     delta = (lyric_data[sl_index+1]["startTimeMs"] - time_pos)
@@ -300,6 +321,12 @@ def main():
                         e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
                     else:
                         c_print("❌")
+                
+                elif lyric_data == 200:
+                    if setting_c_print == "default":
+                        e_print("🚫 200 🚫") #No internet connection available 
+                    else:
+                        c_print("🚫")
 
                 time.sleep(1)
 
@@ -344,6 +371,7 @@ if __name__ == "__main__":
         dest_lang = args.translate
     else:
         translate = False
+        dest_lang = "orig"
 
     if args.store_offline:
         import sqlite3
