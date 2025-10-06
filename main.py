@@ -89,6 +89,12 @@ def error_print(text):
         else:
             c_print("❌")
     
+    elif text == 400:
+        if setting_c_print == "default":
+            e_print("❌ 400 ❌") #There are no synced lyrics in our sqlite3 database available.
+        else:
+            c_print("❌")
+
     elif text == 200:
         if setting_c_print == "default":
             e_print("🚫 200 🚫") #No internet connection available 
@@ -169,7 +175,7 @@ def sqlite3_request(artist, title, lang_code):
         elif song_row and "0" in str(song_row[1]):
             """It looks like there is no synced lyric available for this song. We will check again after 24 hours to see if lrclib has provided an update for it."""
             if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
-                return -1, song_row[2], 422
+                return -1, song_row[2], 400
             else:
                 lrclib_request = lrclib_api_request(artist, title)
                 if offline_storage and lrclib_request not in (200,):
@@ -284,7 +290,7 @@ def main():
             id = track_id
             delta_time = 0
             sql_id, lang_code, lyric_data = get_lyric(artist, title, dest_lang)      
-            if lyric_data not in (404, 422, 200):
+            if lyric_data not in (404, 422, 400, 200):
                 len_lyric_data = len(lyric_data)
                 if translate == True and dest_lang not in lang_code:
                     lyric_data = translate_lyric(lyric_data, dest=dest_lang)
@@ -296,7 +302,7 @@ def main():
                 delta = 3000
                 error_print(lyric_data)
             
-        if lyric_data not in (404, 422, 200):
+        if lyric_data not in (404, 422, 400, 200):
             sl_index = get_syncedlyric_index(lyric_data, time_pos)
             if len_lyric_data > sl_index+1:
                 delta = (lyric_data[sl_index+1]["startTimeMs"] - time_pos)
