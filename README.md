@@ -41,9 +41,8 @@ python3 main.py
 - **```-m, --mode```**_```dbus|spotify-api```_  _Set the mode how the lyrics from your track should be retrieved_
 - **```-p, --print```**_```stream|interactive```_  _Print as stream or interactive (overwrite line)._
 - **```-t --translate```**_```language_code```_ _Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)_
-- **```-i --init```** ```spotify```_Initialize the API set up for the target music player._
+- **```-i --init```**_```spotify```_ _Initialize the API set up for the target music player._
 - **```-0 --store-offline```** _Store lyrics locally to use them without an internet connection_
-
 - **```-h --help```** _Display the help message and exit._
 
 ## Example
