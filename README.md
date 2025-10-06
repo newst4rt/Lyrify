@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-<div align="center">
-<h1>Lyrify</h1>
-A lightweight Python application for displaying synchronized lyrics in the terminal, optionally with translation and offline storage, via the <a href="https://lrclib.net">Lrclib API</a>.
-<br></br>
-<img src="https://github.com/user-attachments/assets/04e8f13c-f06f-45d4-860d-40eebce5edba" width="600"></img>
-
-</div>
-
-## Introduction
-
-The idea of printing lyrics from Spotify in a terminal is not new; there are a a lot of projects available that taking the same approach. The reason I chose to write an alternative is because fetching lyrics directly from Spotify is not permitted. Therefore, I decided to come up with an alternative and created Lyrify.
-
-## Dependencies 
-=======
 
 <div align="center">
 <h1>Lyrify<br></h1>
@@ -31,7 +16,6 @@ The idea of printing lyrics from Spotify in a terminal is not new; there are man
 Lyrify is built in Python, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Lyrify is still in development and many new features are planned for the future additionaly stability fixes and code refactoring. 
 
 ### Dependencies 
->>>>>>> develop
 
 
 - [dbus-python](https://pypi.org/project/dbus-python/)
@@ -54,10 +38,7 @@ python3 main.py
 
 ### Options
 
-<<<<<<< HEAD
-=======
 - **```-m, --mode```**_```dbus|spotify-api```_  _Set the mode how the lyrics from your track should be retrieved_
->>>>>>> develop
 - **```-p, --print```**_```stream|interactive```_  _Print as stream or interactive (overwrite line)._
 - **```-t --translate```**_```language_code```_ _Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)_
 - **```-0 --store-offline```** _Store lyrics locally to use them without an internet connection_
