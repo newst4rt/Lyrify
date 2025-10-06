@@ -7,6 +7,7 @@ import argparse
 from rich_argparse import RichHelpFormatter
 import asyncio
 from googletrans import Translator
+import unicodedata
 
 CLIENT_ID = None
 CLIENT_SECRET = None
@@ -37,11 +38,13 @@ def c_print(text):
 
 
 #highlight_color #17ff17 , passed_color #6c6c6c
-def d_print(lyric_data, lyric_index, track_id, highlight_color=(23, 255, 23), passed_lyric_color=(108, 108, 108)):
+def d_print(lyric_data, w_chars, lyric_index, track_id, highlight_color=(23, 255, 23), passed_lyric_color=(108, 108, 108)):
+  
     global old_lyric_index, old_terminal_size, old_track_id
     highlight_color = f"\033[38;2;{highlight_color[0]};{highlight_color[1]};{highlight_color[2]}m"
     passed_lyric_color = f"\033[38;2;{passed_lyric_color[0]};{passed_lyric_color[1]};{passed_lyric_color[2]}m"
     terminal_size = shutil.get_terminal_size()
+    terminal_columns = terminal_size.columns
     max_lines_in_a_window = terminal_size.lines / 2
     max_range = lyric_index+int(max_lines_in_a_window/2)
     if lyric_index != old_lyric_index or terminal_size != old_terminal_size or track_id != old_track_id:
@@ -55,16 +58,20 @@ def d_print(lyric_data, lyric_index, track_id, highlight_color=(23, 255, 23), pa
         for x in range(lyric_index-int(max_lines_in_a_window/2), max_range):
             if x >= max_len:
                 break
-            if x == lyric_index:
-                print(f"{highlight_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns)}\033[0m")
-            elif x < 0:
-                print("".center(terminal_size.columns))
-            elif x < lyric_index:
-                print(f"{passed_lyric_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns)}\033[0m")
+            if x < 0:
+                print("\n".center(terminal_size.columns))
+                continue
+            if x in w_chars:
+                w_charc = w_chars[x]
             else:
-                print(lyric_data[x]["lyric_line"].center(terminal_size.columns))
-            if x+1 == max_range:
-                break
+                w_charc = 0
+
+            if x == lyric_index:
+                print(f"{highlight_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns-w_charc)}\033[0m")                
+            elif x < lyric_index:
+                print(f"{passed_lyric_color}{lyric_data[x]["lyric_line"].center(terminal_size.columns-w_charc)}\033[0m")
+            else:
+                print(lyric_data[x]["lyric_line"].center(terminal_size.columns-w_charc))
             print("\n", end="")
 
 def error_print(text):
@@ -101,16 +108,25 @@ def error_print(text):
         else:
             c_print("🚫")
 
+    else:
+        if setting_c_print == "default":
+            e_print(text) #No internet connection available 
+        else:
+            c_print(text)
 
-def get_track_data(spotify_metadata, setting_mode):
+
+
+def get_track_data(player_metadata, setting_mode):
     if setting_mode == "dbus":
-        spotify_metadata_track = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-        ix = spotify_metadata_track["xesam:url"].rindex("/")
-        artist = str(spotify_metadata_track["xesam:artist"][0])
-        title = str(spotify_metadata_track["xesam:title"])
-        track_len = float(spotify_metadata_track["mpris:length"]) #microseconds
-        position_µs = float(spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
-        return str(spotify_metadata_track["xesam:url"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+"), float(position_µs / 1_000.0), float(track_len / 1_000.0)
+        player_metadata_track = player_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+        ix = str(player_metadata_track["mpris:trackid"]).rindex("/")
+        artist = str(player_metadata_track["xesam:artist"][0])
+        title = str(player_metadata_track["xesam:title"])
+        track_len = float(player_metadata_track["mpris:length"]) #microseconds
+        position_µs = float(player_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
+        if track_len == position_µs:
+            raise Exception(f"The current player {dbus_player} is not supported. There is an issue with getting the current track position.")
+        return str(player_metadata_track["mpris:trackid"][ix+1:]), artist.replace(" ", "+"), title.replace(" ", "+"), float(position_µs / 1_000.0), float(track_len / 1_000.0)
     
     elif setting_mode == "spotify-api":
         global access_token
@@ -131,6 +147,10 @@ def get_track_data(spotify_metadata, setting_mode):
 
 
 def lrclib_api_request(artist, title):
+    """ Prepare for wide characters"""
+    def is_cjk(ch):
+        return unicodedata.east_asian_width(ch) in ("W", "F")
+
     """ Get Lyrics from lrclib.net """
     url = f"https://lrclib.net/api/get?artist_name={artist}&track_name={title}"
     header = {"User-Agent": "requests/*"}
@@ -140,21 +160,27 @@ def lrclib_api_request(artist, title):
             body = response.json()
             if body["syncedLyrics"]:
                 lyric_data = []
+                w_chars = {0: 0}
                 tmp_lyric_data = body["syncedLyrics"].split("\n")
-                for x in tmp_lyric_data:
-                    if x.startswith("["):
-                        sep_between_time_and_lyric = x.index("]")
-                        time = x[0+1:sep_between_time_and_lyric].split(":")
-                        lyric_line = x[sep_between_time_and_lyric+2:]
+                for x in range(0, len(tmp_lyric_data)):
+                    if tmp_lyric_data[x].startswith("["):
+                        sep_between_time_and_lyric = tmp_lyric_data[x].index("]")
+                        time = tmp_lyric_data[x][0+1:sep_between_time_and_lyric].split(":")
+                        lyric_line = tmp_lyric_data[x][sep_between_time_and_lyric+2:]
                         ms = int(float(time[0])*60*1000 + float(time[1])*1000)
                         if lyric_line == "":
-                            lyric_line = "♬"   
+                            lyric_line = "♬"
+                        else:
+                            cjk_count = sum(1 for ch in lyric_line if is_cjk(ch))
+                            if cjk_count > 0:
+                                w_chars[x+1] = cjk_count
+
                         lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line})
 
                 if 0 != int(lyric_data[0]["startTimeMs"]):
                     lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
 
-                return lyric_data
+                return [w_chars, lyric_data]
             else:
                 return 422 # 422 represent a successful request with some available data but no synced lyric. 
         elif response.status_code == 404:
@@ -171,7 +197,7 @@ def sqlite3_request(artist, title, lang_code):
             cursor.execute("SELECT lyric FROM lyrics WHERE song_id=? AND lang_code=?", (song_row[0], lang_code))
             lyric_row = cursor.fetchone()
             if lyric_row:
-                return song_row[0], song_row[2], json.loads(lyric_row[0])
+                return song_row[0], song_row[2], (json.loads(lyric_row[0]))
         elif song_row and "0" in str(song_row[1]):
             """It looks like there is no synced lyric available for this song. We will check again after 24 hours to see if lrclib has provided an update for it."""
             if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
@@ -182,7 +208,7 @@ def sqlite3_request(artist, title, lang_code):
                     cursor.execute("UPDATE songs SET timestamp=? WHERE id=?",(time.time(), song_row[0]))
                     conn.commit()
                     if lrclib_request not in (404, 422):
-                        cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(song_row[0], "orig", json.dumps(lrclib_request, ensure_ascii=False, indent=4)))
+                        cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?, ?)",(song_row[0], "orig", json.dumps(lrclib_request, ensure_ascii=False, indent=4)))
                         conn.commit()
 
                 return song_row[0], "orig", lrclib_request
@@ -215,14 +241,18 @@ def get_lyric(artist, title, dest_lang):
     if offline_usage:
         sql_id, lang_code, offline_data = sqlite3_request(artist, title, dest_lang)
         if offline_data:
-           return sql_id, lang_code, offline_data
+           return sql_id, lang_code, offline_data[1], offline_data[0]
         
     lrclib_request = lrclib_api_request(artist, title)
-    if offline_storage and lrclib_request not in (200,):
+    if offline_storage and lrclib_request[1] not in (200,):
         sql_id = store_lyric_offline(artist, title, lrclib_request, dest_lang)
-        return sql_id, "orig", lrclib_request
+        return sql_id, "orig", lrclib_request[1], lrclib_request[0]
+    elif lrclib_request not in (404, 400, 422):
+        return -1, None, lrclib_request[1], lrclib_request[0]
+        
+    return -1, None, lrclib_request, None
     
-    return -1, None, lrclib_request
+    
 
 def get_syncedlyric_index(lyric_data, time_pos):
     len_ly = len(lyric_data)
@@ -264,33 +294,53 @@ def init_spotify_api():
         from utils.spotify_api import user_authorization
 
 def main():
-    if setting_mode == "dbus":
-        session_bus = dbus.SessionBus()
-        try:
-            spotify_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
-        except dbus.exceptions.DBusException:
-            print("Spotify is not running")
-            exit()
-        spotify_metadata = dbus.Interface(spotify_bus, "org.freedesktop.DBus.Properties")
-    elif setting_mode == "spotify-api":
-        global get_track, access_token
-        from utils.spotify_api import get_track
-        access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
-        #spotify_metadata = get_track.get_track_data(access_token)
-        spotify_metadata = ""
+    while True:
+        if setting_mode == "dbus":
+            session_bus = dbus.SessionBus()
+            if dbus_player is None:
+                try:
+                    player_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
+                except dbus.exceptions.DBusException:
+                    error_print("Spotify is not running.")
+                    exit()
+                player_metadata = dbus.Interface(player_bus, "org.freedesktop.DBus.Properties")
+                break
+            else:
+                dbus_names = session_bus.list_names()
+                lf_services = [dbus_names for dbus_names in dbus_names if dbus_names.startswith("org.mpris.MediaPlayer2." + dbus_player)]
+                if not lf_services:
+                    raise Exception(f"There is no player with the name {dbus_player}.")
+                try:
+                    player_bus = session_bus.get_object(lf_services[0], "/org/mpris/MediaPlayer2")
+                except dbus.exceptions.DBusException:
+                    error_print("Something went wrong with the player" + player_bus)
+                player_metadata = dbus.Interface(player_bus, "org.freedesktop.DBus.Properties")
+                break
+
+        elif setting_mode == "spotify-api":
+            global get_track, access_token
+            from utils.spotify_api import get_track
+            access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
+            if access_token != 200:
+                player_metadata = ""
+                break
+            else:
+                error_print("To use the spotify-api you have to be online.")
+        
+        time.sleep(5)
         
     id = "initial"
     delta_time = 0
     while True:
-        track_id, artist, title, time_pos, track_len = get_track_data(spotify_metadata, setting_mode)
 
+        track_id, artist, title, time_pos, track_len = get_track_data(player_metadata, setting_mode)
         #Fetch lyric only when the track has changed
         if track_id != id:
             c_print("↻")
             id = track_id
             delta_time = 0
-            sql_id, lang_code, lyric_data = get_lyric(artist, title, dest_lang)      
-            if lyric_data not in (404, 422, 400, 200):
+            sql_id, lang_code, lyric_data, w_chars = get_lyric(artist, title, dest_lang)      
+            if lyric_data not in (404, 422, 400, 200, "None"):
                 len_lyric_data = len(lyric_data)
                 if translate == True and dest_lang not in lang_code:
                     lyric_data = translate_lyric(lyric_data, dest=dest_lang)
@@ -302,7 +352,7 @@ def main():
                 delta = 3000
                 error_print(lyric_data)
             
-        if lyric_data not in (404, 422, 400, 200):
+        if lyric_data not in (404, 422, 400, 200, "None"):
             sl_index = get_syncedlyric_index(lyric_data, time_pos)
             if len_lyric_data > sl_index+1:
                 delta = (lyric_data[sl_index+1]["startTimeMs"] - time_pos)
@@ -315,7 +365,7 @@ def main():
             delta_time = current_time+delta
 
             if setting_c_print == "default":
-                d_print(lyric_data, sl_index, track_id)
+                d_print(lyric_data, w_chars, sl_index, track_id)
             else:
                 c_print(f'{lyric_data[sl_index]["lyric_line"]}')
 
@@ -336,9 +386,13 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--print", default="default", choices=['stream', 'interactive'], help = "Print the output as stream or interactive (overwrite line)")
     parser.add_argument("-t", "--translate", metavar="language_code", help = "Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     parser.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
-
     parser.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
+    parser.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
     args = parser.parse_args()
+
+    if args.init:
+        if "spotify" in args.init:
+            from utils.spotify_api import user_authorization
 
     if args.mode:
         if "dbus" in args.mode:
@@ -346,7 +400,14 @@ if __name__ == "__main__":
         elif "spotify-api" in args.mode:
             init_spotify_api()
             setting_mode = "spotify-api"
-
+    
+    if args.mode == "dbus" and args.dbus_word:
+        if args.dbus_word == "help":
+            print("You can use instead of Spotify any other music player. This feature don't work with all players because it depends supporting dynamic refreshment.")
+            exit()
+        dbus_player = args.dbus_word
+    else:
+        dbus_player = None
 
     if args.print:
         if "stream" in args.print:
@@ -364,9 +425,6 @@ if __name__ == "__main__":
         translate = False
         dest_lang = "orig"
 
-    if args.init:
-        if "spotify" in args.init:
-            from utils.spotify_api import user_authorization
 
     if args.store_offline:
         import sqlite3
@@ -378,7 +436,7 @@ if __name__ == "__main__":
                 try:
                     os.kill(pid, 0)
                     offline_storage = False
-                    print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is still in use by another process. Fetched lyrics will not be stored to the database for this session.\n")
+                    print("\033[31m!!! WARNING !!!\033[0m\n\nThe database is currently in use by another process. Lyrics will not be saved to the database during this session.\n")
                     input("Press Enter to continue...")
                 except ProcessLookupError:
                     offline_storage = True
