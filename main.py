@@ -67,14 +67,34 @@ def d_print(lyric_data, lyric_index, track_id, highlight_color=(23, 255, 23), pa
                 break
             print("\n", end="")
 
-def e_print(text):
-    terminal_size = shutil.get_terminal_size()
-    os.system('clear')
-    for x in range(0, terminal_size.lines-2):
-        if x == int(terminal_size.lines/2)+1:
-            print(f"{text.center(terminal_size.columns)}")
+def error_print(text):
+    def e_print(text):
+        terminal_size = shutil.get_terminal_size()
+        os.system('clear')
+        for x in range(0, terminal_size.lines-2):
+            if x == int(terminal_size.lines/2)+1:
+                print(f"{text.center(terminal_size.columns)}")
+            else:
+                print("")
+
+    if text == 422:
+        if setting_c_print == "default":
+            e_print("🔴 422 🔴") # There are partial data available at lrclib, but no synced lyrics for this song.
         else:
-            print("")
+            c_print("🔴")
+
+    elif text == 404:
+        if setting_c_print == "default":
+            e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
+        else:
+            c_print("❌")
+    
+    elif text == 200:
+        if setting_c_print == "default":
+            e_print("🚫 200 🚫") #No internet connection available 
+        else:
+            c_print("🚫")
+
 
 def get_track_data(spotify_metadata, setting_mode):
     if setting_mode == "dbus":
@@ -93,7 +113,7 @@ def get_track_data(spotify_metadata, setting_mode):
             access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
             track_data = get_track.get_track_data(access_token)
             if track_data == 101:
-                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Try again or use --init spotify.")
+                print("!!! ERROR !!!\n\nCould not refresh the access token. Try again or use --init spotify.")
                 exit()
         elif track_data["item"]:
             artist = str(track_data["item"]["artists"][0]["name"])
@@ -255,8 +275,8 @@ def main():
     id = "initial"
     delta_time = 0
     while True:
-        current_time = time.time() * 1000 # Between current lyric line and upcoming lyric line we compare the time and use it as cooldown to avoid multiple useless requests.
-        if current_time >= delta_time+50:
+        #current_time = time.time() * 1000 # Between current lyric line and upcoming lyric line we compare the time and use it as cooldown to avoid multiple useless requests.
+        #if current_time >= delta_time+50:
             track_id, artist, title, time_pos, track_len = get_track_data(spotify_metadata, setting_mode)
 
             #Fetch lyric only when the track has changed
@@ -274,7 +294,9 @@ def main():
                     elif translate == True and dest_lang in lang_code:
                         _, _, lyric_data = sqlite3_request(artist, title, dest_lang)
                 else:
-                    continue
+                    delta = 3000
+                    #delta_time = current_time+4000
+                    error_print(lyric_data)
                 
             if lyric_data not in (404, 422, 200):
                 sl_index = get_syncedlyric_index(lyric_data, time_pos)
@@ -292,29 +314,9 @@ def main():
                     d_print(lyric_data, sl_index, track_id)
                 else:
                     c_print(f'{lyric_data[sl_index]["lyric_line"]}')
-            else:
-                delta_time = current_time+4000
-                if lyric_data == 422:
-                    if setting_c_print == "default":
-                        e_print("🔴 422 🔴") # There are partial data available at lrclib, but no synced lyrics for this song.
-                    else:
-                        c_print("🔴")
 
-                elif lyric_data == 404:
-                    if setting_c_print == "default":
-                        e_print("❌ 404 ❌") #No lyrics available at lrclib for this song.
-                    else:
-                        c_print("❌")
-                
-                elif lyric_data == 200:
-                    if setting_c_print == "default":
-                        e_print("🚫 200 🚫") #No internet connection available 
-                    else:
-                        c_print("🚫")
 
-                time.sleep(1)
-
-            time.sleep(0.2)
+            time.sleep(delta / 1000)
 
 if __name__ == "__main__":
     """ Command line argument parsing """
