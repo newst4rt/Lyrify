@@ -18,6 +18,7 @@ max_lyric_line_len = 60
 old_text = ""
 old_lyric_index = -1
 old_terminal_size = -1
+old_track_id = -1
 
 def c_print(text):
     global max_lyric_line_len, old_text
@@ -36,14 +37,14 @@ def c_print(text):
 
 
 #highlight_color #17ff17 , passed_color #6c6c6c
-def d_print(lyric_data, lyric_index, highlight_color=(23, 255, 23), passed_lyric_color=(108, 108, 108)):
-    global old_lyric_index, old_terminal_size
+def d_print(lyric_data, lyric_index, track_id, highlight_color=(23, 255, 23), passed_lyric_color=(108, 108, 108)):
+    global old_lyric_index, old_terminal_size, old_track_id
     highlight_color = f"\033[38;2;{highlight_color[0]};{highlight_color[1]};{highlight_color[2]}m"
     passed_lyric_color = f"\033[38;2;{passed_lyric_color[0]};{passed_lyric_color[1]};{passed_lyric_color[2]}m"
     terminal_size = shutil.get_terminal_size()
     max_lines_in_a_window = terminal_size.lines / 2
     max_range = lyric_index+int(max_lines_in_a_window/2)
-    if lyric_index != old_lyric_index or terminal_size != old_terminal_size:
+    if lyric_index != old_lyric_index or terminal_size != old_terminal_size or track_id != old_track_id:
         old_lyric_index = lyric_index # In order to avoid unnecessary screen refreshes
         old_terminal_size = terminal_size # In order to execute a screen refresh when the terminal size has changed
         max_len = len(lyric_data)
@@ -102,23 +103,6 @@ def get_track_data(spotify_metadata, setting_mode):
             print("🚫 ERROR 🚫\n\nNo internet connection available.")
             exit()
 
-"""
-def get_track_position(spotify_metadata, setting_mode):
-    if setting_mode == "dbus":
-        position_µs = spotify_metadata.Get("org.mpris.MediaPlayer2.Player", "Position") #microseconds
-        position_ms = position_µs / 1_000.0
-        return int(position_ms)
-    elif setting_mode == "spotify-api":
-        global access_token
-        track_data = get_track.get_track_data(access_token)
-        if track_data == 101:
-            access_token = get_track.get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
-            track_data = get_track.get_track_data(access_token)
-            if track_data == 101:
-                e_print("!!! ERROR !!!\n\nCould not refresh the access token. Please restart the application.")
-                exit()
-        return int(track_data["progress_ms"])
-"""
 
 def lrclib_api_request(artist, title):
     """ Get Lyrics from lrclib.net """
@@ -175,7 +159,6 @@ def sqlite3_request(artist, title, lang_code):
                         cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(song_row[0], "orig", json.dumps(lrclib_request, ensure_ascii=False, indent=4)))
                         conn.commit()
 
-                
                 return song_row[0], "orig", lrclib_request
         else:
             return -1, None, None
@@ -194,6 +177,7 @@ def store_lyric_offline(artist, title, lyric_data, lang_code, sql_id=-1):
             cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=?, timestamp=? WHERE id=?",("0" if lyric_data in (404, 422) else "1", json.dumps(available_languages, ensure_ascii=False, indent=4), current_timestamp, sql_id))
         else:
             return
+        
     if lyric_data not in (404, 422):
         cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data, ensure_ascii=False, indent=4)))
         conn.commit()
@@ -305,7 +289,7 @@ def main():
                 delta_time = current_time+delta
 
                 if setting_c_print == "default":
-                    d_print(lyric_data, sl_index)
+                    d_print(lyric_data, sl_index, track_id)
                 else:
                     c_print(f'{lyric_data[sl_index]["lyric_line"]}')
             else:
