@@ -3,32 +3,75 @@
 <h1>Lyrify<br></h1>
 A lightweight Python application for displaying synchronized lyrics in the terminal, optionally with translation and offline storage, via the <a href="https://lrclib.net">Lrclib API</a>.
 <br></br>
-<img src="https://github.com/user-attachments/assets/04e8f13c-f06f-45d4-860d-40eebce5edba" width="600"></img>
+<img src="https://github.com/user-attachments/assets/f1e977a2-a204-4bc9-882a-fffcb10d3138" width="600"></img>
 </div>
 
 
 ## Introduction
 
-The idea of printing lyrics from Spotify in a terminal is not new; there are many projects that take the same approach. Lyrify was developed to avoid fetching lyrics directly from Spotify. It started as a simple application, without any options, featuring with a simple print stream, and has evolved over time into an application with many new features. 
+The idea of printing lyrics from Spotify in a terminal is not new; there are many projects they are taking the same approach. Lyrify is developed with the idea behind to avoid fetching lyrics directly from Spotify. The project has started first as a simple application, without any options, featuring just a simple print output, and has evolved over the time into a application with some handsome features. 
 
 ### Why Lyrify ?
 
-Lyrify is built in Python, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Lyrify is still in development and many new features are planned for the future additionaly stability fixes and code refactoring. 
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the main thread. Moreover, wide characters like Kanji, Kana, and full-width Latin letters are full supported.
+<br></br>
+<table align="right">
+    <thead>
+        <tr>
+            <th align="center">$${\color{gray}Features}$$</th>
+            <th align="center">$${\color{gray}Status}$$</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="left"><i>LRCLIB.net API-Support</i></td>
+            <td align="center">$${\color{green}✓}$$</td> 
+        </tr>
+        <tr>
+            <td align="left"><i>DBUS-Support</i></td>
+            <td align="center">$${\color{green}✓}$$</td>          
+        </tr>
+        <tr>
+            <td align="left"><i>Spotify-API Support</i></td>
+            <td align="center">$${\color{green}✓}$$</td>           
+        </tr>
+        <tr>
+            <td align="left"><i>Offline-Storage</i></td>
+            <td align="center">$${\color{green}✓}$$</td>     
+        </tr>
+        <tr>
+            <td align="left"><i>Google-Translation</i></td>
+            <td align="center">$${\color{green}✓}$$</td>          
+        </tr>
+        <tr>
+            <td align="left"><i>Different Print Modes</i></td>
+            <td align="center">$${\color{green}✓}$$</td> 
+        </tr>
+        <tr>
+            <td align="left"><i>Wide Character Support</i></td>
+            <td align="center">$${\color{green}✓}$$</td>        
+        </tr>
+    </tbody>
+</table>
 
-### Dependencies 
-
+### Python Dependencies 
 
 - [dbus-python](https://pypi.org/project/dbus-python/)
 - [googletrans](https://pypi.org/project/googletrans/)
 - [rich-argparse](https://github.com/hamdanal/rich-argparse)
-- [requests](https://github.com/psf/requests) 
+- [requests](https://github.com/psf/requests)
+  
+### Features
 
-_Currently, Lyrify works only for Linux._
+If your desired feature is not listed, feel free to open a new issue. If it makes sense and I have time, I may add it.
+
+
 
 
 ## Installation
+
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Usage
@@ -39,6 +82,7 @@ python3 main.py
 ### Options
 
 - **```-m, --mode```**_```dbus|spotify-api```_  _Set the mode how the lyrics from your track should be retrieved_
+  - **```--mode```**_```dbus <name>```_ _Use a different music player instead of Spotify_
 - **```-p, --print```**_```stream|interactive```_  _Print as stream or interactive (overwrite line)._
 - **```-t --translate```**_```language_code```_ _Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)_
 - **```-i --init```**_```spotify```_ _Initialize the API set up for the target music player._
@@ -48,10 +92,9 @@ python3 main.py
 ## Example
 
 ```bash
-python3 main.py -p interactive -t de
+python3 main.py --mode spotify-api -t de -0
 ```
-
-Set the output interactive and translate it to the German language.
+Fetch the current playback, translate the lyric to German and store origin and translated lyrics local.
 
 
 ## License
