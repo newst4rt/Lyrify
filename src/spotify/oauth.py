@@ -35,9 +35,11 @@ def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str):
     port = int(REDIRECT_URI.split(":")[2].split("/")[0])
     with socketserver.TCPServer(("", port), SpotifyAuthHandler) as httpd:
         print(f"Open Spotify Login in the Browser ...")
+        #httpd.timeout = 15
         webbrowser.open(auth_url)
         httpd.handle_request()
-        return SpotifyAuthHandler.auth_code
+        return str(SpotifyAuthHandler.auth_code)
+
 
 def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI: str):
     basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
@@ -52,8 +54,7 @@ def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI:
         body = response.json()
         return body["access_token"], body.get("refresh_token")
     
-if __name__ == "utils.spotify.user_authorization":
-        print("It looks like you didn't configured the Spotify API credentials yet.")
+def init():
         print("Follow this instructions:\n")
         print("1. Go to https://developer.spotify.com/dashboard/applications")
         print("2. Create an App (if you haven't already)")
@@ -62,7 +63,7 @@ if __name__ == "utils.spotify.user_authorization":
         CLIENT_SECRET = input("Client Secret: ")
         REDIRECT_URI = input("Redirect URI (e.g. http://127.0.0.1:8000/callback): ")
         user_auth_token = request_user_authorization(CLIENT_ID, REDIRECT_URI)
-        access_token, REFRESH_TOKEN = get_tokens(user_auth_token, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+        access_token, REFRESH_TOKEN = get_tokens(user_auth_token, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI) # type: ignore
         if access_token is not None or REFRESH_TOKEN is not None:
             with open(".env", "w") as f:
                 f.write(f'CLIENT_ID = "{CLIENT_ID}"\n')
