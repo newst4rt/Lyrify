@@ -35,7 +35,6 @@ def ex_print(lyric_data: tuple | str | int, w_chars: dict = {0:0}, lyric_index: 
         highlight_aescolor = f"\033[38;2;{highlight_rgbcolor[0]};{highlight_rgbcolor[1]};{highlight_rgbcolor[2]}m"
         passed_lyric_aescolor = f"\033[38;2;{passed_lyric_rgbcolor[0]};{passed_lyric_rgbcolor[1]};{passed_lyric_rgbcolor[2]}m"
         
-        #terminal_size = shutil.get_terminal_size()
         terminal_columns, terminal_lines = get_terminal_size()
         sum_terminal_size = terminal_columns+terminal_lines
         max_range = lyric_index+int(terminal_lines/4)

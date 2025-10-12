@@ -54,8 +54,6 @@ def lrclib_api(artist: str | tuple, title: str):
             return lrclib_request
         else:
             artist = str(artist[0])
-    else:
-        artist = str(artist[0])
             
     
     return lrclib_api_request(artist, title)

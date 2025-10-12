@@ -5,7 +5,6 @@ import shutil
 old_text = ""
 max_lyric_len = 0
 
-
 def ex_print(lyric_data: tuple | str | int, w_chars: dict | None = None, lyric_index: int | None = None, track_id: str | int | None = None):
     global old_text, max_lyric_len
     if isinstance(lyric_data, tuple) and lyric_index is not None:
