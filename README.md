@@ -15,9 +15,9 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 ### How Lyrify started 
 
-It started with a similar application that no longer worked anymore. I looked for a replacement, but there was nothing what satisfied me. So, I did some research to find out what has been actually changed.
+It started with a similar application that no longer worked anymore. I looked for a replacement, but there was nothing what satisfied me. So, I did some research to find out what has been actually changed to fix the issue by myself.
 
-I found out that Spotify provides a seperat undocumented interface to get lyrics from Musixmatch and they changed the authentication method for using this endpoint. After going with my research deeper, I discovered that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intend to avoid the API and sought for a replacement that eventually fit as replacement and found Lrclib.net.
+I discovered that Spotify provides a seperat undocumented endpoint to get lyrics from Musixmatch and they changed the authentication method for using this. After digging deeper into my research, it turns out that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intend to avoid the API and sought for a replacement that eventually fit and found Lrclib.net.
 
 Lrclib.net provides versatile and relatively qualitavly good data, without requiring authentication. Moreover, the project is opensource and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) available. All the aforementioned points made me decide to set Lrclib as my first choice, and I'm glad I did.
 
@@ -26,7 +26,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the programme. There is a Full-Width Characters support include Kanji, Kana and all other full-width letters and aside from that the status handler helps you to understand if something goes wrong. 
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the programme. There is a Full-Width Characters support include Kanji, Kana and all other full-width letters and aside from that the status handler helps you to understand if something goes wrong. The Codes can be determined [here](docs/status_codes.md)
 
 
 <table align="right">
@@ -106,6 +106,10 @@ python3 main.py
 python3 main.py --mode spotify-api -t de -0
 ```
 Fetch the current playback, translate the lyric to German and store origin and translated lyrics local.
+
+## Status Codes
+
+Here is a list of all 
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
