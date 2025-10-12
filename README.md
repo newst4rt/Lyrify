@@ -26,7 +26,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the programme. There is a Full-Width Characters support include Kanji, Kana and all other full-width letters and aside from that the status handler helps you to understand if something goes wrong. The Codes can be determined [here](docs/status_codes.md)
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the program. There is a Full-Width Characters support include Kanji, Kana and all other full-width letters and aside from that a status handler helps you to understand if something goes wrong – codes can be determined [here](docs/status_codes.md).
 
 
 <table align="right">
@@ -106,10 +106,6 @@ python3 main.py
 python3 main.py --mode spotify-api -t de -0
 ```
 Fetch the current playback, translate the lyric to German and store origin and translated lyrics local.
-
-## Status Codes
-
-Here is a list of all 
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
