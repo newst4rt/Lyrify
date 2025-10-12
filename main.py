@@ -109,7 +109,7 @@ if __name__ == "__main__":
     if args.mode:
         if args.dbus_word:
             if args.dbus_word == "help":
-                print("You can use instead of Spotify any other music player. This feature don't work with all players because it depends supporting dynamic refreshment.")
+                print("You can use instead of Spotify any other player. This feature don't work with all because it depends if the player supports dynamic refreshment.")
                 exit()
             dbus_player = args.dbus_word
         else:
