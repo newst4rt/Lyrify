@@ -41,11 +41,11 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
         <tr>
-            <td align="left"><i>DBUS-MPRIS-Support</i></td>
+            <td align="left"><i>D-BUS-MPRIS-Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
         </tr>
         <tr>
-            <td align="left"><i>Spotify-API Support</i></td>
+            <td align="left"><i>Spotify API Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>           
         </tr>
         <tr>
@@ -53,11 +53,11 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td>     
         </tr>
         <tr>
-            <td align="left"><i>Google-Translation</i></td>
+            <td align="left"><i>Google Translation</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
         </tr>
         <tr>
-            <td align="left"><i>Different Print Modes</i></td>
+            <td align="left"><i>Different Display Modes</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
         <tr>
@@ -87,13 +87,13 @@ pip3 install -r requirements.txt
         
 ### Initiliazing
 
-Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, use The Spotify API and set up your API credentials from your account. Here's a simple instruction how to do that:
+Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, use the Spotify API and set up your API credentials from your account. Here's a simple instruction how to do that:
 
- - *First, use this command to initiliaze the setup dialog.*
+ - *First, use this command to initialize the setup dialog.*
    ```bash
    python3 main.py --init spotify
    ```
- - *Second, follow the instruction how to get your credentials.*
+ - *Second, follow the instructions how to get your credentials.*
  - *After them, fill the terminal with the required data.*
 
 If everything goes well, a message with the text `Authentication succeeded` will be displayed. Lyrify has successfully applied the credential and is now ready to get in touch with your playback. To use it, simply add the argument `--mode spotify`.
@@ -122,7 +122,7 @@ After completing the initialization, we will now take a closer look at how to de
   python3 main.py
   ```
 
-- ***Stream*** : *Print it as stream to stdout.*
+- ***Stream*** : *Print it as a stream to stdout.*
   ```bash
   python3 main.py stream
   ```
@@ -138,9 +138,9 @@ After completing the initialization, we will now take a closer look at how to de
 
 This option allows us to define how to get the current playback from Spotify. You can choose from:
  
- - `--mode dbus` : Use D-Bus MPRIS. *only for Linux
- - `--mode dbus <name>` : Use D-Bus MPRIS with another Player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)  
- - `--mode spotify` : Use Spotify-API.
+ - `--mode dbus` : Use D-Bus MPRIS. 
+ - `--mode dbus <name>` : Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)  
+ - `--mode spotify` : Use Spotify API.
 
 
 #### `-t --translate`
@@ -153,7 +153,7 @@ The value of the language code should be defined as [ISO-639](https://cloud.goog
 
 #### `-0 --store-offline`
 
-Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage if the argument has been passed. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you don't need anymore to bother to get in touch with the lyrics from your favorite songs. You will always get them — just listen to them one time, and Lyrify will store them.
+Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage if the argument has been passed. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
