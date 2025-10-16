@@ -55,7 +55,7 @@ def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI:
         return body["access_token"], body.get("refresh_token")
     
 def init():
-        print("Follow this instructions:\n")
+        print("Follow this instruction:\n")
         print("1. Go to https://developer.spotify.com/dashboard/applications")
         print("2. Create an App (if you haven't already)")
         print("3. Go to your App -> Basic Information\n")
@@ -70,7 +70,7 @@ def init():
                 f.write(f'CLIENT_SECRET = "{CLIENT_SECRET}"\n')
                 f.write(f'REDIRECT_URI = "{REDIRECT_URI}"\n')
                 f.write(f'REFRESH_TOKEN = "{REFRESH_TOKEN}"\n')
-                print("\nSuccessfully stored the credentials in your .env file.")
+                print("Authentication succeeded.")
                 exit()
         else:
             print("Something went wrong. Please try again.")

@@ -15,16 +15,17 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 ### How Lyrify started 
 
-I was looking for an alternative when Spotify changed its authentication process for accessing lyrics. After doing some research, I found out that Spotify provides an undocumented endpoint to access lyrics from Musixmatch. The problem with using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I wanted to avoid Spotify's endpoint, so I looked for a replacement and found Lrclib.net. 
+It began with a similar application that no longer worked. Since there was no suitable replacement, I decided to look into what had changed to fix the issue myself.
 
-Lrclib.net provides versatile and relatively qualitavly good data, without requiring authentication. Moreover, the project is opensource and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) and a download of the entire database available. In summary, due to all of the aforementioned points, I decided to use Lrclib for my approach and I'm glad to took it. 
+First, I discovered that Spotify provides a separate, undocumented endpoint to get lyrics from Musixmatch, and they changed the authentication method for using this. After digging deeper into my research, it turns out that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intended to avoid the API and sought a replacement and found Lrclib.net.
 
-That was the moment when the project marked the beginning of **Lyrify**. It has started as a simple application, without any options, featuring just a simple print output, and evolved over the time into a software with some useful features. 
+Lrclib.net provides versatile and relatively qualitatively good data without requiring authentication. Moreover, the project is open source, and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) available. All the aforementioned points made me decide to set Lrclib as my first choice — and I'm glad I did.
 
+That was the moment when the project marked the beginning of **Lyrify**. It started as a simple application, without any options, featuring just a simple print output, and evolved over time into a software with some useful features. 
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load which only the necessary components are loaded into the programme. There is a Full-Width Characters support include Kanji, Kana and all other full-width letters and aside from that the status handler helps you to understand if something goes wrong. 
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. There is full width character support, including kanji, kana, and all other full-width letters, and aside from that, the status handler helps you to understand if something goes wrong. 
 
 
 <table align="right">
@@ -40,11 +41,11 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
         <tr>
-            <td align="left"><i>DBUS-MPRIS-Support</i></td>
+            <td align="left"><i>D-BUS-MPRIS-Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
         </tr>
         <tr>
-            <td align="left"><i>Spotify-API Support</i></td>
+            <td align="left"><i>Spotify API Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>           
         </tr>
         <tr>
@@ -52,11 +53,11 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td>     
         </tr>
         <tr>
-            <td align="left"><i>Google-Translation</i></td>
+            <td align="left"><i>Google Translation</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
         </tr>
         <tr>
-            <td align="left"><i>Different Print Modes</i></td>
+            <td align="left"><i>Different Display Modes</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
         <tr>
@@ -82,28 +83,77 @@ If your desired feature is not listed, feel free to open a new issue. If it make
 ```bash
 pip3 install -r requirements.txt
 ```
+## Get Started
+        
+### Initializing
 
-## Usage
+Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, use the Spotify API and set up your API credentials from your account. Here's a simple instruction how to do that:
+
+ - *First, use this command to initialize the setup dialog.*
+   ```bash
+   python3 main.py --init spotify
+   ```
+ - *Second, follow the instructions how to get your credentials.*
+ - *After them, fill the terminal with the required data.*
+
+If everything goes well, a message with the text `Authentication succeeded` will be displayed. Lyrify has successfully applied the credential and is now ready to get in touch with your playback. To use it, simply add the argument `--mode spotify`.
+
+#### *Using an Alternative Music Player Instead of Spotify*
+
+Lyrify supports any music player that implements the MPRIS D-Bus interface. To check whether your player is supported, follow these instructions:
+
+ - Get the bus-name from your application. 
 ```bash
-python3 main.py
+python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus.list_names() if x.startswith('org.mpris.MediaPlayer2')]"
+```
+ - If the player appears, fill the name as positional argument by add them after `--mode dbus`. 
+```bash
+python3 main.py --mode dbus <name>
 ```
 
-### Options
+This feature is experimental and may not work with all players. It mostly depends on how accurately the data is transmitted to D-Bus. 
 
-- **```-m, --mode```**_```dbus|spotify-api```_  _Set the mode how the lyrics from your track should be retrieved_
-  - **```--mode```**_```dbus <name>```_ _Use a different music player instead of Spotify_
-- **```-p, --print```**_```stream|interactive```_  _Print as stream or interactive (overwrite line)._
-- **```-t --translate```**_```language_code```_ _Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)_
-- **```-i --init```**_```spotify```_ _Initialize the API set up for the target music player._
-- **```-0 --store-offline```** _Store lyrics locally to use them without an internet connection_
-- **```-h --help```** _Display the help message and exit._
+### Start
 
-## Example
+After completing the initialization, we will now take a closer look at how to define a layout for displaying lyrics in the terminal.
 
-```bash
-python3 main.py --mode spotify-api -t de -0
-```
-Fetch the current playback, translate the lyric to German and store origin and translated lyrics local.
+- ***Full-screen*** : *Display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
+  ```bash
+  python3 main.py
+  ```
+
+- ***Stream*** : *Print it as a stream to stdout.*
+  ```bash
+  python3 main.py stream
+  ```
+  
+- ***Interactive*** : *Display the lyric in just one row with dynamic refreshment.*
+  ```bash
+  python3 main.py interactive
+  ```
+
+## Options
+
+#### `-m --mode`
+
+This option allows us to define how to get the current playback from Spotify. You can choose from:
+ 
+ - `--mode dbus` : Use D-Bus MPRIS. 
+ - `--mode dbus <name>` : Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)  
+ - `--mode spotify` : Use Spotify API.
+
+
+#### `-t --translate`
+
+Translating lyrics is a great purpose for education. It helps to understand and learn. You can use it by:
+
+  - `--translate <language_code>`
+
+The value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).
+
+#### `-0 --store-offline`
+
+Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage if the argument has been passed. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
