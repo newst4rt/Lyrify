@@ -54,7 +54,7 @@ A list of status codes that may appear when something goes wrong:
             <td align="left">lrclib/sqlite3</td>      
         </tr>
         <tr>
-            <td align="left"><b>404</b></td>
+            <td align="left"><b>422</b></td>
             <td align="left">There are partial data available on Lrclib, but no synced lyric for this song.</td>       
             <td align="left">lrclib</td>      
         </tr>

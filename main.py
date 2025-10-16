@@ -15,16 +15,13 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str):
         if lyric_data not in (400,):
            return sql_id, lang_code, lyric_data, w_chars
         
-
     lrclib_request = lrclib_api(artist, title)
     if offline_storage and lrclib_request not in (503,):
         sql_id = store_lyric_offline(artist, title, lrclib_request, "orig", sql_id if sql_id else -1)
 
     if isinstance(lrclib_request, tuple):
         return sql_id, "orig", lrclib_request[1], lrclib_request[0]
-    
-        #return -1, "orig", lrclib_request[1], lrclib_request[0]
-        
+            
     return -1, "orig", lrclib_request, None
     
 def get_syncedlyric_index(lyric_data: tuple, time_pos: float):
@@ -57,8 +54,6 @@ def main():
                         w_chars, lyric_data = translate_lyric(lyric_data, dest=dest_lang)
                         if offline_storage:
                             sql_id = store_lyric_offline(track_data[3], track_data[4], (w_chars, lyric_data), dest_lang, sql_id) # type: ignore
-                    elif dest_lang in lang_code:
-                        _, _, lyric_data, w_chars = sqlite3_request(track_data[3], track_data[4], dest_lang) # type: ignore
 
         elif isinstance(track_data, int): 
             id = track_data
