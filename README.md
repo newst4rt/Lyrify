@@ -85,7 +85,7 @@ pip3 install -r requirements.txt
 ```
 ## Get Started
         
-### Initiliazing
+### Initializing
 
 Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, use the Spotify API and set up your API credentials from your account. Here's a simple instruction how to do that:
 
