@@ -15,11 +15,11 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 ### How Lyrify started 
 
-It started with a similar application that no longer worked anymore. I looked for a replacement, but there was nothing what satisfied me. So, I did some research to find out what has been actually changed to fix the issue by myself.
+I used in the past a similar application and after a bunch of time it no longer worked anymore. There was no replacement what satisfied me, so, I did some research what has been actually changed to try to fix the issue by myself.
 
-I discovered that Spotify provides a seperat undocumented endpoint to get lyrics from Musixmatch and they changed the authentication method for using this. After digging deeper into my research, it turns out that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intend to avoid the API and sought for a replacement that eventually fit and found Lrclib.net.
+First I discovered that Spotify provides a seperat undocumented endpoint to get lyrics from Musixmatch and they changed the authentication method for using this. After digging deeper into my research, it turns out that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intend to avoid the API and sought for a replacement and found Lrclib.net.
 
-Lrclib.net provides versatile and relatively qualitavly good data, without requiring authentication. Moreover, the project is opensource and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) available. All the aforementioned points made me decide to set Lrclib as my first choice, and I'm glad I did.
+Lrclib.net provides versatile and relatively qualitavly good data, without requiring authentication. Moreover, the project is opensource and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) available. All the aforementioned points made me decide to set Lrclib as my first choice – and I'm glad I did.
 
 That was the moment when the project marked the beginning of **Lyrify**. It started as a simple application, without any options, featuring just a simple print output, and evolved over time into a software with some useful features. 
 

@@ -84,7 +84,7 @@ def main():
 
 if __name__ == "__main__":
     """ Command line argument parsing """
-    descripton = """Lyrify - Display synchronized lyrics from your current song track in Spotify using lrclib.net"""
+    descripton = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
     RichHelpFormatter.styles.update({
         "argparse.text": "#6cbf7d bold",
         "argparse.args": "#6caabf",
@@ -92,14 +92,22 @@ if __name__ == "__main__":
     })
     
     # Initialize parser
-    parser = argparse.ArgumentParser(prog="Lyrify", description=descripton, formatter_class=RichHelpFormatter)    
-    parser.add_argument("-m", "--mode", default="dbus", choices=['dbus', 'spotify-api'], help = "Set the mode how lyrics should be received.")
-    parser.add_argument("-p", "--print", default="default", choices=['stream', 'interactive'], help = "Print the output as stream or interactive (overwrite line)")
-    parser.add_argument("-t", "--translate", metavar="language_code", help = "Translate the lyric to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
-    parser.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
-    parser.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
-    parser.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
-    args = parser.parse_args()
+
+    p_base = argparse.ArgumentParser(add_help=False)
+    p_base.add_argument("-m", "--mode", default="dbus", choices=['dbus', 'spotify'], help = "Select the mode how lyrics should be received.")
+    p_base.add_argument("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    p_base.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
+    p_base.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
+    p_base.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
+
+    p_mdef = argparse.ArgumentParser(prog="Lyrify", description=descripton, parents=[p_base], formatter_class=RichHelpFormatter)        
+    p_sub = p_mdef.add_subparsers(dest="sub_arg", metavar="", title="Commands")
+    p_mstr = p_sub.add_parser("stream", help="Print as stream to stdout.", parents=[p_base], formatter_class=RichHelpFormatter)
+    p_int = p_sub.add_parser("interactive", help="Print as one liner with dynamic refreshment.", parents=[p_base], formatter_class=RichHelpFormatter)
+
+    args = p_mdef.parse_args()
+
+    
 
     if args.init:
         if "spotify" in args.init:
@@ -107,28 +115,28 @@ if __name__ == "__main__":
             oauth.init()
 
     if args.mode:
-        if args.dbus_word:
-            if args.dbus_word == "help":
-                print("You can use instead of Spotify any other player. This feature don't work with all because it depends if the player supports dynamic refreshment.")
-                exit()
+        """if args.dbus_word:
+
             dbus_player = args.dbus_word
         else:
-            dbus_player = None
+            dbus_player = None"""
 
         if "dbus" in args.mode:
+            if args.dbus_word == "help":
+                print("You can use instead of Spotify any other player by passing the name of the player as argument.")
+                exit()
             from src.core.dbus import *  
-            init_dbus(args.dbus_word)
-        elif "spotify-api" in args.mode:
+            dbus_player = args.dbus_word if args.dbus_word else "spotify"
+            init_dbus(dbus_player)
+        elif "spotify" in args.mode:
             from src.spotify.api_request import *
     
-    if args.print:
-        if "stream" in args.print:
-            from src.core.print.stream_print import *
-
-        elif "interactive" in args.print:
-            from src.core.print.interactive_print import *
-        else:
-            from src.core.print.default_print import *
+    if args.sub_arg == "stream":
+        from src.core.print.stream_print import *
+    elif args.sub_arg == "interactive":
+        from src.core.print.interactive_print import *
+    else:
+        from src.core.print.default_print import *
 
     if args.translate:
         from src.translator.googletrans import *
