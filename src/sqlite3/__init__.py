@@ -33,8 +33,15 @@ def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int
                 return sql_id
         
     if synced_lyric_av == 1:
-        cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data, ensure_ascii=False, indent=4)))
-        conn.commit()
+        cursor.execute("SELECT id FROM lyrics WHERE song_id=? AND lang_code=?", (sql_id, lang_code))
+        lyric_row = cursor.fetchone()
+        if lyric_row:
+            cursor.execute("UPDATE lyrics SET lyric=? WHERE id=?",(json.dumps(lyric_data, ensure_ascii=False, indent=4), lyric_row[0]))
+            conn.commit()
+        else:
+            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data, ensure_ascii=False, indent=4)))
+            conn.commit()
+            
         return sql_id
     else:
         return -1
