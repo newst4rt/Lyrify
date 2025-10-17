@@ -71,15 +71,7 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str):
             return -1, song_row[2], 404 if song_row[1] == "0" else 424, None # We use 404/424 as status code
         else:
             return song_row[0], song_row[2], 400 , None #We use 400 in Row 3 to trigger lrclib_api_request
-            """lrclib_request = lrclib_api_request(artist, title)
-            if offline_storage and lrclib_request not in (503,):
-                cursor.execute("UPDATE songs SET timestamp=? WHERE id=?",(time.time(), song_row[0]))
-                conn.commit()
-                if isinstance(lrclib_request, tuple):
-                    cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(song_row[0], "orig", json.dumps(lrclib_request, ensure_ascii=False, indent=4)))
-                    conn.commit()
-
-            return song_row[0], "orig", lrclib_request, None"""
+        
     else:
         return -1, "orig", 400, None
     

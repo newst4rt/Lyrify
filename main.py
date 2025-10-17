@@ -4,7 +4,7 @@ import argparse
 from rich_argparse import RichHelpFormatter
 from src.lyric_providers.lrclib import *
 
-def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str):
+def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, track_len: int | float):
     if artist is None or title is None:
         return -1, dest_lang, 6, None
     
@@ -15,7 +15,8 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str):
         if lyric_data not in (400,):
            return sql_id, lang_code, lyric_data, w_chars
         
-    lrclib_request = lrclib_api(artist, title)
+    # lyric_data = lrclib_request[1], w_chars = lrclib_request[0], duration = lrclib_request[2]
+    lrclib_request = lrclib_api(artist, title, track_len)
     if offline_storage and lrclib_request not in (503,):
         sql_id = store_lyric_offline(artist, title, lrclib_request, "orig", sql_id if sql_id else -1)
 
@@ -45,7 +46,7 @@ def main():
         if isinstance(track_data, tuple) and track_data[0] != id: 
             ex_print("↻")
             id = track_data[0]
-            sql_id, lang_code, lyric_data, w_chars = get_lyric(track_data[3], track_data[4], dest_lang) # type: ignore
+            sql_id, lang_code, lyric_data, w_chars = get_lyric(track_data[3], track_data[4], dest_lang, track_data[2]) # type: ignore
             if isinstance(lyric_data, tuple):      
                 len_lyric_data = len(lyric_data)
                 track_len = track_data[2] # type: ignore

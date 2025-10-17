@@ -20,7 +20,7 @@ A list of status codes that may appear when something goes wrong:
         </tr>
         <tr>
             <td align="left"><b>3</b></td>
-            <td align="left">Target player don't support „dynamic refreshment". </td>
+            <td align="left">The target player isn't supported. </td>
             <td align="left">DBUS-MPRIS</td>           
         </tr>
         <tr>
@@ -30,12 +30,17 @@ A list of status codes that may appear when something goes wrong:
         </tr>
         <tr>
             <td align="left"><b>5</b></td>
-            <td align="left">An error occurred while accessing the sqlite3 database. Maybe corrupt?</td>  
+            <td align="left">An error occurred while accessing the sqlite3 database – Maybe corrupt?</td>  
             <td align="left">sqlite3</td>           
         </tr>
         <tr>
+            <td align="left"><b>6</b></td>
+            <td align="left">The total duration difference is too high between playback and retrieved lyric – Maybe bad data at lrclib.net or artist and title from your playback is wrong ? </td>  
+            <td align="left">lrclib</td>           
+        </tr>
+        <tr>
             <td align="left"><b>204</b></td>
-            <td align="left">The player has not started, or no song has been played yet. Playing a song will fix it.</td> 
+            <td align="left">The player has not started, or no song has been played yet – playing a song will fix it.</td> 
             <td align="left">Spotify-API</td>     
         </tr>
         <tr>
