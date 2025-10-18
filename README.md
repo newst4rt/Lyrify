@@ -5,7 +5,10 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 <br></br>
 <img src="https://github.com/user-attachments/assets/f1e977a2-a204-4bc9-882a-fffcb10d3138" width="600"></img>
 <br></br>
-<img alt="License MIT" src="https://img.shields.io/badge/License-MIT-blue"></img>
+
+[![License MIT](https://img.shields.io/badge/License-MIT-blue)](#)<br>
+[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#) [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) [![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#)
+
 </div>
 
 
@@ -74,7 +77,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [rich-argparse](https://github.com/hamdanal/rich-argparse)
 - [requests](https://github.com/psf/requests)
   
-### Features
+### Feature Request
 
 If your desired feature is not listed, feel free to open a new issue. If it makes sense and I have time, I may add it.
 
@@ -113,11 +116,11 @@ python3 main.py --mode dbus <name>
 
 This feature is experimental and may not work with all players. It mostly depends on how accurately the data is transmitted to D-Bus. 
 
-### Start
+### Start ~ Print Mode
 
-After completing the initialization, we will now take a closer look at how to define a layout for displaying lyrics in the terminal.
+Lyrify supports three different methods to print lyrics on the terminal. 
 
-- ***Full-screen*** : *Display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
+- ***Default*** : *Display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
   ```bash
   python3 main.py
   ```
@@ -134,26 +137,36 @@ After completing the initialization, we will now take a closer look at how to de
 
 ## Options
 
-#### `-m --mode`
+Due to the selection of different print states and those behavior, they are seperated into different options. Choose from: 
 
-This option allows us to define how to get the current playback from Spotify. You can choose from:
- 
- - `--mode dbus` : Use D-Bus MPRIS. 
- - `--mode dbus <name>` : Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)  
- - `--mode spotify` : Use Spotify API.
+- #### Core Options
+  *Core options are useable in all print methods.*
+  - #### **`-m --mode`**
+
+     *Choose from an interface to get the current playback from the player.*
+     > **`--mode dbus`** : *apply D-Bus MPRIS.*   
+     > **`--mode dbus <name>`** : *apply D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
+     > **`--mode spotify`** : *apply the Spotify API.*
+  
+
+  - #### **`-t --translate`**
+  
+    *Translate the lyrics in your target language.*
+  
+    > **`--translate <language_code>`** : the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).
+  
+  - #### **`-0 --store-offline`**
+  
+    *Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.*
+
+- #### Default Options
+  *Can only be used in the **default print mode**.*
+  - #### `-c --highlight-color`
+    *Define how lyrics should be highlighted as RGB color.*
+
+    > **`--highlight-color 255,200,0`** 
 
 
-#### `-t --translate`
-
-Translating lyrics is a great purpose for education. It helps to understand and learn. You can use it by:
-
-  - `--translate <language_code>`
-
-The value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).
-
-#### `-0 --store-offline`
-
-Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage if the argument has been passed. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
