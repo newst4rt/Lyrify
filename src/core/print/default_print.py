@@ -1,13 +1,6 @@
 import os
 import shutil
 
-old_lyric_index = -1
-old_terminal_size = -1
-old_track_id = -1
-# Hint: you can change this color how you like.
-highlight_rgbcolor=(23, 255, 23)
-passed_lyric_rgbcolor=(108, 108, 108)
-
 def get_terminal_size():
     terminal_size = shutil.get_terminal_size()
     return terminal_size.columns, terminal_size.lines
@@ -68,3 +61,12 @@ def ex_print(lyric_data: tuple | str | int, w_chars: dict = {0:0}, lyric_index: 
                 print("\n", end="")
     else:
         center_print(str(lyric_data))
+
+if __name__ == "src.core.print.default_print":
+    
+    old_lyric_index = -1
+    old_terminal_size = -1
+    old_track_id = -1
+    # Hint: you can change this color how you like.
+    highlight_rgbcolor=(23, 255, 23)
+    passed_lyric_rgbcolor=(108, 108, 108)

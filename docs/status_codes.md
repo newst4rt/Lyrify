@@ -35,7 +35,7 @@ A list of status codes that may appear when something goes wrong:
         </tr>
         <tr>
             <td align="left"><b>6</b></td>
-            <td align="left">The total duration difference is too high between playback and retrieved lyric – Maybe bad data at lrclib.net or artist and title from your playback is wrong ? </td>  
+            <td align="left">The total duration difference is too high between playback and retrieved lyric – Maybe bad data at lrclib.net or artist and title didn't match with the song from your playback? </td>  
             <td align="left">lrclib</td>           
         </tr>
         <tr>
