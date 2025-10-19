@@ -118,7 +118,7 @@ This feature is experimental and may not work with all players. It mostly depend
 
 ### Start ~ Print Mode
 
-Lyrify supports three different methods to print lyrics on the terminal. 
+There are three different methods to display lyrics on the terminal. 
 
 - ***Default*** : *Display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
   ```bash
@@ -137,7 +137,7 @@ Lyrify supports three different methods to print lyrics on the terminal.
 
 ## Options
 
-Due to the selection of different print states and those behavior, they are seperated into different options. Choose from: 
+Options are separated due to the states of the different print methods and their behavior.
 
 - #### Core Options
   *Core options are useable in all print methods.*
