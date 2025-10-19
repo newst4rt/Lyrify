@@ -1,13 +1,14 @@
 import json
 import time
+from src.core.config import offline_usage, offline_storage 
 
 def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int, lang_code: str, sql_id: int =-1 ):
     current_timestamp = time.time()
     if isinstance(artist, tuple):
         artist = str(artist[0])
-    synced_lyric_av = 1 if isinstance(lyric_data, tuple) else 0 if lyric_data == "404" else 2 
+    synced_lyric_av = 1 if isinstance(lyric_data, tuple) else 0 if lyric_data == 404 else 2 
     if sql_id == -1:
-        cursor.execute("INSERT INTO songs (title, artist, synced_lyric, available_translation, timestamp) VALUES (?, ?, ?, ?, ?)",(title, artist, synced_lyric_av, lang_code, current_timestamp))
+        cursor.execute("INSERT INTO songs (title, artist, synced_lyric, available_translation, track_duration, timestamp) VALUES (?, ?, ?, ?, ?, ?)",(title, artist, synced_lyric_av, lang_code, lyric_data[2] if isinstance(lyric_data, tuple) else 0, current_timestamp))
         conn.commit()
         sql_id = cursor.lastrowid if cursor.lastrowid is not None else -1
     else:
@@ -19,7 +20,7 @@ def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int
         conn.commit()
         cursor.execute("SELECT available_translation FROM songs WHERE id=?", (sql_id,))
         cursor_languages = cursor.fetchone()
-        if lang_code is not "orig":
+        if lang_code != "orig":
             try:
                 available_languages = json.loads(cursor_languages[0])
             except json.JSONDecodeError:
@@ -39,17 +40,17 @@ def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int
             cursor.execute("UPDATE lyrics SET lyric=? WHERE id=?",(json.dumps(lyric_data, ensure_ascii=False, indent=4), lyric_row[0]))
             conn.commit()
         else:
-            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data, ensure_ascii=False, indent=4)))
+            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data[0:2], ensure_ascii=False, indent=4)))
             conn.commit()
             
         return sql_id
     else:
         return -1
     
-def sqlite3_request(artist: str | tuple, title: str, lang_code: str):
+def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: int | float):
     if isinstance(artist, tuple):
         artist = str(artist[0])
-    cursor.execute("SELECT id, synced_lyric, available_translation, timestamp FROM songs WHERE title=? AND artist=?", (title, artist))
+    cursor.execute("SELECT id, synced_lyric, available_translation, track_duration, timestamp FROM songs WHERE title=? AND artist=?", (title, artist))
     song_row = cursor.fetchone()
     if song_row and "1" in str(song_row[1]):
         if lang_code in song_row[2]:
@@ -62,6 +63,11 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str):
         lyric_row = cursor.fetchone()
         if lyric_row:
             lyric_data = json.loads(lyric_row[0])
+            delta = abs(float(song_row[3]) - track_len/1000)
+            if delta > 1 or delta < -1:
+                """The duration difference is too high. We consider this as a wrong match."""
+                return song_row[0], lyric_row[1], 6, None
+                
             return song_row[0], lyric_row[1], tuple(lyric_data[1]), lyric_data[0] # OK
 
 

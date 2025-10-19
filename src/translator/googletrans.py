@@ -27,6 +27,3 @@ def translate_lyric(lyric_data, dest='en'):
 
     return w_chars, tuple(trans_lyric_data)
 
-if __name__ == "src.translator.googletrans":
-    translate = True
-

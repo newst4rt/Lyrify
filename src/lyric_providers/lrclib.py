@@ -15,9 +15,9 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float):
             body = response.json()
             if body["syncedLyrics"]:
                 d_delta = abs(body["duration"] - track_len/1000)
-                if track_len and d_delta > 1:
+                if track_len and d_delta > 1 or d_delta < -1:
                     """The duration difference is too high. We consider this as a wrong match."""
-                    return 6 # 6 represent a successful request with some available data but wrong match due to duration mismatch.
+                    return 6 
                 lyric_data = []
                 w_chars = {0: 0}
                 tmp_lyric_data = body["syncedLyrics"].split("\n")
