@@ -13,6 +13,7 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, tra
     sql_id = -1
     if config.offline_usage:
         sql_id, lang_code, lyric_data, w_chars = sqlite3_request(artist, title, dest_lang, track_len)
+        
         #if lyric_data and not isinstance(lyric_data, int):
         if lyric_data not in (400,):
            return sql_id, lang_code, lyric_data, w_chars

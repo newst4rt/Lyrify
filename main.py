@@ -15,7 +15,7 @@ def main():
 
         if isinstance(track_data, tuple) and track_data[0] != id: 
             id, track_len = track_data[0], track_data[2] # type: ignore
-            w_chars, lyric_data = main_gxl(track_data)
+            w_chars, lyric_data = printer.main_gxl(track_data)
         elif isinstance(track_data, int): 
             id = track_data
             lyric_data = track_data
@@ -30,11 +30,11 @@ def main():
             if delta > 3000:
                 delta = 3000
 
-            ex_print(lyric_data, w_chars, sl_index, id) # type: ignore
+            printer.ex_print(lyric_data, w_chars, sl_index, id) # type: ignore
 
         else:
             delta = 3000
-            error_print(lyric_data)
+            printer.error_print(lyric_data)
 
         sleep(delta / 1000)
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     p_base.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
 
     p_core = argparse.ArgumentParser(prog="Lyrify", description=descripton, parents=[p_base], formatter_class=RichHelpFormatter)    
-    p_default = p_core.add_argument_group(description="Additional Options:")
+    p_default = p_core.add_argument_group(description="Default Mode:")
     p_default.add_argument("-c", "--highlight-color", metavar="R,G,B", default="23,255,23", help = "Set the color for highlighting lyrics (default: 23,255,23).")    
     p_sub = p_core.add_subparsers(dest="sub_arg", metavar="", title="Print Modes", help='Use „stream|interactive --help" for more info.\n')
     p_mstr = p_sub.add_parser("stream", help="Print as stream to stdout.", parents=[p_base], formatter_class=RichHelpFormatter)
@@ -111,9 +111,11 @@ if __name__ == "__main__":
 
     if args.sub_arg in ("stream", "interactive"):
         config.terminal_mode = args.sub_arg
-        from src.core.print.ias_utils import * 
+        #from src.core.print.ias_utils import *
+        import src.core.print.ias_utils as printer 
     else:
-        from src.core.print.default_print import *  
+        from src.core.print.default_print import *
+        printer = default_print()
         config.terminal_mode = "default"
 
     import src.core.__main__ as cxe

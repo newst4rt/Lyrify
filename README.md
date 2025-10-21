@@ -28,7 +28,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. There is full width character support, including kanji, kana, and all other full-width letters, and aside from that, the status handler helps you to understand if something goes wrong. 
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters, and it is rich in features. Aside from that, if something goes wrong, a status handler helps you understand what happened by displaying a status code. 
 
 
 <table align="right">
@@ -90,7 +90,7 @@ pip3 install -r requirements.txt
         
 ### Initializing
 
-Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, use the Spotify API and set up your API credentials from your account. Here's a simple instruction how to do that:
+Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, you can use the Spotify API by set up your API credentials from your account. Here's a simple instruction how to do that:
 
  - *First, use this command to initialize the setup dialog.*
    ```bash

@@ -21,7 +21,7 @@ def translate_lyric(lyric_data, dest='en'):
     for x in range(0, len(lyric_data)):
         lyric_line = trans_tuple[x]
         if (cjk_count := sum(1 for ch in lyric_line if is_cjk(ch))):
-            w_chars[x + 1] = cjk_count
+            w_chars[x] = cjk_count
 
         trans_lyric_data.append({"startTimeMs": lyric_data[x]["startTimeMs"], "lyric_line": lyric_line})
 
