@@ -1,7 +1,7 @@
 import requests
 import unicodedata
 
-def lrclib_api_request(artist: str, title: str):
+def lrclib_api_request(artist: str, title: str, track_len: int | float):
     """ Prepare for wide characters"""
     def is_cjk(ch):
         return unicodedata.east_asian_width(ch) in ("W", "F")
@@ -14,6 +14,10 @@ def lrclib_api_request(artist: str, title: str):
         if response.status_code == 200:
             body = response.json()
             if body["syncedLyrics"]:
+                d_delta = abs(body["duration"] - track_len/1000)
+                if track_len and d_delta > 1 or d_delta < -1:
+                    """The duration difference is too high. We consider this as a wrong match."""
+                    return 6 
                 lyric_data = []
                 w_chars = {0: 0}
                 tmp_lyric_data = body["syncedLyrics"].split("\n")
@@ -34,7 +38,7 @@ def lrclib_api_request(artist: str, title: str):
                 if 0 != int(lyric_data[0]["startTimeMs"]):
                     lyric_data.insert(0, {"startTimeMs": 0, "lyric_line": "♬"})
 
-                return (w_chars, tuple(lyric_data))
+                return (w_chars, tuple(lyric_data), body["duration"])
             else:
                 return 422 # 422 represent a successful request with some available data but no synced lyric. 
         else: #404
@@ -47,11 +51,11 @@ def lrclib_api_request(artist: str, title: str):
         """It looks like there is no internet connection. We will try it later again."""
         return 503
 
-def lrclib_api(artist: str | tuple, title: str):
+def lrclib_api(artist: str | tuple, title: str, track_len: int | float):
     if isinstance(artist, tuple) and len(artist) > 1:
-        lrclib_request = lrclib_api_request(",".join(artist), title)
+        lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
         if isinstance(lrclib_request, tuple):
             return lrclib_request
     
-    return lrclib_api_request(artist, title)
+    return lrclib_api_request(artist, title, track_len)
     
