@@ -138,10 +138,10 @@ There are three different methods to display lyrics on the terminal.
 
 ## Options
 
-Options are separated due to the states of the different print methods and their behavior.
+Options are separated into different categories due to the different print modes and those behaviors. 
 
 - #### Core Options
-  *Core options are useable in all print methods.*
+  *Core options are useable in all states.*
   - #### **`-m --mode`**
 
      *Choose from an interface to get the current playback from the player.*
@@ -166,8 +166,6 @@ Options are separated due to the states of the different print methods and their
     *Define how lyrics should be highlighted as RGB color.*
 
     > **`--highlight-color 255,200,0`** 
-
-
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
