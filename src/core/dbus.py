@@ -14,7 +14,7 @@ def init_dbus(player):
             player_metadata = dbus.Interface(player_bus, "org.freedesktop.DBus.Properties")
         except dbus.exceptions.DBusException:
             return 2
-            time.sleep(3)
+        
     else:
         dbus_names = session_bus.list_names()
         lf_services = [names for names in dbus_names if names.startswith("org.mpris.MediaPlayer2." + dbus_player)]
@@ -23,7 +23,6 @@ def init_dbus(player):
         try:
             player_bus = session_bus.get_object(lf_services[0], "/org/mpris/MediaPlayer2")
         except dbus.exceptions.DBusException:
-            #error_print("Something went wrong with the player" + player_bus)
             return 2
             exit()
         player_metadata = dbus.Interface(player_bus, "org.freedesktop.DBus.Properties")

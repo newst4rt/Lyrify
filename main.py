@@ -119,7 +119,12 @@ if __name__ == "__main__":
         config.terminal_mode = "default"
 
     import src.core.__main__ as cxe
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+    except BaseException as e:
+        print('\033[?25h', end="")
 
         
 

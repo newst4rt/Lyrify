@@ -15,7 +15,7 @@ def ex_print(lyric_data: tuple | str | int, w_chars: dict | None = None, lyric_i
     if len_text < max_lyric_len:
         print(" "*max_lyric_len, end="\r", flush=True)
     
-    """If you like to set a maximum of character for displaying the lyric add [:<num>] to print and define the number"""
+    """If you like to set a maximum of characters of displaying lyrics add [:<num>]"""
     print(f'{text}', end="\r", flush=True)
     max_lyric_len = len_text
 
