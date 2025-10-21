@@ -122,7 +122,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(e)
+        raise(e)
     except BaseException as e:
         print('\033[?25h', end="")
 

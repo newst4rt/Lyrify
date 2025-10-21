@@ -67,8 +67,8 @@ class default_print:
 
         """Precalculation how many lines fit in our terminal."""
         while True:
-            lxe_pos = 3 if lyric_index+it_lxe >= len(lyric_data) and config.translate else 2 if lyric_data[lyric_index+it_lxe]["lyric_line"] == "♬" or config.translate == False else 3
-            lxe_neg = 3 if lyric_index+(it_lxe*-1) < 0 and config.translate else 2 if lyric_data[lyric_index+(it_lxe*-1)]["lyric_line"] == "♬" and config.translate == False else 3
+            lxe_pos = 3 if lyric_index+it_lxe >= len(lyric_data) and config.translate else 2 if lyric_index+it_lxe >= len(lyric_data) or lyric_data[lyric_index+it_lxe]["lyric_line"] == "♬" or config.translate == False else 3
+            lxe_neg = 3 if lyric_index+(it_lxe*-1) < 0 and config.translate else 2 if lyric_index+(it_lxe*-1) < 0 or lyric_data[lyric_index+(it_lxe*-1)]["lyric_line"] == "♬" or config.translate == False else 3
             if (lxe_total+lxe_pos+lxe_neg) < terminal_lines:
                 lxe_total += lxe_pos + lxe_neg
                 it_lxe += 1
