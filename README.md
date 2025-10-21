@@ -3,8 +3,9 @@
 <h1>Lyrify<br></h1>
 A lightweight Python application for displaying synchronized lyrics in the terminal, optionally with translation and offline storage, via the <a href="https://lrclib.net">Lrclib API</a>.
 <br></br>
-<img src="https://github.com/user-attachments/assets/f1e977a2-a204-4bc9-882a-fffcb10d3138" width="600"></img>
+<img src="https://github.com/user-attachments/assets/d426b46b-cafb-42d7-8d0f-4b12d475f397" width="650"></img>
 <br></br>
+
 
 [![License MIT](https://img.shields.io/badge/License-MIT-blue)](#)<br>
 [![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#) [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) [![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#)
