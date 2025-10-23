@@ -140,7 +140,7 @@ There are three different methods to display lyrics on the terminal.
 
 Options are separated into different categories due to the different print modes and those behaviors. 
 
-- #### Core Options
+### Core Options
   *Core options are useable in all states.*
   - #### **`-m --mode`**
 
@@ -160,7 +160,7 @@ Options are separated into different categories due to the different print modes
   
     *Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.*
 
-- #### Default Options
+### Default Options
   *Can only be used in the **default print mode**.*
   - #### `-c --highlight-color`
     *Define how lyrics should be highlighted as RGB color.*
