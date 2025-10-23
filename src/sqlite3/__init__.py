@@ -68,7 +68,7 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: 
                 """The duration difference is too high. We consider this as a wrong match."""
                 return song_row[0], lyric_row[1], 6, None
                 
-            return song_row[0], lyric_row[1], tuple(lyric_data[1]), lyric_data[0] # OK
+            return song_row[0], lyric_row[1], tuple(lyric_data[1]), {int(k): v for k, v in lyric_data[0].items()} # OK
 
 
     elif song_row and str(song_row[1]) in ["0", "2"]:
