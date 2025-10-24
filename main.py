@@ -53,12 +53,14 @@ if __name__ == "__main__":
     p_base.add_argument("-m", "--mode", default=None, choices=['dbus', 'spotify'], help = "Select the mode how lyrics should be received.")
     p_base.add_argument("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     p_base.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
-    p_base.add_argument("-0", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
+    p_base.add_argument("-o", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
     p_base.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
 
     p_core = argparse.ArgumentParser(prog="Lyrify", description=descripton, parents=[p_base], formatter_class=RichHelpFormatter)    
     p_default = p_core.add_argument_group(description="Default Mode:")
     p_default.add_argument("-c", "--highlight-color", metavar="R,G,B", default="23,255,23", help = "Set the color for highlighting lyrics (default: 23,255,23).")    
+    p_default.add_argument("-0", "--hide-sourcelyrics", action="store_true", help = "Hide source lyrics when using translation.")    
+
     p_sub = p_core.add_subparsers(dest="sub_arg", metavar="", title="Print Modes", help='Use „stream|interactive --help" for more info.\n')
     p_mstr = p_sub.add_parser("stream", help="Print as stream to stdout.", parents=[p_base], formatter_class=RichHelpFormatter)
     p_int = p_sub.add_parser("interactive", help="Print as one liner and dynamic refreshment.", parents=[p_base], formatter_class=RichHelpFormatter)
@@ -100,6 +102,12 @@ if __name__ == "__main__":
         config.offline_storage = True
         config.offline_usage = True
 
+    if args.hide_sourcelyrics:
+        if args.translate:
+            config.hide_source = True
+        else:
+            p_core.error("--hide-sourcelyric should be used with --translate")
+
     if args.highlight_color:
         try:
             _hc_color = tuple(int(c) for c in args.highlight_color.split(","))
@@ -125,6 +133,7 @@ if __name__ == "__main__":
         raise(e)
     except BaseException as e:
         print('\033[?25h', end="")
+        print("\n")
 
         
 
