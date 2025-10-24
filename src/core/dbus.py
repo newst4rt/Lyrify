@@ -19,7 +19,8 @@ def init_dbus(player):
         dbus_names = session_bus.list_names()
         lf_services = [names for names in dbus_names if names.startswith("org.mpris.MediaPlayer2." + dbus_player)]
         if not lf_services:
-            raise Exception(f"There is no player with the name {player}.")
+            return 2
+            #raise Exception(f"There is no player with the name {player}.")
         try:
             player_bus = session_bus.get_object(lf_services[0], "/org/mpris/MediaPlayer2")
         except dbus.exceptions.DBusException:
