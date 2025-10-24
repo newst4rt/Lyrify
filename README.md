@@ -171,5 +171,8 @@ Options are separated into different categories due to the different print modes
 
     > **`--highlight-color 255,200,0`** 
 
+  - #### `-0 --hide-sourcelyrics`
+    *Hide the displayed source lyrics when translation is enabled.* 
+
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
