@@ -35,4 +35,4 @@ The documentation for Lyrify currently exist in the [README](README.md). Feel fr
 
 ## Final Notes
 
-Lyrify is still in its early stages, and as creator, it's one of my first official repositories built with the intention of meeting the standards of the GitHub community. . I truly appreciate your contributions — you’re awesome!
+This project is one of my first official repositories built with the intention of meeting the standards of the GitHub community. If something went wrong, it might be due to misunderstandings or mistakes. Just drop me an [email](mailto:130695d3-10e7-4c33-afc0-ca333ec1d1c0@newst4rt.anonaddy.me) or open issue if you encounter any problems or feel unsure about something.
