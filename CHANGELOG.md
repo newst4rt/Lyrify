@@ -11,10 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add CHANGELOG.
 - Add CONTRIBUTING guide.
-- Add `--hide-sourcelyric`.
+- Add `-0 --hide-sourcelyric`.
 
 ### Fixed
  - Improve Readme.
+  <!-- b41c2f2690297a18786a1a09d951b12759bdbebf  --> 
+ - Fix bug related to handle keys from w_chars dictionary correctly.  
+ - Fix bug related to centering text
+
+### Changed
+ - Store offline uses now the parameter `-o` instead of `-0`.
 
 ## [v0.2] - 2025-10-21
 
