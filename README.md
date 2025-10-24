@@ -136,6 +136,10 @@ There are three different methods to display lyrics on the terminal.
   python3 main.py interactive
   ```
 
+### Status Handler
+
+Lyrify uses predefined status codes to report the user if something goes wrong. This feature make it easy to detect and handle issues during runtime. Codes and their description can be determined [here](docs/status_codes.md).
+
 ## Options
 
 Options are separated into different categories due to the different print modes and those behaviors. 
