@@ -31,7 +31,7 @@ Lyrify uses the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format 
 
 ## Documentation
 
-The documentation for Lyrify currently exist in the [README](README.md). Feel free to add, replace or delete text as you think is right. <br><br>Generally, PRs without an open Issue will be mostly accepted except for major changes that need to be discussed at first. If your PR get rejected, please don't be discouraged – there may be some reasons for it. You're welcom to open an issue so we can get in touch and discuss about your changes.
+The documentation for Lyrify currently exist in the [README](README.md). Feel free to add, replace or delete text as you think is right. <br><br>Generally, PRs without an open Issue will be mostly accepted except for major changes that need to be discussed at first. If your PR get rejected, please don't be discouraged – there may be some reasons for it. You're welcome to open an issue so we can get in touch and discuss about your changes.
 
 ## Final Notes
 

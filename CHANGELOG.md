@@ -5,23 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.3] - 2025-10-24
 
 ### Added
 
-- Add CHANGELOG.
-- Add CONTRIBUTING guide.
-- Add `-0 --hide-sourcelyric`.
+- Added CHANGELOG.
+<!-- 5e0f5e86f97728b2f0ed8b649fcf413cb0fe21e5, 264379bd7dac5a9eeb128bae9142934320c1600f -->
+- Added CONTRIBUTING guide.
+<!-- 017161360d9fba626ea35bba79eb82d9c53b2bef, 35b08f9239e96a5cfca24c7aae943dafd5a18e08 -->
+- Added `-0 --hide-sourcelyric`.
+<!-- c80c0c90a25ba7abc73d9368a18e27c25f6668bf, c9ce720d0fe88223e8ce7d4870b8d8216ac40b0d, 11aa67eca59bdc81a6ac587cc1de82995026039e -->
 
 ### Fixed
- - Improve Readme.
-  <!-- b41c2f2690297a18786a1a09d951b12759bdbebf  --> 
- - Fix bug related to handle keys from w_chars dictionary correctly.  
- - Fix bug related to centering text
+ - Fixed bug related to handle keys from w_chars dictionary correctly.  
+   <!-- b41c2f2690297a18786a1a09d951b12759bdbebf  --> 
+ - Fixed bug related to use `--mode dbus <player>`.
+   <!-- 27dd914f9ca3db0634518e707e588740388ed994 -->
+ - Fixed program termination when an unavailable player is passed to `--mode dbus <player>`.
 
 ### Changed
- - Store offline uses now the parameter `-o` instead of `-0`.
-
+ - Offline storage parameter is now `-o` instead of `-0`.
+ <!-- 11aa67eca59bdc81a6ac587cc1de82995026039e -->
+  - Updated Readme.
+ <!-- 9a2706ff1c2374ab8f2f682bdcbdd275b2971f5f, 20a34638a7a6211d86f9ee5401b005736b47d743, 543331cdfbad8395d74fcd022f83a156adb194ca -->
+  - Updated doc/status_code
+ <!-- 8ea46f5e39e07fe7f45cac6e1344e9af9b237174 -->
 ## [v0.2] - 2025-10-21
 
 ### Added
