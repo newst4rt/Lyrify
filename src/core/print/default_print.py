@@ -78,8 +78,8 @@ class default_print:
                 lxc_data.append(f'{highlight_aescolor}{self.center_text(lyric_data[lyric_index]["lyric_line"], terminal_columns, w_charc)}\033[0m')
                 if lyric_data[lyric_index]["lyric_line"] != "♬" and config.translate == True:
                     w_charc = 0 if lyric_index not in self.trans_w_chars else self.trans_w_chars[lyric_index]
-
-                    lxc_data.append(f'{highlight_aescolor}{f'({self.trans_lyric_data[lyric_index]["lyric_line"]})'.center(terminal_columns-w_charc)}\033[0m')
+                    lxc_data.append(f'{highlight_aescolor}{self.center_text(f'({self.trans_lyric_data[lyric_index]["lyric_line"]})', terminal_columns, w_charc)}\033[0m')
+                    #lxc_data.append(f'{highlight_aescolor}{f'({self.trans_lyric_data[lyric_index]["lyric_line"]})'.center(terminal_columns-w_charc)}\033[0m')
 
                 break
 
@@ -134,11 +134,15 @@ class default_print:
                         self.trans_w_chars, self.trans_lyric_data = translate_lyric(lyric_data, dest=config.dest_lang)
                         if config.offline_storage:
                             sql_id = store_lyric_offline(artist, title, (self.trans_w_chars, self.trans_lyric_data), config.dest_lang, sql_id) # type: ignore
-                        return w_chars, lyric_data
-                    else:
+                        if config.hide_source:
+                            config.translate = False
+                            return self.trans_w_chars, self.trans_lyric_data
+
+                    elif config.hide_source == False:
                         self.trans_w_chars, self.trans_lyric_data = w_chars, lyric_data
                         _, _, lyric_data, w_chars = get_lyric(artist, title, "orig", track_len) # type: ignore
-                        return w_chars, lyric_data
+
+                    return w_chars, lyric_data
 
                 else:
                     return None if w_chars is None else w_chars, lyric_data
