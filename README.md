@@ -68,6 +68,10 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="left"><i>Wide Character Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>        
         </tr>
+          <tr>
+            <td align="left"><i>Romanizer</i></td>
+            <td align="center">$${\color{green}✓}$$</td>        
+        </tr>
     </tbody>
 </table>
 
@@ -77,6 +81,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [googletrans](https://pypi.org/project/googletrans/)
 - [rich-argparse](https://github.com/hamdanal/rich-argparse)
 - [requests](https://github.com/psf/requests)
+- [uroman](https://github.com/isi-nlp/uroman)
   
 ### Feature Request
 
@@ -156,9 +161,27 @@ Options are separated into different categories due to the different print modes
 
   - #### **`-t --translate`**
   
-    *Translate the lyrics in your target language.*
+    *Translate the lyrics in your target language – the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).*
   
-    > **`--translate <language_code>`** : the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).
+    > **`--translate <language_code>`** : 
+
+  - #### **`-r --romanize`**
+
+    *Romanize lines if lyrics contain characters that can be romanized. This option can be used combined with `--translate` and `--hide-sourcelyrics` wether to romanize the original or translated lyrics. Here some examples for a better understanding:*
+
+
+    - > **`--translate zh-CN --romanize --hide-sourcelyrics`**
+
+       - *Display on the first row the Chinese translation and on the second the romanized text from the translation*
+
+    - > **`--translate zh-CN --romanize`** 
+      
+       - *Display the romanized text from the original lyric and below the Chinese Translation*
+
+    - > **`stream --romanize --translate zh-CN`** 
+       - *Display the romanized Chinese translation.* 
+
+    *¹first line²second line
   
   - #### **`-o --store-offline`**
   
@@ -173,6 +196,10 @@ Options are separated into different categories due to the different print modes
 
   - #### `-0 --hide-sourcelyrics`
     *Hide the displayed source lyrics when translation is enabled.* 
+
+### Credits
+
+ - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
