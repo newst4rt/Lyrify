@@ -16,7 +16,7 @@ class default_print:
         self.old_terminal_size = -1
         self.old_track_id = -1
         self.passed_lyric_rgbcolor=(108, 108, 108)
-        if config.translate or config.romanize and config.hide_source == False:
+        if (config.translate or config.romanize) and config.hide_source == False:
             self.multi_line = True
         else:
             self.multi_line = False
@@ -148,14 +148,28 @@ class default_print:
                         self.trans_w_chars, self.trans_lyric_data = w_chars, lyric_data
                         _, _, lyric_data, w_chars = get_lyric(artist, title, "orig", track_len) # type: ignore
 
-                if config.romanize:
-                    if config.translate and config.hide_source:
-                        self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
 
-                    elif config.translate or config.hide_source: 
+                if config.romanize:
+                    self.multi_line = True
+                    if config.translate and config.hide_source: #H-T-R
+                        if w_chars[0] != 1:
+                            self.multi_line = False
+                            w_chars, lyric_data = self.trans_w_chars, self.trans_lyric_data
+
+                        self.trans_lyric_data, self.trans_w_chars = romanize_lyric(self.trans_lyric_data, self.trans_w_chars)
+
+                    elif config.translate or config.hide_source: #T-R | H-R
                         lyric_data, w_chars = romanize_lyric(lyric_data, w_chars)
-                    else:
-                        self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
+                        if config.hide_source:
+                            self.multi_line = False
+
+                    else: #R
+                        if w_chars[0] == 0:
+                            self.multi_line = False
+                        else:
+                            self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
+
+
             
             return None if w_chars is None else w_chars, lyric_data
         
