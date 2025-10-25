@@ -53,6 +53,8 @@ if __name__ == "__main__":
     p_base = argparse.ArgumentParser(add_help=False)
     p_base.add_argument("-m", "--mode", default=None, choices=['dbus', 'spotify'], help = "Select the mode how lyrics should be received.")
     p_base.add_argument("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    p_base.add_argument("-r", "--romanize", action='store_true', help = "Romanize lyrics.")
+
     p_base.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
     p_base.add_argument("-o", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
     p_base.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
@@ -92,22 +94,22 @@ if __name__ == "__main__":
         init_dbus("spotify")
     
 
-
+    if args.romanize:
+        config.romanize = True
+    
     if args.translate:
-        #from src.translator.googletrans import *
         config.translate = True
         config.dest_lang = args.translate
 
     if args.store_offline:
-        #from src.sqlite3 import *
         config.offline_storage = True
         config.offline_usage = True
 
     if args.hide_sourcelyrics:
-        if args.translate:
+        if args.translate or args.romanize:
             config.hide_source = True
         else:
-            p_core.error("--hide-sourcelyric should be used with --translate")
+            p_core.error("--hide-sourcelyric should be used with --translate, --romanize or both")
 
     if args.highlight_color:
         try:
@@ -120,7 +122,6 @@ if __name__ == "__main__":
 
     if hasattr(args, "sub_arg") and args.sub_arg in ("stream", "interactive"):
         config.terminal_mode = args.sub_arg
-        #from src.core.print.ias_utils import *
         import src.core.print.ias_utils as printer 
     else:
         from src.core.print.default_print import *
@@ -129,6 +130,7 @@ if __name__ == "__main__":
 
     import src.core.__main__ as cxe
     try:
+        print('\033[?25l', end="\r")
         main()
     except Exception as e:
         raise(e)
