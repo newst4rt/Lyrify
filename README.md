@@ -167,21 +167,20 @@ Options are separated into different categories due to the different print modes
 
   - #### **`-r --romanize`**
 
-    *Romanize lines if lyrics contain characters that can be romanized. This option can be used combined with `--translate` and `--hide-sourcelyrics` wether to romanize the original or translated lyrics. Here some examples for a better understanding:*
+    *Romanize lines if lyrics contain characters that can be romanized.<br>
+    This option can be used combined with `--translate` and `--hide-sourcelyrics` whether to romanize the original or translated lyrics. Here some examples for a better understanding:*
 
 
     - > **`--translate zh-CN --romanize --hide-sourcelyrics`**
 
-       - *Display on the first row the Chinese translation and on the second the romanized text from the translation*
+       - *Display on the first row the Chinese translation and on the second the romanized text from translation*
 
     - > **`--translate zh-CN --romanize`** 
       
-       - *Display the romanized text from the original lyric and below the Chinese Translation*
+       - *Display the romanized text from the original lyric and below the Chinese translation*
 
     - > **`stream --romanize --translate zh-CN`** 
        - *Display the romanized Chinese translation.* 
-
-    *¹first line²second line
   
   - #### **`-o --store-offline`**
   
@@ -197,7 +196,7 @@ Options are separated into different categories due to the different print modes
   - #### `-0 --hide-sourcelyrics`
     *Hide the displayed source lyrics when translation is enabled.* 
 
-### Credits
+## Credits
 
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
 
