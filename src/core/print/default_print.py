@@ -142,7 +142,6 @@ class default_print:
                         if config.offline_storage:
                             sql_id = store_lyric_offline(artist, title, (self.trans_w_chars, self.trans_lyric_data), config.dest_lang, sql_id) # type: ignore
                         if config.hide_source:
-                            config.translate = False
                             w_chars, lyric_data = self.trans_w_chars, self.trans_lyric_data
 
                     elif config.hide_source == False:
@@ -150,7 +149,10 @@ class default_print:
                         _, _, lyric_data, w_chars = get_lyric(artist, title, "orig", track_len) # type: ignore
 
                 if config.romanize:
-                    if config.translate or config.hide_source:
+                    if config.translate and config.hide_source:
+                        self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
+
+                    elif config.translate or config.hide_source: 
                         lyric_data, w_chars = romanize_lyric(lyric_data, w_chars)
                     else:
                         self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
