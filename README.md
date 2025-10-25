@@ -12,12 +12,29 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 </div>
 
+## Table of Contents
+- [Introduction](#introduction)
+  - [How Lyrify Started](#how-lyrify-started)
+  - [Why Lyrify ?](#why-lyrify-)
+  - [Python Dependencies](#python-dependencies)
+  - [Feature Request](#feature-request)
+- [Installation](#installation)
+- [Get Started](#get-started)
+  - [Initializing](#initializing)
+  - [Start ~ Print Modes](#start--print-modes)
+  - [Status Handler](#status-handler)
+- [Options](#options)
+  - [Core Options](#core-options)
+  - [Default Options](#default-options)
+- [Credits](#credits)
+- [License](#license)
+
 
 
 
 ## Introduction
 
-### How Lyrify started 
+### How Lyrify Started 
 
 It began with a similar application that no longer worked. Since there was no suitable replacement, I decided to look into what had changed to fix the issue myself.
 
@@ -69,7 +86,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td>        
         </tr>
           <tr>
-            <td align="left"><i>Romanizer</i></td>
+            <td align="left"><i>Offline Romanizer</i></td>
             <td align="center">$${\color{green}✓}$$</td>        
         </tr>
     </tbody>
@@ -78,7 +95,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 ### Python Dependencies 
 
 - [dbus-python](https://pypi.org/project/dbus-python/)
-- [googletrans](https://pypi.org/project/googletrans/)
+- [googletrans](https://github.com/ssut/py-googletrans)
 - [rich-argparse](https://github.com/hamdanal/rich-argparse)
 - [requests](https://github.com/psf/requests)
 - [uroman](https://github.com/isi-nlp/uroman)
@@ -122,7 +139,7 @@ python3 main.py --mode dbus <name>
 
 This feature is experimental and may not work with all players. It mostly depends on how accurately the data is transmitted to D-Bus. 
 
-### Start ~ Print Mode
+### Start ~ Print Modes
 
 There are three different methods to display lyrics on the terminal. 
 
@@ -145,42 +162,52 @@ There are three different methods to display lyrics on the terminal.
 
 Lyrify uses predefined status codes to report the user if something goes wrong. This feature make it easy to detect and handle issues during runtime. Codes and their description can be found [here](docs/status_codes.md).
 
-## Options
 
-Options are separated into different categories due to the different print modes and those behaviors. 
+## Options
+Options are organized into different categories to accommodate the various states and their operational behaviours. 
+<br>
 
 ### Core Options
-  *Core options are useable in all states.*
+
+  Available across all print states.
   - #### **`-m --mode`**
 
-     *Choose from an interface to get the current playback from the player.*
-     > **`--mode dbus`** : *apply D-Bus MPRIS.*   
-     > **`--mode dbus <name>`** : *apply D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
-     > **`--mode spotify`** : *apply the Spotify API.*
+     *Choose from an interface how to get the current playback from the player.*
+
+     - **`--mode dbus`** 
+       
+       *Use D-Bus MPRIS to get playback from Spotify.* 
+     - **`--mode dbus <name>`** 
+
+       *Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
+     - **`--mode spotify`** 
+
+       *Apply Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
   
 
   - #### **`-t --translate`**
   
     *Translate the lyrics in your target language – the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).*
   
-    > **`--translate <language_code>`** : 
+     **`--translate <language_code>`**
 
   - #### **`-r --romanize`**
 
     *Romanize lines if lyrics contain characters that can be romanized.<br>
-    This option can be used combined with `--translate` and `--hide-sourcelyrics` whether to romanize the original or translated lyrics. Here some examples for a better understanding:*
+    This option can be used combined with `--translate` and `--hide-sourcelyrics` whether to romanize the original or translated lyrics. Here are some examples for a better understanding:*
 
 
-    - > **`--translate zh-CN --romanize --hide-sourcelyrics`**
+    - **`--translate zh-CN --romanize --hide-sourcelyrics`**
 
-       - *Display on the first row the Chinese translation and on the second the romanized text from translation*
+       *Display the translation on the first row and the romanized translation on the second. If translation can't be transliterated, only the first row will be displayed.*
 
-    - > **`--translate zh-CN --romanize`** 
+    - **`--translate zh-CN --romanize`** 
       
-       - *Display the romanized text from the original lyric and below the Chinese translation*
+       *Display the romanized lyric and below the translation.*
 
-    - > **`stream --romanize --translate zh-CN`** 
-       - *Display the romanized Chinese translation.* 
+    -  **`stream --romanize --translate zh-CN`**
+    
+        *Just display as stream the romanized translation.* 
   
   - #### **`-o --store-offline`**
   
@@ -198,7 +225,18 @@ Options are separated into different categories due to the different print modes
 
 ## Credits
 
+Greetings to, and those contributors:
+
+ - The D-Bus maintainers @ dbus-python
+ - SuHun Han @ googletrans
+ - Ali Hamdan @ rich-argparse
+ - Kenneth Reitz @ requests
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
+ 
+
+  Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
+
+  
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
