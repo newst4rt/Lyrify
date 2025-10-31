@@ -107,6 +107,7 @@ Lyrify is still in development and in the beta stage. New modules may be added o
 
 ```bash
 pip3 install -r requirements.txt
+git pull --recurse-submodules
 ```
 ## Get Started
         
