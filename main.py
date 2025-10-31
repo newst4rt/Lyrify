@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from time import sleep
-import argparse
-from rich_argparse import RichHelpFormatter
+#import argparse
+#from rich_argparse import RichHelpFormatter
 from src.lyric_providers.lrclib import *
 import src.core.config as config
-import sys
+from src.core.com import *
 
 def main():
     id = None
@@ -41,39 +41,64 @@ def main():
 
 if __name__ == "__main__":
     """ Command line argument parsing """
-    descripton = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
-    RichHelpFormatter.styles.update({
-        "argparse.text": "#6cbf7d bold",
-        "argparse.args": "#6caabf",
-        "argparse.help": "#E0E0E0",
-    })
+    style = {"commands_args" :  ("#5898E7", "bold"),
+            "commands_help" : ("#CBCBCB"),
+            "commands_req" : "#88e6fd",
+            "commands_metavar" : "#ecbc84",
+            "commands_pipe" : ("#7E7E7E", "bold"),
+
+            "options_args" :  ("#FF8B6A", "bold"),
+            "options_req" : "#c77e25" ,
+            "options_metavar" : "#ecbc84" ,
+            "options_pipe" : ("#7E7E7E", "bold"),
+
+            "dxt_options_args" :  ("#e5e996", "bold"),
+            "dxt_options_req" : "#e5e996" ,
+            "dxt_options_metavar" : ("#e5e996") ,
+            "dxt_options_pipe" : ("#7E7E7E", "bold"),
+
+            "title_args" : ("#67c236", "bold"),
+            "title_pipe" : ("#7E7E7E", "bold"),
+            "title_req" : "#c77e25", 
+            "title_brackets" : "#7E7E7E",
+            "title_metavar" :  "#d8892e",
+    }
     
-    # Initialize parser
-
-    p_base = argparse.ArgumentParser(add_help=False)
-    p_base.add_argument("-m", "--mode", default=None, choices=['dbus', 'spotify'], help = "Select the mode how lyrics should be received.")
-    p_base.add_argument("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
-    p_base.add_argument("-r", "--romanize", action='store_true', help = "Romanize lyrics.")
-
-    p_base.add_argument("-i", "--init", choices=["spotify"], help = "Initialize the API configuration for the target music player.")
-    p_base.add_argument("-o", "--store-offline", action='store_true', help = "Write fetched lyrics to a file for offline access (experimental)")
-    p_base.add_argument("dbus_word", nargs="?", help=argparse.SUPPRESS)
-
-    p_core = argparse.ArgumentParser(prog="Lyrify", description=descripton, parents=[p_base], formatter_class=RichHelpFormatter)    
-    if any(arg in sys.argv for arg in ("stream", "interactive", "-h", "--help")):
-        p_sub = p_core.add_subparsers(dest="sub_arg", metavar="", title="Print Modes", required=False, help='Use „stream|interactive --help" for more info.\n')
-        p_mstr = p_sub.add_parser("stream", help="Print as stream to stdout.", parents=[p_base], formatter_class=RichHelpFormatter)
-        p_int = p_sub.add_parser("interactive", help="Print as one liner.", parents=[p_base], formatter_class=RichHelpFormatter)
-
+    description = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
+    com = Commander()
+    com.styles.update(style)
+    com.com_title = ("Lyrify", description)
     
-    p_default = p_core.add_argument_group(description="Default Mode:")
-    p_default.add_argument("-c", "--highlight-color", metavar="R,G,B", default="23,255,23", help = "Set the color for highlighting lyrics (default: 23,255,23).")    
-    p_default.add_argument("-0", "--hide-sourcelyrics", action="store_true", help = "Hide source lyrics when using translation.")    
+    com.add_text(" Core Options: \n", "optional_2", 2, index=1)
+    com.add_stylegroup("commands")
+    com.add_arg("-h", "--help", nargs=1, required=None, help="This is a simple help message")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
+    com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
+    com.add_arg("-o", "--store-offline", help = "Write fetched lyrics to a file for offline access (experimental)")
+
+    com.add_stylegroup("options")
+    sub_com = SubCommander(com)
+    sub_com.add_com("stream", metavar="[--help]", help="Stream Mode", index=0)
+    sub_com.add_com("interactive", metavar="[--help]", help="Interactive Mode", index=0)
+    sub_com.add_text("Commands: \n", "commands_args", 1, index=0)
+    sub_com.add_text("", index=3)
+
+    a_sub_com = SubCommander(sub_com)
+    a_sub_com.add_text("\n  Default:\n", "optional_1", idt=3)
+    a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", help="Set the color for highlighting lyrics (default: 23,255,23).")
+    a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation.")
+    a_sub_com.add_stylegroup("dxt_options")
 
 
-    args = p_core.parse_args()
+    args = a_sub_com.parse_args()
 
-    
+    if args.help:
+        if args.interactive or args.stream:
+            com.print_help()
+        else:
+            a_sub_com.print_help()
 
     if args.init:
         if "spotify" in args.init:
@@ -83,12 +108,10 @@ if __name__ == "__main__":
     if args.mode:
         if "dbus" in args.mode:
             from src.core.dbus import *  
-            dbus_player = args.dbus_word if args.dbus_word else "spotify"
+            dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
             init_dbus(dbus_player)
         elif "spotify" in args.mode:
             from src.spotify.api_request import *
-    elif args.dbus_word:
-        p_core.error(f'Bad Argument {args.dbus_word}.')
     else:
         from src.core.dbus import * 
         init_dbus("spotify")
@@ -99,7 +122,7 @@ if __name__ == "__main__":
     
     if args.translate:
         config.translate = True
-        config.dest_lang = args.translate
+        config.dest_lang = "".join(args.translate)
 
     if args.store_offline:
         config.offline_storage = True
@@ -113,16 +136,19 @@ if __name__ == "__main__":
 
     if args.highlight_color:
         try:
-            _hc_color = tuple(int(c) for c in args.highlight_color.split(","))
+            _hc_color = tuple(int(c) for c in args.highlight_color[0].split(","))
             if len(_hc_color) != 3 or any(x > 0 or x < 255 for x in _hc_color):
                 config.highlight_rgbcolor = _hc_color # type: ignore
         except ValueError:
             p_core.error("Highlight color must be in the format R,G,B with values between 0 and 255.")
 
 
-    if hasattr(args, "sub_arg") and args.sub_arg in ("stream", "interactive"):
-        config.terminal_mode = args.sub_arg
-        import src.core.print.ias_utils as printer 
+    if args.interactive:
+        config.terminal_mode = "interactive"
+        import src.core.print.ias_utils as printer
+    elif args.stream:
+        config.terminal_mode = "stream"
+        import src.core.print.ias_utils as printer
     else:
         from src.core.print.default_print import *
         printer = default_print()

@@ -96,7 +96,6 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 
 - [dbus-python](https://pypi.org/project/dbus-python/)
 - [googletrans](https://github.com/ssut/py-googletrans)
-- [rich-argparse](https://github.com/hamdanal/rich-argparse)
 - [requests](https://github.com/psf/requests)
 - [uroman](https://github.com/isi-nlp/uroman)
   
@@ -176,30 +175,28 @@ Options are organized into different categories to accommodate the various state
 
      - **`--mode dbus`** 
        
-       *Use D-Bus MPRIS to get playback from Spotify.* 
+       *Use D-Bus MPRIS to get the current playback from Spotify.* 
      - **`--mode dbus <name>`** 
 
        *Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
      - **`--mode spotify`** 
 
-       *Apply Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
+       *Apply the Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
   
 
-  - #### **`-t --translate`**
+  - #### **`-t --translate <language_code>`**
   
     *Translate the lyrics in your target language – the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).*
   
-     **`--translate <language_code>`**
-
   - #### **`-r --romanize`**
 
     *Romanize lines if lyrics contain characters that can be romanized.<br>
-    This option can be used combined with `--translate` and `--hide-sourcelyrics` whether to romanize the original or translated lyrics. Here are some examples for a better understanding:*
+    This option can be used both combined or individually with `--translate` and `--hide-sourcelyrics` whether to romanize the translated or original lyrics. Here are some examples for a better understanding:*
 
 
     - **`--translate zh-CN --romanize --hide-sourcelyrics`**
 
-       *Display the translation on the first row and the romanized translation on the second. If translation can't be transliterated, only the first row will be displayed.*
+       *Display on the first row the translation and on the second the romanized translation. If translation can't be transliterated, only first row will be displayed.*
 
     - **`--translate zh-CN --romanize`** 
       
@@ -207,7 +204,7 @@ Options are organized into different categories to accommodate the various state
 
     -  **`stream --romanize --translate zh-CN`**
     
-        *Just display as stream the romanized translation.* 
+        *Just display the romanized translation as stream.* 
   
   - #### **`-o --store-offline`**
   
@@ -221,7 +218,7 @@ Options are organized into different categories to accommodate the various state
     > **`--highlight-color 255,200,0`** 
 
   - #### `-0 --hide-sourcelyrics`
-    *Hide the displayed source lyrics when translation is enabled.* 
+    *Hide the displayed source lyrics when translation or romanizing is enabled.* 
 
 ## Credits
 
@@ -229,7 +226,6 @@ Greetings to, and those contributors:
 
  - The D-Bus maintainers @ dbus-python
  - SuHun Han @ googletrans
- - Ali Hamdan @ rich-argparse
  - Kenneth Reitz @ requests
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
  
