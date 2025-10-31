@@ -10,6 +10,8 @@ def translate_lyric(lyric_data, dest='en'):
     def is_cjk(ch):
         return unicodedata.east_asian_width(ch) in ("W", "F")
     
+
+    latin_let = True
     trans_cache = ""
     trans_lyric_data = []
     w_chars = {0: 0}
@@ -20,6 +22,10 @@ def translate_lyric(lyric_data, dest='en'):
     trans_tuple = tuple(raw_text.text.split("\n"))
     for x in range(0, len(lyric_data)):
         lyric_line = trans_tuple[x]
+        if latin_let and lyric_line.isascii() == False and lyric_line.isalpha():
+            w_chars = {0: 1}
+            latin_let = False
+
         if (cjk_count := sum(1 for ch in lyric_line if is_cjk(ch))):
             w_chars[x] = cjk_count
 

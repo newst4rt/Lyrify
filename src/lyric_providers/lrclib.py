@@ -15,11 +15,12 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float):
             body = response.json()
             if body["syncedLyrics"]:
                 d_delta = abs(body["duration"] - track_len/1000)
-                if track_len and d_delta > 1 or d_delta < -1:
+                if track_len and d_delta > 3 or d_delta < -3:
                     """The duration difference is too high. We consider this as a wrong match."""
                     return 6 
                 lyric_data = []
                 w_chars = {0: 0}
+                latin_let = True
                 tmp_lyric_data = body["syncedLyrics"].split("\n")
                 for x in range(0, len(tmp_lyric_data)):
                     if tmp_lyric_data[x].startswith("["):
@@ -32,6 +33,9 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float):
                         else:
                             if (cjk_count := sum(1 for ch in lyric_line if is_cjk(ch))):
                                 w_chars[x + 1] = cjk_count
+                            if latin_let and lyric_line.isascii() == False and lyric_line.isalpha():
+                                w_chars = {0: 1}
+                                latin_let = False
 
                         lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line.strip()})
 
