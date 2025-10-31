@@ -1,0 +1,3 @@
+[submodule "src/Commander"]
+	path = src/Commander
+	url = git@github.com:newst4rt/Commander

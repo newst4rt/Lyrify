@@ -4,7 +4,7 @@ from time import sleep
 #from rich_argparse import RichHelpFormatter
 from src.lyric_providers.lrclib import *
 import src.core.config as config
-from src.core.com import *
+from src.Commander.com import *
 
 def main():
     id = None
