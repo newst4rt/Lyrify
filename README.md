@@ -98,10 +98,10 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [googletrans](https://github.com/ssut/py-googletrans)
 - [requests](https://github.com/psf/requests)
 - [uroman](https://github.com/isi-nlp/uroman)
-  
+
 ### Feature Request
 
-If your desired feature is not listed, feel free to open a new issue. If it makes sense and I have time, I may add it.
+Lyrify is still in development and in the beta stage. New modules may be added over time. So, if your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
 
 ## Installation
 
@@ -184,7 +184,7 @@ Options are organized into different categories to accommodate the various state
        *Apply the Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
   
 
-  - #### **`-t --translate <language_code>`**
+  - #### **`-t --translate`***`<language_code>`*
   
     *Translate the lyrics in your target language – the value of the language code should be defined as [ISO-639](https://cloud.google.com/translate/docs/languages).*
   
