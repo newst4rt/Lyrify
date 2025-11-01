@@ -7,7 +7,8 @@ if config.translate is True:
     if config.offline_storage is True:
         from src.sqlite3 import store_lyric_offline
 if config.romanize is True:
-    from src.utils.romanizer_uroman import romanize_lyric
+    from src.utils.romanizer_uroman import *
+    rom = Uroman()
 
 class default_print:
 
@@ -53,10 +54,7 @@ class default_print:
 
                 fxd_lyrics = self.fxt_helper(lyric_data, lyric_index, w_chars, terminal_lines, terminal_columns)
                 os.system('clear')
-                for x in range(0, len(fxd_lyrics)-1):
-                    print(f'{fxd_lyrics[x]}')
-                else:
-                    print(f'{fxd_lyrics[len(fxd_lyrics)-1]}', end="\r")
+                print(fxd_lyrics)
         else:
             self.center_print(str(lyric_data))
 
@@ -65,7 +63,7 @@ class default_print:
         padding = (terminal_columns-len(text)-w_chars) // 2
         return str(" "*padding + text)
 
-    def fxt_helper(self, lyric_data: tuple, lyric_index: int, w_chars: dict, terminal_lines: int, terminal_columns: int) -> None:
+    def fxt_helper(self, lyric_data: tuple, lyric_index: int, w_chars: dict, terminal_lines: int, terminal_columns: int) -> str:
         highlight_aescolor = f"\033[38;2;{config.highlight_rgbcolor[0]};{config.highlight_rgbcolor[1]};{config.highlight_rgbcolor[2]}m"
         passed_lyric_aescolor = f"\033[38;2;{self.passed_lyric_rgbcolor[0]};{self.passed_lyric_rgbcolor[1]};{self.passed_lyric_rgbcolor[2]}m"
 
@@ -129,7 +127,7 @@ class default_print:
             lxc_data.append("")
 
 
-        return lxc_data
+        return "\n".join(lxc_data)
 
     def main_gxl(self, track_data: tuple) -> tuple:
             self.ex_print("↻")
@@ -156,10 +154,10 @@ class default_print:
                             self.multi_line = False
                             w_chars, lyric_data = self.trans_w_chars, self.trans_lyric_data
 
-                        self.trans_lyric_data, self.trans_w_chars = romanize_lyric(self.trans_lyric_data, self.trans_w_chars)
+                        self.trans_lyric_data, self.trans_w_chars = rom.romanize_lyric(self.trans_lyric_data, self.trans_w_chars)
 
                     elif config.translate or config.hide_source: #T-R | H-R
-                        lyric_data, w_chars = romanize_lyric(lyric_data, w_chars)
+                        lyric_data, w_chars = rom.romanize_lyric(lyric_data, w_chars)
                         if config.hide_source:
                             self.multi_line = False
 
@@ -167,7 +165,7 @@ class default_print:
                         if w_chars[0] == 0:
                             self.multi_line = False
                         else:
-                            self.trans_lyric_data, self.trans_w_chars = romanize_lyric(lyric_data, w_chars)
+                            self.trans_lyric_data, self.trans_w_chars = rom.romanize_lyric(lyric_data, w_chars)
 
 
             
