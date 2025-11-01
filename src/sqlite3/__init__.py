@@ -2,7 +2,7 @@ import json
 import time
 from src.core.config import offline_usage, offline_storage 
 
-def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int, lang_code: str, sql_id: int =-1 ):
+def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int, lang_code: str, sql_id: int =-1 ) -> int:
     current_timestamp = time.time()
     if isinstance(artist, tuple):
         artist = str(artist[0])
@@ -40,14 +40,14 @@ def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int
             cursor.execute("UPDATE lyrics SET lyric=? WHERE id=?",(json.dumps(lyric_data, ensure_ascii=False, indent=4), lyric_row[0]))
             conn.commit()
         else:
-            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data[0:2], ensure_ascii=False, indent=4)))
+            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data[0:2], ensure_ascii=False, indent=4))) # type: ignore
             conn.commit()
             
         return sql_id
     else:
         return -1
     
-def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: int | float):
+def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: int | float) -> tuple:
     if isinstance(artist, tuple):
         artist = str(artist[0])
     cursor.execute("SELECT id, synced_lyric, available_translation, track_duration, timestamp FROM songs WHERE title=? AND artist=?", (title, artist))
@@ -76,7 +76,7 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: 
         if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
             return -1, song_row[2], 404 if song_row[1] == "0" else 424, None # We use 404/424 as status code
         else:
-            return song_row[0], song_row[2], 400 , None #We use 400 in Row 3 to trigger lrclib_api_request
+            return song_row[0], song_row[2], 400 , None # We use 400 in Row 3 to trigger lrclib_api_request
         
     else:
         return -1, "orig", 400, None
@@ -92,7 +92,7 @@ if __name__ == "src.sqlite3":
         with open(script_dir + "/lyrics.db.lock") as f:
             pid = int(f.read().strip())
             try:
-                os.kill(pid, 0)
+                os.kill(pid, 0) # Check if process exist by sending a test signal
                 offline_storage = False
                 print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is currently in use by another process. Saving lyrics during this session is disabled.\n")
                 input("Press Enter to continue...")
