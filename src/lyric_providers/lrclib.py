@@ -34,7 +34,7 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float):
                             if (cjk_count := sum(1 for ch in lyric_line if is_cjk(ch))):
                                 w_chars[x + 1] = cjk_count
                             if latin_let and lyric_line.isascii() == False and lyric_line.isalpha():
-                                w_chars = {0: 1}
+                                w_chars[0] = 1
                                 latin_let = False
 
                         lyric_data.append({"startTimeMs": ms, "lyric_line": lyric_line.strip()})
