@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Update Readme.
+- Refactor code in `main.py`
+- Improve performance in `src/utils/romanizer_uroman.py`
+- Refactor `src/lyric_providers/lrclib.py`
+
+### Fixed
+
+ - Fixed Bug in `w_chars`for displaying lyrics with Asian characters off-center  
+
 ## [v0.4] - 2025-10-31
 
 ### Add

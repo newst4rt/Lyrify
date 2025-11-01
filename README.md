@@ -46,8 +46,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters, and it is rich in features. Aside from that, if something goes wrong, a status handler helps you understand what happened by displaying a status code. 
-
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters, and it is rich in features. Aside from that, many other customizable options and features are available to improve the user experience.  
 
 <table align="right">
     <thead>
@@ -98,10 +97,11 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [googletrans](https://github.com/ssut/py-googletrans)
 - [requests](https://github.com/psf/requests)
 - [uroman](https://github.com/isi-nlp/uroman)
+- [Commander](https://github.com/newst4rt/Commander)
 
 ### Feature Request
 
-Lyrify is still in development and in the beta stage. New modules may be added over time. So, if your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
+Lyrify is currently in development and still in its beta stage. New modules may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
 
 ## Installation
 
@@ -137,7 +137,7 @@ python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.Me
 python3 main.py --mode dbus <name>
 ```
 
-This feature is experimental and may not work with all players. It mostly depends on how accurately the data is transmitted to D-Bus. 
+This feature is experimental and may not work with all players. It mostly depends on how accurately the data are transmitted to D-Bus. 
 
 ### Start ~ Print Modes
 
