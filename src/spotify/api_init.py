@@ -7,7 +7,7 @@ REDIRECT_URI = None
 REFRESH_TOKEN = None
 access_token = None
 
-def get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET):
+def get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET) -> dict|int:
     basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
     params = {"grant_type": "refresh_token",
               "refresh_token": REFRESH_TOKEN
@@ -19,10 +19,12 @@ def get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET):
         if response.status_code == 200:
             body = response.json()
             return body['access_token']
+        else:
+            return response.status_code
     except requests.exceptions.ConnectionError:
         return 503
     
-def check_credentials():
+def check_credentials() -> None:
     global CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, access_token
     try:
         with open(".env") as f:
