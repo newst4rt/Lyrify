@@ -24,16 +24,19 @@ def get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET):
     
 def check_credentials():
     global CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, access_token
-    with open(".env") as f:
-        for line in f:
-            if line.startswith('#') or not line.strip():
-                continue
-            key, value = line.strip().split('=', 1)
-            value = value.strip().strip('"').strip("'")
-            globals()[key.strip()] = value.strip()
+    try:
+        with open(".env") as f:
+            for line in f:
+                if line.startswith('#') or not line.strip():
+                    continue
+                key, value = line.strip().split('=', 1)
+                value = value.strip().strip('"').strip("'")
+                globals()[key.strip()] = value.strip()
+    except FileNotFoundError:
+        pass
 
     if CLIENT_ID is None or CLIENT_SECRET is None or REDIRECT_URI is None or REFRESH_TOKEN is None:
-        print("It looks like you didn't configured the Spotify API credentials yet.")
+        print("It looks like you didn't configured the Spotify API yet.")
         exit()
     else:
         access_token = get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
