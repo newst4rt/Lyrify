@@ -23,7 +23,7 @@ class SpotifyAuthHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(b"<h1>Error</h1><p>Something went wrong.</p>")
             exit()
 
-def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str):
+def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str) -> str:
     query_string = {
         "client_id": CLIENT_ID,
         "response_type": "code",
@@ -41,7 +41,7 @@ def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str):
         return str(SpotifyAuthHandler.auth_code)
 
 
-def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI: str):
+def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI: str) -> tuple|int:
     basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
     params = {"code": auth_code,
               "redirect_uri": REDIRECT_URI,
@@ -53,6 +53,8 @@ def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI:
     if response.status_code == 200:
         body = response.json()
         return body["access_token"], body.get("refresh_token")
+    else:
+        return response.status_code
     
 def init():
         print("Follow this instruction:\n")
@@ -63,16 +65,21 @@ def init():
         CLIENT_SECRET = input("Client Secret: ")
         REDIRECT_URI = input("Redirect URI (e.g. http://127.0.0.1:8000/callback): ")
         user_auth_token = request_user_authorization(CLIENT_ID, REDIRECT_URI)
-        access_token, REFRESH_TOKEN = get_tokens(user_auth_token, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI) # type: ignore
-        if access_token is not None or REFRESH_TOKEN is not None:
-            with open(".env", "w") as f:
-                f.write(f'CLIENT_ID = "{CLIENT_ID}"\n')
-                f.write(f'CLIENT_SECRET = "{CLIENT_SECRET}"\n')
-                f.write(f'REDIRECT_URI = "{REDIRECT_URI}"\n')
-                f.write(f'REFRESH_TOKEN = "{REFRESH_TOKEN}"\n')
-                print("Authentication succeeded.")
+        tokens = get_tokens(user_auth_token, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI) # type: ignore
+        if isinstance(tokens, tuple):
+            access_token, REFRESH_TOKEN = tokens
+            if access_token is not None or REFRESH_TOKEN is not None:
+                with open(".env", "w") as f:
+                    f.write(f'CLIENT_ID = "{CLIENT_ID}"\n')
+                    f.write(f'CLIENT_SECRET = "{CLIENT_SECRET}"\n')
+                    f.write(f'REDIRECT_URI = "{REDIRECT_URI}"\n')
+                    f.write(f'REFRESH_TOKEN = "{REFRESH_TOKEN}"\n')
+                    print("Authentication succeeded.")
+                    exit()
+            else:
+                print("Something went wrong. Please try again.")
                 exit()
-        else:
-            print("Something went wrong. Please try again.")
+        
+        else: # Raise error
+            print(f'HTTP Error: {tokens}')
             exit()
-    
