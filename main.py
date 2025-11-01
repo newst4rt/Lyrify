@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 from time import sleep
-#import argparse
-#from rich_argparse import RichHelpFormatter
 from src.lyric_providers.lrclib import *
 import src.core.config as config
 from src.Commander.com import *
@@ -132,7 +130,7 @@ if __name__ == "__main__":
         if args.translate or args.romanize:
             config.hide_source = True
         else:
-            p_core.error("--hide-sourcelyric should be used with --translate, --romanize or both")
+            com.raise_error("--hide-sourcelyric option can only be used in default mode in combination with --translate, --romanize, or both.")
 
     if args.highlight_color:
         try:
@@ -140,7 +138,7 @@ if __name__ == "__main__":
             if len(_hc_color) != 3 or any(x > 0 or x < 255 for x in _hc_color):
                 config.highlight_rgbcolor = _hc_color # type: ignore
         except ValueError:
-            p_core.error("Highlight color must be in the format R,G,B with values between 0 and 255.")
+            com.raise_error("Highlight color must be in the format R,G,B with values between 0 and 255.")
 
 
     if args.interactive:
@@ -156,7 +154,7 @@ if __name__ == "__main__":
 
     import src.core.__main__ as cxe
     try:
-        print('\033[?25l', end="\r")
+        print('\033[?25l', end="")
         main()
     except Exception as e:
         raise(e)
