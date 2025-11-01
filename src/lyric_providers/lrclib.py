@@ -1,9 +1,9 @@
 import requests
 import unicodedata
 
-def lrclib_api_request(artist: str, title: str, track_len: int | float):
+def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple|int:
     """ Prepare for wide characters"""
-    def is_cjk(ch):
+    def is_cjk(ch) -> bool:
         return unicodedata.east_asian_width(ch) in ("W", "F")
 
     """ Get Lyrics from lrclib.net """
@@ -53,7 +53,7 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float):
         """It looks like there is no internet connection. We will try it later again."""
         return 503
 
-def lrclib_api(artist: str | tuple, title: str, track_len: int | float):
+def lrclib_api(artist: str | tuple, title: str, track_len: int | float) -> tuple|int:
     if isinstance(artist, tuple) and len(artist) > 1:
         lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
         if isinstance(lrclib_request, tuple):
