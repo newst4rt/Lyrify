@@ -145,7 +145,8 @@ class default_print:
                     elif config.hide_source == False:
                         self.trans_w_chars, self.trans_lyric_data = w_chars, lyric_data
                         _, _, lyric_data, w_chars = get_lyric(artist, title, "orig", track_len) # type: ignore
-
+                        if isinstance(lyric_data, int):
+                            return None, lyric_data
 
                 if config.romanize:
                     self.multi_line = True
@@ -169,6 +170,6 @@ class default_print:
 
 
             
-            return None if w_chars is None else w_chars, lyric_data
+            return w_chars, lyric_data
         
 
