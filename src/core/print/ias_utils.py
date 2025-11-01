@@ -11,7 +11,8 @@ if config.translate:
         from src.sqlite3 import store_lyric_offline
 
 if config.romanize is True:
-    from src.utils.romanizer_uroman import romanize_lyric
+    from src.utils.romanizer_uroman import *
+    rom = Uroman()
 
 def main_gxl(track_data: tuple) -> tuple:
         ex_print("↻") # type: ignore
@@ -24,6 +25,6 @@ def main_gxl(track_data: tuple) -> tuple:
                     sql_id = store_lyric_offline(artist, title, (w_chars, lyric_data), config.dest_lang, sql_id) # type: ignore
 
             if config.romanize:
-                 lyric_data, w_chars = romanize_lyric(lyric_data, w_chars) # type: ignore
+                 lyric_data, w_chars = rom.romanize_lyric(lyric_data, w_chars) # type: ignore
 
         return None if w_chars is None else w_chars, lyric_data

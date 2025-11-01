@@ -6,7 +6,8 @@ if config.offline_usage is True:
         from src.sqlite3 import sqlite3_request
 
 
-def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, track_len: int | float):
+
+def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, track_len: int | float) -> tuple:
     if artist is None or title is None:
         return -1, dest_lang, 6, None
     
@@ -16,7 +17,7 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, tra
         
         #if lyric_data and not isinstance(lyric_data, int):
         if lyric_data not in (400,):
-           return sql_id, lang_code, lyric_data, w_chars
+            return sql_id, lang_code, lyric_data, w_chars
         
     # lyric_data = lrclib_request[1], w_chars = lrclib_request[0], duration = lrclib_request[2]
     lrclib_request = lrclib_api(artist, title, track_len)
@@ -27,10 +28,23 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, tra
         return sql_id, "orig", lrclib_request[1], lrclib_request[0]
             
     return -1, "orig", lrclib_request, None
-    
-def get_syncedlyric_index(lyric_data: tuple, time_pos: float):
-    len_ly = len(lyric_data)
-    for x in range(0, len_ly):
-        if time_pos >= int(lyric_data[x]["startTimeMs"]):
-            if x == len_ly-1 or time_pos <= int(lyric_data[x+1]["startTimeMs"]):
-                return x
+        
+class Cxe():
+
+    def __init__(self):
+        self.index_sync_ly = 0
+    def get_syncedlyric_index(self, lyric_data: tuple, time_pos: float) -> int|None:
+        len_ly = len(lyric_data)
+        for _ in range(0, 2):
+            for x in range(self.index_sync_ly, len_ly):
+                if time_pos >= int(lyric_data[x]["startTimeMs"]):
+                    if x == len_ly-1 or time_pos <= int(lyric_data[x+1]["startTimeMs"]):
+                        self.index_sync_ly = x
+                        return x
+                else:
+                    self.index_sync_ly = 0
+                    break
+            else:
+                self.index_sync_ly = 0
+                
+                    

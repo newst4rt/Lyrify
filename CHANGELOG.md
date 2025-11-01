@@ -5,9 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5]  - 2025-11-03
+
+### Added
+
+- **Added Windows support.**
+  <!-- b9df4f6f58c477f2119832cc41926800b00baf57 -->
+- Added type hints and comments.
+  <!-- fc03b9560b0a4f331b9a1c41f6ea7997a298ae1a
+  9d296f8940a0ee91ad86244b4a3ad04cb68638ed
+  e6e2d8eec525cabd72439eb64b8e1022da1fdce6 --> 
+- Added fallbacks in the Spotify API modules.
+  <!-- 7ab228efe5961d159e7443eff6ce30afbcf27085
+  13b5d90a444ec5b2b98086fb8b63f13006d947e3
+  4145b4ae7877281acfa560fa586c2fa182dc9b01 -->
+
+
+### Changed
+
+- Update Readme.
+  <!-- 71555c3b12efdef425966dc851b1fc62648c966a -->
+- Improve performance in `src/utils/romanizer_uroman.py`.
+  <!-- 01a6afc3a7344bdcf4bfae019ec1bc5d6d24560f -->
+- improved performance in `src/core/__main__.py` and `src/utils/romanizer_uroman.py` .
+  <!-- 73de41b115d50eff303bce2d910333b164152c8b 
+  01a6afc3a7344bdcf4bfae019ec1bc5d6d24560f
+  -->
+
+### Removed
+
+ - Removed `--mode dbus` argument in Windows.
+  <!-- 4c33b4277bf214fa40888ebb459aed5d7d40bfa7 -->
+
+### Fixed
+
+ - Fixed Bug in `w_chars`for displaying lyrics with Asian characters off-center.
+   <!-- a89096ef30c12959c7d416bfa97c2d8975ec80a9 -->
+ - Fixed possible crash if `w_chars` is None.
+   <!-- 0f719e4a6cebc32c4fa8003614d438507aabe062  --> 
+ - Fixed errors in `main.py`.
+   <!-- 0219ed6bd1056922a8be3267c02d7c3db083d08c -->
+ - Fixed disappearing terminal cursor if a crash occurs.
+   <!-- 2428aba64e862cbadde335577feb855c85a66507 -->
+ - Fixed potential issues in older Python versions caused by nested f-strings.
+   <!-- b9df4f6f58c477f2119832cc41926800b00baf57 -->
+
+
 ## [v0.4] - 2025-10-31
 
-### Add
+### Added
 
 - Added romanizer [uroman](https://pypi.org/project/uroman).
 - Added new argument `-r --romanize`.

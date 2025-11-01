@@ -7,9 +7,8 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 <br></br>
 
 
-[![License MIT](https://img.shields.io/badge/License-MIT-blue)](#)<br>
-[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#) [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) [![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#)
-
+[![License MIT](https://img.shields.io/badge/License-MIT-blue)](#)<br><br>
+[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#)&nbsp;&nbsp;[![Windows](https://img.shields.io/badge/Windows-003054)](#)&nbsp;&nbsp;[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)&nbsp;&nbsp;[![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#) 
 </div>
 
 ## Table of Contents
@@ -46,8 +45,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters, and it is rich in features. Aside from that, if something goes wrong, a status handler helps you understand what happened by displaying a status code. 
-
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Additionaly, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports Linux and Windows and full width characters, including kanji, kana, and all other full-width letters. Furthermore, many customizable options and features are present like translating, romanizing or offline storage.
 
 <table align="right">
     <thead>
@@ -61,6 +59,12 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="left"><i>LRCLIB.net API-Support</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
+        <!--
+        <tr>
+            <td align="left"><i>Windows Runtime API Support</i></td>
+            <td align="center">$${\color{green}✓}$$</td> 
+        </tr>
+        -->
         <tr>
             <td align="left"><i>D-BUS-MPRIS-Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
@@ -98,10 +102,12 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [googletrans](https://github.com/ssut/py-googletrans)
 - [requests](https://github.com/psf/requests)
 - [uroman](https://github.com/isi-nlp/uroman)
+- [Commander](https://github.com/newst4rt/Commander)
+<!-- - [WinRT](https://pypi.org/project/winrt/) -->
 
 ### Feature Request
 
-Lyrify is still in development and in the beta stage. New modules may be added over time. So, if your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
+Lyrify is currently in development and still in its beta stage. New features may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
 
 ## Installation
 
@@ -109,12 +115,11 @@ Lyrify is still in development and in the beta stage. New modules may be added o
 pip3 install -r requirements.txt
 git pull --recurse-submodules
 ```
-
 ## Get Started
         
 ### Initializing
 
-Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, you can use the Spotify API by set up your API credentials from your account. Here's a simple instruction how to do that:
+Lyrify uses MPRIS D-Bus at Linux to retrieve the current playback by default. There is no user configuration required for using D-Bus. In order to access playbacks from external devices or to use the application on Windows, utilize the Spotify API by passing your API credentials to Lyrify. Here's a simple instruction how to do that:
 
  - *First, use this command to initialize the setup dialog.*
    ```bash
@@ -138,7 +143,7 @@ python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.Me
 python3 main.py --mode dbus <name>
 ```
 
-This feature is experimental and may not work with all players. It mostly depends on how accurately the data is transmitted to D-Bus. 
+This feature is experimental and may not work with all players. It mostly depends on how accurately the data are transmitted to D-Bus. 
 
 ### Start ~ Print Modes
 
@@ -181,9 +186,13 @@ Options are organized into different categories to accommodate the various state
      - **`--mode dbus <name>`** 
 
        *Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
-     - **`--mode spotify`** 
 
-       *Apply the Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
+    <!--  - **`--mode winrt `** &nbsp; <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=45></img></sup></sub>
+            *Get the playback from Spotify by using WinRT.*
+    -->
+     - **`--mode spotify`** <sub><sup><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=45></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=45></img></sup></sub>
+
+       *Use the public API from Spotify to get your current playback – a stable online connection is required. If the credentials has not been passed yet, an error occurs. To fix the issue use `--init spotify`.*
   
 
   - #### **`-t --translate`***`<language_code>`*

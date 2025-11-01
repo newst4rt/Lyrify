@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 from time import sleep
-#import argparse
-#from rich_argparse import RichHelpFormatter
 from src.lyric_providers.lrclib import *
 import src.core.config as config
 from src.Commander.com import *
@@ -22,7 +20,7 @@ def main():
             lyric_data = track_data
 
         if isinstance(lyric_data, tuple):
-            sl_index = cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
+            sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
             try:
                 delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
             except IndexError:
@@ -72,11 +70,11 @@ if __name__ == "__main__":
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
     com.add_arg("-h", "--help", nargs=1, required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify'], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
-    com.add_arg("-o", "--store-offline", help = "Write fetched lyrics to a file for offline access (experimental)")
+    com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
 
     com.add_stylegroup("options")
     sub_com = SubCommander(com)
@@ -105,16 +103,21 @@ if __name__ == "__main__":
             from src.spotify import oauth
             oauth.init()
 
-    if args.mode:
-        if "dbus" in args.mode:
-            from src.core.dbus import *  
-            dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
-            init_dbus(dbus_player)
-        elif "spotify" in args.mode:
-            from src.spotify.api_request import *
-    else:
-        from src.core.dbus import * 
-        init_dbus("spotify")
+
+
+    if config.os == "Linux":
+        if args.mode:
+            if "dbus" in args.mode:
+                from src.core.dbus import *  
+                dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
+                init_dbus(dbus_player)
+            elif "spotify" in args.mode:
+                from src.spotify.api_request import *
+        else:
+            from src.core.dbus import * 
+            init_dbus("spotify")
+    elif config.os == "Windows":
+        from src.spotify.api_request import *
     
 
     if args.romanize:
@@ -132,7 +135,7 @@ if __name__ == "__main__":
         if args.translate or args.romanize:
             config.hide_source = True
         else:
-            p_core.error("--hide-sourcelyric should be used with --translate, --romanize or both")
+            com.raise_error("--hide-sourcelyric option can only be used in default mode in combination with --translate, --romanize, or both.")
 
     if args.highlight_color:
         try:
@@ -140,7 +143,7 @@ if __name__ == "__main__":
             if len(_hc_color) != 3 or any(x > 0 or x < 255 for x in _hc_color):
                 config.highlight_rgbcolor = _hc_color # type: ignore
         except ValueError:
-            p_core.error("Highlight color must be in the format R,G,B with values between 0 and 255.")
+            com.raise_error("Highlight color must be in the format R,G,B with values between 0 and 255.")
 
 
     if args.interactive:
@@ -155,14 +158,16 @@ if __name__ == "__main__":
         config.terminal_mode = "default"
 
     import src.core.__main__ as cxe
+    sync_cxe = cxe.Cxe()
     try:
-        print('\033[?25l', end="\r")
+        print('\033[?25l', end="")
         main()
     except Exception as e:
+        print('\033[?25h', end="")
         raise(e)
     except BaseException as e:
-        print('\033[?25h', end="")
-        print("\n")
+        print('\033[?25h')
+        exit()
 
         
 

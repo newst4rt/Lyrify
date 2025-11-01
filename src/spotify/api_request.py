@@ -2,7 +2,7 @@ import base64
 import requests
 from .api_init import *
 
-def get_track_data(past_id: str | int | None):
+def get_track_data(past_id: str | int | None) -> tuple|int:
     global access_token
     url = f"https://api.spotify.com/v1/me/player"
     for _ in range(0, 2):
@@ -23,7 +23,7 @@ def get_track_data(past_id: str | int | None):
             elif response.status_code == 204:
                 return 204
             else:
-                """It could be that we need to refresh the token"""
+                """It could be to refresh the token"""
                 access_token = get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
                 if access_token == None: 
                     return 401

@@ -1,4 +1,4 @@
 requests
 googletrans==4.0.2
-dbus-python
+dbus-python ; sys_platform == "linux"
 uroman
