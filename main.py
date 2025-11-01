@@ -20,7 +20,7 @@ def main():
             lyric_data = track_data
 
         if isinstance(lyric_data, tuple):
-            sl_index = cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
+            sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
             try:
                 delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
             except IndexError:
@@ -153,6 +153,7 @@ if __name__ == "__main__":
         config.terminal_mode = "default"
 
     import src.core.__main__ as cxe
+    sync_cxe = cxe.Cxe()
     try:
         print('\033[?25l', end="")
         main()

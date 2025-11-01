@@ -2,12 +2,17 @@ import asyncio
 from googletrans import Translator
 import unicodedata
 
-def translate_lyric(lyric_data, dest='en'):
+def translate_lyric(lyric_data, dest='en') -> str:
     async def googletrans(text, dest='en'):
         async with Translator() as translator:
-            result = await translator.translate(text, dest=dest)
-            return result
-    def is_cjk(ch):
+            try:
+                result = await translator.translate(text, dest=dest)
+                return result
+            except ValueError:
+                print(f"{dest} wrong iso-639 code parameter.")
+                exit()
+
+    def is_cjk(ch) -> bool:
         return unicodedata.east_asian_width(ch) in ("W", "F")
     
 
