@@ -44,4 +44,7 @@ class Cxe():
                 else:
                     self.index_sync_ly = 0
                     break
+            else:
+                self.index_sync_ly = 0
+                
                     

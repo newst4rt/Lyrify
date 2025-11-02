@@ -38,7 +38,7 @@ def check_credentials() -> None:
         pass
 
     if CLIENT_ID is None or CLIENT_SECRET is None or REDIRECT_URI is None or REFRESH_TOKEN is None:
-        print("It looks like you didn't configured the Spotify API yet.")
+        print("It looks like you didn't configured your credentials for the Spotify API yet.")
         exit()
     else:
         access_token = get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)

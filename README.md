@@ -113,7 +113,7 @@ git pull --recurse-submodules
         
 ### Initializing
 
-Lyrify uses the MPRIS D-Bus interface by default to retrieve the current playback. For using D-Bus there is no user configuration required. If you want to get in touch with playbacks from external devices, you can use the Spotify API by set up your API credentials from your account. Here's a simple instruction how to do that:
+Lyrify uses MPRIS D-Bus or COM to retrieve the current playback by default. For using D-Bus or COM there is no user configuration required. If you want to access playbacks from external devices, use the Spotify API by passing your API credentials to Lyrify. Here's a simple instruction how to do that:
 
  - *First, use this command to initialize the setup dialog.*
    ```bash
@@ -138,6 +138,9 @@ python3 main.py --mode dbus <name>
 ```
 
 This feature is experimental and may not work with all players. It mostly depends on how accurately the data are transmitted to D-Bus. 
+
+### Windows
+
 
 ### Start ~ Print Modes
 
@@ -174,15 +177,20 @@ Options are organized into different categories to accommodate the various state
 
      *Choose from an interface how to get the current playback from the player.*
 
-     - **`--mode dbus`** &nbsp; <sub><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" width=45></img></sub>
+     - **`--mode dbus`** &nbsp; <sub><sup><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=45></img></sup></sub>
        
        *Use D-Bus MPRIS to get the current playback from Spotify.* 
      - **`--mode dbus <name>`** 
 
        *Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
+
+     - **`--mode com `** &nbsp; <sub><sup><img src="https://img.shields.io/badge/WINDOWS-003054" width=45></img></sup></sub>
+
+        *Get the playback from Spotify by using COM.*
+
      - **`--mode spotify`** 
 
-       *Apply the Spotify API. If credentials have not been stored yet, a set up dialog will appear.*
+       *Use the public API from Spotify to get your current playback – a stable online connection is required. If the credentials has not been passed yet, an error occurs. Use `--init spotify` to fix the issue.*
   
 
   - #### **`-t --translate`***`<language_code>`*
