@@ -34,7 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Fix possible crash if `w_chars` is None
    <!-- 0f719e4a6cebc32c4fa8003614d438507aabe062  --> 
  - Fix errors in `main.py`
-  <!-- 0219ed6bd1056922a8be3267c02d7c3db083d08c -->
+   <!-- 0219ed6bd1056922a8be3267c02d7c3db083d08c -->
+ - Fix disappearing terminal cursor if a crash occurs
+   <!-- 2428aba64e862cbadde335577feb855c85a66507 -->
 
 
 ## [v0.4] - 2025-10-31
