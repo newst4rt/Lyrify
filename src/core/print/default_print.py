@@ -55,7 +55,7 @@ class default_print:
 
                 fxd_lyrics = self.fxt_helper(lyric_data, lyric_index, w_chars, terminal_lines, terminal_columns)
                 os.system(self.cls)
-                print(fxd_lyrics)
+                print(fxd_lyrics, end="")
         else:
             self.center_print(str(lyric_data))
 
@@ -74,7 +74,7 @@ class default_print:
         """Precalculation how many lines fit in our terminal."""
         while True:
             lxe_pos = 3 if lyric_index+it_lxe >= len(lyric_data) and self.multi_line else 2 if lyric_index+it_lxe >= len(lyric_data) or lyric_data[lyric_index+it_lxe]["lyric_line"] == "♬" or self.multi_line == False else 3
-            lxe_neg = 3 if lyric_index+(it_lxe*-1) < 0 and self.multi_line else 2 if lyric_index+(it_lxe*-1) < 0 or lyric_data[lyric_index+(it_lxe*-1)]["lyric_line"] == "♬" or self.multi_line == False else 3
+            lxe_neg = 3 if lyric_index+((it_lxe+1)*-1) < 0 and self.multi_line else 2 if lyric_index+((it_lxe+1)*-1) < 0 or lyric_data[lyric_index+((it_lxe+1)*-1)]["lyric_line"] == "♬" or self.multi_line == False else 3
             if (lxe_total+lxe_pos+lxe_neg) < terminal_lines:
                 lxe_total += lxe_pos + lxe_neg
                 it_lxe += 1
