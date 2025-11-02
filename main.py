@@ -103,16 +103,21 @@ if __name__ == "__main__":
             from src.spotify import oauth
             oauth.init()
 
-    if args.mode:
+
+
+    if config.os == "Linux":
         if "dbus" in args.mode:
             from src.core.dbus import *  
             dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
             init_dbus(dbus_player)
         elif "spotify" in args.mode:
             from src.spotify.api_request import *
-    else:
-        from src.core.dbus import * 
-        init_dbus("spotify")
+        else:
+            from src.core.dbus import * 
+            init_dbus("spotify")
+    elif config.os == "Windows":
+        if "spotify" in args.mode:
+            from src.spotify.api_request import *
     
 
     if args.romanize:

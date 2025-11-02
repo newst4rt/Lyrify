@@ -1,6 +1,6 @@
 import uroman as ur
 
-class Uroman()
+class Uroman():
     def __init__(self):
         self.uroman = ur.Uroman()
     def romanize_lyric(self, lyric_data: tuple, w_chars: dict) -> tuple:

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <!-- 7ab228efe5961d159e7443eff6ce30afbcf27085
   13b5d90a444ec5b2b98086fb8b63f13006d947e3
   4145b4ae7877281acfa560fa586c2fa182dc9b01 -->
+- Add Windows support *only compatible with `--mode spotify`
 
 ### Change
 
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    <!-- 0219ed6bd1056922a8be3267c02d7c3db083d08c -->
  - Fix disappearing terminal cursor if a crash occurs
    <!-- 2428aba64e862cbadde335577feb855c85a66507 -->
+ - Fix potential issues in older Python versions caused by nested f-strings.
 
 
 ## [v0.4] - 2025-10-31
