@@ -7,16 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Add
+
+- Add type hints and comments.
+  <!-- fc03b9560b0a4f331b9a1c41f6ea7997a298ae1a
+  9d296f8940a0ee91ad86244b4a3ad04cb68638ed
+  e6e2d8eec525cabd72439eb64b8e1022da1fdce6 --> 
+- Add fallbacks in the Spotify API modules.
+  <!-- 7ab228efe5961d159e7443eff6ce30afbcf27085
+  13b5d90a444ec5b2b98086fb8b63f13006d947e3
+  4145b4ae7877281acfa560fa586c2fa182dc9b01 -->
+
+### Change
 
 - Update Readme.
-- Refactor code in `main.py`
-- Improve performance in `src/utils/romanizer_uroman.py`
-- Refactor `src/lyric_providers/lrclib.py`
+  <!-- 71555c3b12efdef425966dc851b1fc62648c966a -->
+- Improve performance in `src/utils/romanizer_uroman.py`.
+  <!-- 01a6afc3a7344bdcf4bfae019ec1bc5d6d24560f -->
+- Refactor and improve performance in `src/core/__main__.py`.
+- Refactor `src/lyric_providers/lrclib.py`.
 
-### Fixed
+### Fix
 
- - Fixed Bug in `w_chars`for displaying lyrics with Asian characters off-center  
+ - Fixed Bug in `w_chars`for displaying lyrics with Asian characters off-center.
+   <!-- a89096ef30c12959c7d416bfa97c2d8975ec80a9 -->
+ - Fix possible crash if `w_chars` is None
+   <!-- 0f719e4a6cebc32c4fa8003614d438507aabe062  --> 
+ - Fix errors in `main.py`
+  <!-- 0219ed6bd1056922a8be3267c02d7c3db083d08c -->
+
 
 ## [v0.4] - 2025-10-31
 

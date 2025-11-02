@@ -46,7 +46,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters, and it is rich in features. Aside from that, many other customizable options and features are available to improve the user experience.  
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Furthermore, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports full width characters, including kanji, kana, and all other full-width letters. Aside from that, many other customizable options and features are present like translating, romanizing or storing lyrics offline in a SQLite3 database.    
 
 <table align="right">
     <thead>
@@ -101,7 +101,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 
 ### Feature Request
 
-Lyrify is currently in development and still in its beta stage. New modules may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
+Lyrify is currently in development and still in its beta stage. New features may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
 
 ## Installation
 
@@ -174,7 +174,7 @@ Options are organized into different categories to accommodate the various state
 
      *Choose from an interface how to get the current playback from the player.*
 
-     - **`--mode dbus`** 
+     - **`--mode dbus`** &nbsp; <sub><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" width=45></img></sub>
        
        *Use D-Bus MPRIS to get the current playback from Spotify.* 
      - **`--mode dbus <name>`** 
