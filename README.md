@@ -113,7 +113,7 @@ Lyrify is currently in development and still in its beta stage. New features may
 
 ```bash
 pip3 install -r requirements.txt
-git pull --recurse-submodules
+git submodule update --init
 ```
 ## Get Started
         
