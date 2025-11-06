@@ -108,7 +108,7 @@ if __name__ == "__main__":
         if args.mode:
             if "dbus" in args.mode:
                 config.player = args.mode[1] if len(args.mode) > 1 else "spotify"
-                from src.core.dbus import Mpris as mode
+                from src.core.dbus import Mpris
                 mode = Mpris()
             elif "spotify" in args.mode:
                 from src.spotify.api_request import Spotify_API
