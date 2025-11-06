@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 from time import sleep
 from src.lyric_providers.lrclib import *
-import src.core.config as config
+from src.core.config import config
 from src.Commander.com import *
 
 def main():
-    id = None
-    delta = 3000
+    id = 0
     lyric_data = 204
 
     while True:
-        track_data = get_track_data(id)
+        track_data = mode.get_track_data(id)
 
         if isinstance(track_data, tuple) and track_data[0] != id: 
             id, track_len = track_data[0], track_data[2] # type: ignore
@@ -22,20 +21,20 @@ def main():
         if isinstance(lyric_data, tuple):
             sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
             try:
-                delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
+                config.delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
             except IndexError:
-                delta = (track_len - track_data[1]) # type: ignore
+                config.delta = (track_len - track_data[1]) # type: ignore
 
-            if delta > 3000:
-                delta = 3000
+            if config.delta > 3000:
+                config.delta = 3000
 
             printer.ex_print(lyric_data, w_chars, sl_index, id) # type: ignore
 
         else:
-            delta = 3000
+            config.delta = 3000
             printer.error_print(lyric_data)
 
-        sleep(delta / 1000)
+        sleep(config.delta / 1000)
 
 if __name__ == "__main__":
     """ Command line argument parsing """
@@ -70,7 +69,7 @@ if __name__ == "__main__":
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
     com.add_arg("-h", "--help", nargs=1, required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "linux" else ['spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify'], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
@@ -108,16 +107,27 @@ if __name__ == "__main__":
     if config.os == "Linux":
         if args.mode:
             if "dbus" in args.mode:
-                from src.core.dbus import *  
-                dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
-                init_dbus(dbus_player)
+                config.player = args.mode[1] if len(args.mode) > 1 else "spotify"
+                from src.core.dbus import Mpris as mode
+                mode = Mpris()
             elif "spotify" in args.mode:
-                from src.spotify.api_request import *
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
         else:
-            from src.core.dbus import * 
-            init_dbus("spotify")
+            from src.core.dbus import Mpris
+            mode = Mpris()
     elif config.os == "Windows":
-        from src.spotify.api_request import *
+        if args.mode:
+            if "wmc" in args.mode:
+                import asyncio
+                from src.core.winrt_wmc import Wmc
+                mode = asyncio.run(Wmc.create())
+            elif "spotify" in args.mode:
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
+        else:
+            from src.spotify.api_request import Spotify_API
+            mode = Spotify_API()
     
 
     if args.romanize:

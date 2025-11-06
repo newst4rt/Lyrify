@@ -1,6 +1,6 @@
 import os
 import shutil
-import src.core.config as config
+from src.core.config import config
 from src.core.__main__ import get_lyric
 if config.translate is True:
     from src.translator.googletrans import translate_lyric

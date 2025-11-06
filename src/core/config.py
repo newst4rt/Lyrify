@@ -1,19 +1,28 @@
 from platform import system
 
-offline_storage = False
-offline_usage = False
-translate = False
-romanize = False
-dest_lang = "orig"
-highlight_rgbcolor = (23, 255, 23)
-terminal_mode = "Default"
-hide_source = False
+class Config():
 
-if system() == "Linux":
-    os = "Linux"
-    cls = "clear"
-elif system() == "Windows":
-    os = "Windows"
-    cls = "cls"
+    def __init__(self):
+        self.offline_storage = False
+        self.offline_usage = False
+        self.translate = False
+        self.romanize = False
+        self.dest_lang = "orig"
+        self.highlight_rgbcolor = (23, 255, 23)
+        self.terminal_mode = "Default"
+        self.hide_source = False
+        self.player = "spotify"
+        self.delta = 3000
 
-#delta = 3000
+        _os = system()
+
+        if _os == "Linux":
+            self.os = _os
+            self.cls = "clear"
+        elif _os == "Windows":
+            self.os = _os
+            self.cls = "cls"
+
+        #delta = 3000
+
+config = Config()
