@@ -1,6 +1,5 @@
 from winrt.windows.media.control import GlobalSystemMediaTransportControlsSessionManager
 import winrt.windows.foundation.collections
-from src.core.config import config
 import asyncio
 import time
 
@@ -29,10 +28,10 @@ class Wmc():
             self.pb_state = False
 
     @classmethod
-    async def create(cls):
+    async def create(cls, player):
         manager = await GlobalSystemMediaTransportControlsSessionManager.request_async()
         sessions = manager.get_sessions()
-        session = next((x for x in sessions if "Spotify" in x.source_app_user_model_id), None)
+        session = next((x for x in sessions if player in x.source_app_user_model_id), None)
         if session:
             await cls.get_media_props(cls, session)
             cls.on_playback(cls, session, None)
@@ -47,13 +46,13 @@ class Wmc():
         self.track_len = _timeline.end_time.total_seconds()*1000
         self.new_track = True
         
-    def get_track_data(self, past_id: str | int | None):
+    def get_track_data(self, past_id: bool | None):
             delta_timesync = float(self.position+((time.perf_counter()-self.timesync)*1000)) 
             if delta_timesync > self.track_len:
                 delta_timesync = self.track_len 
             if self.new_track:
                 self.new_track = False
-                past_id += 1
+                past_id = True if past_id == False else False
                 if self.track_len == self.position:
                     return 3
                 return past_id, float(delta_timesync), float(self.track_len), str(self.artist.replace(" ", "+")), str(self.title.replace(" ", "+"))

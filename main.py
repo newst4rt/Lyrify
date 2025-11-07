@@ -70,7 +70,7 @@ if __name__ == "__main__":
     
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
-    com.add_arg("-h", "--help", nargs=1, required=None, help="This is a simple help message")
+    com.add_arg("-h", "--help", required=None, help="This is a simple help message")
     com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify'], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     a_sub_com = SubCommander(sub_com)
     a_sub_com.add_text("\n  Default:\n", "optional_1", idt=3)
     a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", help="Set the color for highlighting lyrics (default: 23,255,23).")
-    a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation.")
+    a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation, romanizing or both.")
     a_sub_com.add_stylegroup("dxt_options")
 
 
@@ -103,8 +103,6 @@ if __name__ == "__main__":
         if "spotify" in args.init:
             from src.spotify import oauth
             oauth.init()
-
-
 
     if config.os == "Linux":
         if args.mode:
@@ -123,7 +121,8 @@ if __name__ == "__main__":
             if "wmc" in args.mode:
                 import asyncio
                 from src.core.winrt_wmc import Wmc
-                mode = asyncio.run(Wmc.create())
+                config.player = args.mode[1] if len(args.mode) > 1 else "Spotify"
+                mode = asyncio.run(Wmc.create(config.player))
             elif "spotify" in args.mode:
                 from src.spotify.api_request import Spotify_API
                 mode = Spotify_API()
@@ -131,7 +130,6 @@ if __name__ == "__main__":
             from src.spotify.api_request import Spotify_API
             mode = Spotify_API()
     
-
     if args.romanize:
         config.romanize = True
     
