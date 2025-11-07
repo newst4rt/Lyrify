@@ -15,7 +15,6 @@ class Wmc():
 
     def on_media(self, sender, args):
         asyncio.run(self.get_media_props(sender))
-        #self.position = 0
     def on_timeline(self, sender, args):
         if self.pb_state or args == "init":
             timeline = sender.get_timeline_properties()
@@ -39,7 +38,6 @@ class Wmc():
             cls.on_playback(cls, session, None)
             cls.on_timeline(cls, session, "init")
             return cls(session)
-            #self.session = self.sessions[key]
 
     async def get_media_props(self, session):
         player_metadata = await session.try_get_media_properties_async()
@@ -50,16 +48,15 @@ class Wmc():
         self.new_track = True
         
     def get_track_data(self, past_id: str | int | None):
-            
             delta_timesync = float(self.position+((time.perf_counter()-self.timesync)*1000)) 
             if delta_timesync > self.track_len:
                 delta_timesync = self.track_len 
             if self.new_track:
                 self.new_track = False
-                self.id = self.artist+self.title+str(self.track_len)
+                past_id += 1
                 if self.track_len == self.position:
                     return 3
-                return self.id, float(delta_timesync), float(self.track_len), str(self.artist.replace(" ", "+")), str(self.title.replace(" ", "+"))
+                return past_id, float(delta_timesync), float(self.track_len), str(self.artist.replace(" ", "+")), str(self.title.replace(" ", "+"))
             
             else:
-                return self.id, float(delta_timesync)
+                return past_id, float(delta_timesync)

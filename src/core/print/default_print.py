@@ -32,7 +32,7 @@ class default_print:
         terminal_size = shutil.get_terminal_size()
         os.system(self.cls)
         for x in range(0, terminal_size.lines-2):
-            if x == int(terminal_size.lines/2)+1:
+            if x == int(terminal_size.lines/2):
                 print(f"{text.center(terminal_size.columns)}")
             else:
                 print("")

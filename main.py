@@ -11,12 +11,18 @@ def main():
     while True:
         track_data = mode.get_track_data(id)
 
-        if isinstance(track_data, tuple) and track_data[0] != id: 
-            id, track_len = track_data[0], track_data[2] # type: ignore
-            w_chars, lyric_data = printer.main_gxl(track_data)
-        elif isinstance(track_data, int): 
-            id = track_data
-            lyric_data = track_data
+        if track_data[0] != id:
+            if isinstance(track_data, tuple): 
+                id, track_len = track_data[0], track_data[2] # type: ignore
+                w_chars, lyric_data = printer.main_gxl(track_data)
+
+            elif isinstance(track_data, int): 
+                id = track_data
+                lyric_data = track_data
+
+            if isinstance(lyric_data, int):
+                config.delta = 3000
+                printer.error_print(lyric_data)
 
         if isinstance(lyric_data, tuple):
             sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
@@ -29,10 +35,6 @@ def main():
                 config.delta = 3000
 
             printer.ex_print(lyric_data, w_chars, sl_index, id) # type: ignore
-
-        else:
-            config.delta = 3000
-            printer.error_print(lyric_data)
 
         sleep(config.delta / 1000)
 
