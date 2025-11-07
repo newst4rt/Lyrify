@@ -37,6 +37,8 @@ class Wmc():
             cls.on_playback(cls, session, None)
             cls.on_timeline(cls, session, "init")
             return cls(session)
+        else:
+            raise Exception(f"There is no player running with the name {player}.") 
 
     async def get_media_props(self, session):
         player_metadata = await session.try_get_media_properties_async()
