@@ -56,17 +56,15 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
     </thead>
     <tbody>
         <tr>
-            <td align="left"><i>LRCLIB.net API-Support</i></td>
+            <td align="left"><i>LRCLIB.net API Support</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
-        <!--
         <tr>
-            <td align="left"><i>Windows Runtime API Support</i></td>
+            <td align="left"><i>Windows-Runtime-API Support</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
-        -->
         <tr>
-            <td align="left"><i>D-BUS-MPRIS-Support</i></td>
+            <td align="left"><i>D-BUS - MPRIS Support</i></td>
             <td align="center">$${\color{green}✓}$$</td>          
         </tr>
         <tr>
@@ -74,7 +72,7 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
             <td align="center">$${\color{green}✓}$$</td>           
         </tr>
         <tr>
-            <td align="left"><i>Offline-Storage</i></td>
+            <td align="left"><i>Offline Storage</i></td>
             <td align="center">$${\color{green}✓}$$</td>     
         </tr>
         <tr>
@@ -101,9 +99,10 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 - [dbus-python](https://pypi.org/project/dbus-python/)
 - [googletrans](https://github.com/ssut/py-googletrans)
 - [requests](https://github.com/psf/requests)
+- [pywinrt](https://github.com/pywinrt/pywinrt) 
 - [uroman](https://github.com/isi-nlp/uroman)
 - [Commander](https://github.com/newst4rt/Commander)
-<!-- - [WinRT](https://pypi.org/project/winrt/) -->
+
 
 ### Feature Request
 
@@ -132,18 +131,26 @@ If everything goes well, a message with the text `Authentication succeeded` will
 
 #### *Using an Alternative Music Player Instead of Spotify*
 
-Lyrify supports any music player that implements the MPRIS D-Bus interface. To check whether your player is supported, follow these instructions:
+Lyrify works with any music player that uses the MPRIS D-Bus interface or Windows-Runtime-API. To check whether your player is supported, follow one of these instructions, depending on your operating system:
 
+##### **LINUX**
  - Get the bus-name from your application. 
-```bash
-python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus.list_names() if x.startswith('org.mpris.MediaPlayer2')]"
-```
- - If the player appears, fill the name as positional argument by add them after `--mode dbus`. 
-```bash
-python3 main.py --mode dbus <name>
-```
+   ```bash
+   python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus. list_names() if x.startswith('org.mpris.MediaPlayer2')]"
+   ```
+ - If the player appears, fill the name as positional argument by add them after `--mode dbus`
 
-This feature is experimental and may not work with all players. It mostly depends on how accurately the data are transmitted to D-Bus. 
+
+##### **WINDOWS**
+- Get all active sessions.
+  ```bash
+  python3 .\src\utils\winrt_sessions.py
+  ```
+- If a line contains the keyword of your player, use them by adding them after `--mode wmc`
+<br></br>
+
+Using different player instead of Spotify may not work with all players. It mostly depends on how accurately the data are transmitted to the target interface. The functionality cannot be guaranteed.
+
 
 ### Start ~ Print Modes
 
@@ -178,22 +185,23 @@ Options are organized into different categories to accommodate the various state
   Available across all print states.
   - #### **`-m --mode`**
 
-     *Choose from an interface how to get the current playback from the player.*
+     *Choose from an interface how to get the playback.*
 
-     - **`--mode dbus`** 
+     - **`--mode [dbus|dbus <player>]`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></a></sup></sub>
        
-       *Use D-Bus MPRIS to get the current playback from Spotify.* 
-     - **`--mode dbus <name>`** 
+       *Use D-Bus MPRIS to get the current playback from Spotify or optionally from another player.* 
+     - **`--mode [wmc|wmc <player>]`**   <sub><sup><a href=""><img src="https://img.shields.io/badge/Windows-003054" width=40></img></a></sup></sub> 
 
-       *Use D-Bus MPRIS with another player instead of Spotify [(more info)](#using-an-alternative-music-player-instead-of-spotify)*  
+       *Use the Windows-Runtime-API to get the current playback from Spotify, optionally from another player.*
 
     <!--  - **`--mode winrt `** &nbsp; <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=45></img></sup></sub>
             *Get the playback from Spotify by using WinRT.*
     -->
-     - **`--mode spotify`** <sub><sup><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=45></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=45></img></sup></sub>
+     - **`--mode spotify`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=40></img></a></sup></sub>
 
        *Use the public API from Spotify to get your current playback – a stable online connection is required. If the credentials has not been passed yet, an error occurs. To fix the issue use `--init spotify`.*
   
+
 
   - #### **`-t --translate`***`<language_code>`*
   
@@ -236,14 +244,12 @@ Options are organized into different categories to accommodate the various state
 Greetings to, and those contributors:
 
  - The D-Bus maintainers @ dbus-python
+ - The pywinrt maintainers @ pywinrt 
  - SuHun Han @ googletrans
  - Kenneth Reitz @ requests
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
- 
 
-  Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
-
-  
+ and to everyone I didn’t mention who took part in Lyrify. Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
