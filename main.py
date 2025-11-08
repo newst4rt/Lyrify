@@ -10,10 +10,11 @@ def main():
 
     while True:
         track_data = mode.get_track_data(id)
+        _id = track_data[0] if isinstance(track_data, tuple) else track_data
 
-        if track_data[0] != id:
+        if _id != id:
             if isinstance(track_data, tuple): 
-                id, track_len = track_data[0], track_data[2] # type: ignore
+                id, track_len = _id, track_data[2] # type: ignore
                 w_chars, lyric_data = printer.main_gxl(track_data)
 
             elif isinstance(track_data, int): 

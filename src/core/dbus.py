@@ -4,9 +4,8 @@ import dbus
 class Mpris():
     
     def __init__(self, player):
+        self.player = player
         _code = self.init_dbus(player)
-        if _code == 2:
-             raise Exception(f"There is no player running with the name {player}.") 
 
     def init_dbus(self, player):
             session_bus = dbus.SessionBus()
@@ -41,7 +40,7 @@ class Mpris():
                     return ix, float(position_µs / 1_000.0)
 
             except (dbus.exceptions.DBusException, AttributeError) as e:
-                    self.init_dbus()
+                    self.init_dbus(self.player)
         else:
             return 2
 
