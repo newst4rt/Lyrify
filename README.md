@@ -251,9 +251,5 @@ Greetings to, and those contributors:
 
  and to everyone I didn’t mention who took part in Lyrify. Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
 
-## Support
-<br>
-<a href="https://www.buymeacoffee.com/newst4rt"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a Brezeln&emoji=🥨&slug=newst4rt&button_colour=0098d4&font_colour=ffffff&font_family=Bree&outline_colour=ffffff&coffee_colour=FFDD00" width=200/></a>
-
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
