@@ -146,7 +146,7 @@ Lyrify works with any music player that uses the MPRIS D-Bus interface or Window
   ```bash
   python3 .\src\utils\winrt_sessions.py
   ```
-- If a line contains the keyword of your player, use them by adding them after `--mode wmc`
+- If a line includes your player’s keyword, append it after `--mode wmc`.
 <br></br>
 
 Using different player instead of Spotify may not work with all players. It mostly depends on how accurately the data are transmitted to the target interface. The functionality cannot be guaranteed.
@@ -250,6 +250,10 @@ Greetings to, and those contributors:
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
 
  and to everyone I didn’t mention who took part in Lyrify. Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
+
+## Support
+<br>
+<a href="https://www.buymeacoffee.com/newst4rt"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a Brezeln&emoji=🥨&slug=newst4rt&button_colour=0098d4&font_colour=ffffff&font_family=Bree&outline_colour=ffffff&coffee_colour=FFDD00" width=200/></a>
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
