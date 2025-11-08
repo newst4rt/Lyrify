@@ -1,15 +1,14 @@
 import time
 import dbus
-from src.core.config import player
 
 class Mpris():
     
-    def __init__(self):
-        _code = self.init_dbus()
+    def __init__(self, player):
+        _code = self.init_dbus(player)
         if _code == 2:
              raise Exception(f"There is no player running with the name {player}.") 
 
-    def init_dbus(self):
+    def init_dbus(self, player):
             session_bus = dbus.SessionBus()
             dbus_names = session_bus.list_names()
             lf_services = [names for names in dbus_names if names.startswith("org.mpris.MediaPlayer2." + player)]
