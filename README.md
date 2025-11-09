@@ -241,7 +241,7 @@ Options are organized into different categories to accommodate the various state
 
 ## Credits
 
-Greetings to, and those contributors:
+Greetings to all contributors and everyone who took part in Lyrify:
 
  - The D-Bus maintainers @ dbus-python
  - The pywinrt maintainers @ pywinrt 
@@ -249,7 +249,7 @@ Greetings to, and those contributors:
  - Kenneth Reitz @ requests
  - This project uses the universal romanizer software 'uroman' written by Ulf Hermjakob, USC Information Sciences Institute (2015-2020)
 
- and to everyone I didn’t mention who took part in Lyrify. Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
+  Thank you for providing your projects for the public. Without your efforts Lyrify isn't what it is – you're all awesome ❤️
 
 ## License
 Lyrify is licensed under the MIT license. See [LICENSE](https://github.com/newst4rt/Lyrify/blob/main/LICENSE) for more information.
