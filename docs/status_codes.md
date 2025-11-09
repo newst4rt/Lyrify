@@ -33,11 +33,13 @@ A list of status codes that may appear when something goes wrong:
             <td align="left">An error occurred while accessing the sqlite3 database – maybe corrupt?</td>  
             <td align="left">sqlite3</td>           
         </tr>
+        <!--
         <tr>
             <td align="left"><b>6</b></td>
             <td align="left">The total duration difference is too high between playback and retrieved lyric – maybe bad data at lrclib or artist and title don't match with the current track from your playback? </td>  
             <td align="left">lrclib</td>           
         </tr>
+        -->
         <tr>
             <td align="left"><b>204</b></td>
             <td align="left">The player has not started, or no song has been played yet – playing a song will fix it.</td> 

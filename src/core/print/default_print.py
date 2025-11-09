@@ -1,6 +1,6 @@
 import os
 import shutil
-import src.core.config as config
+from src.core.config import config
 from src.core.__main__ import get_lyric
 if config.translate is True:
     from src.translator.googletrans import translate_lyric
@@ -32,7 +32,7 @@ class default_print:
         terminal_size = shutil.get_terminal_size()
         os.system(self.cls)
         for x in range(0, terminal_size.lines-2):
-            if x == int(terminal_size.lines/2)+1:
+            if x == int(terminal_size.lines/2):
                 print(f"{text.center(terminal_size.columns)}")
             else:
                 print("")

@@ -5,7 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5]  - 2025-11-03
+## [v0.6]  - 2025-11-08
+
+### Added
+
+ - **Added `src/core/winrt_wmc.py` as new mode options on Windows.**
+   <!-- 37399237cdb5bc0b03321cf8725394e942e3968e -->
+ - Added requirements for Windows.
+   <!-- 7c1d972c09e209fa374f5f1bb31d8a0c990f7c50 -->
+ - Added utility script to list all player on Windows.
+   <!-- f5bdb4f4c4e8a73b0f05dd3550d0666d9203484c -->
+
+### Changed
+ - Refactored code in the modes modules by adding them into class.
+   <!-- 37399237cdb5bc0b03321cf8725394e942e3968e -->
+ - Updated README.
+   <!-- bbb2d42b8f7029ff69d623767ba11c294e915929
+   8a5f421709e41bc7ade3a7645d589169bba979b1  
+   0ec30dbeb6af69f452983b2cc19b67809e40a543 -->
+ - Updated submodule @Commander
+   <!-- ce2f21cd782ebbd36890db11d032da34b6827bb1 -->
+ - Fixed bug by using `--store-offline` on Windows.
+   <!-- 47840bcb5cfb670c55fe253ebf0af223e29b3d59 -->
+ - Fixed issues, removed useless lines, improved performance and logic in `main.py`.
+   <!-- 26bd5eac657e7f2fc3404896f567cf8410c6b797 -->
+ - Fixed adjusting center position for displaying status code.
+   <!-- d8e189aea8419b284ca27b19a499ef71af410f77 -->
+ - Fixed crash when player get closed.
+   <!-- 02ab59e61f166f6c83d8fe0973b5d0193e351c04 
+   8efe0d25add2cd2a0dfe03e09133467f90ab52a4 -->
+ - Fixed stuck when player restarted during runtime while playback is paused. 
+   <!-- 3830196dfbc0b63b678d1f5e4699b9876cc793b2 -->
+
+
+### Removed
+
+- Removed duration check between playback and lyrics <sup>*it makes status code 6 useless</sup>.
+  <!-- 5b91d2c191bec54cd8d4e06d8efa51c75d752adf -->
+- Removed status code 6 in `docs/status_codes.md`.
+  <!-- d63dbd1d07e9356c950c69448b885ea4726a8494 -->
+
+## [v0.5]  - 2025-11-03
 
 ### Added
 

@@ -1,5 +1,5 @@
 # Utilities for interactive and stream print 
-import src.core.config as config
+from src.core.config import config
 if config.terminal_mode == "stream":
     from src.core.print.stream_print import *
 elif config.terminal_mode == "interactive":

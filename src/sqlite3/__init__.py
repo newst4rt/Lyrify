@@ -1,6 +1,6 @@
 import json
 import time
-from src.core.config import offline_usage, offline_storage 
+from src.core.config import config
 
 def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int, lang_code: str, sql_id: int =-1 ) -> int:
     current_timestamp = time.time()
@@ -87,19 +87,25 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: 
 if __name__ == "src.sqlite3":
     import sqlite3
     import os
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    if os.path.exists(script_dir + "/lyrics.db.lock"):
-        with open(script_dir + "/lyrics.db.lock") as f:
+    _dir = os.path.dirname(os.path.realpath(__file__))
+    try:
+        with open(_dir + "/lyrics.db.lock") as f:
             pid = int(f.read().strip())
-            try:
+            if config.os == "Linux":
                 os.kill(pid, 0) # Check if process exist by sending a test signal
-                offline_storage = False
-                print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is currently in use by another process. Saving lyrics during this session is disabled.\n")
-                input("Press Enter to continue...")
-            except ProcessLookupError:
-                offline_storage = True
-    with open(script_dir + "/lyrics.db.lock", "w") as f:
-        f.write(str(os.getpid()))
-    conn = sqlite3.connect(script_dir + "/lyrics.db", timeout=10)
+            elif config.os == "Windows":
+                import subprocess
+                _out = subprocess.check_output(["tasklist", "/FI", f"PID eq {pid}"])
+                if str(pid) not in str(_out):
+                    raise ProcessLookupError
+            config.offline_storage = False
+            print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is currently in use by another process. Saving lyrics during this session is disabled.\n")
+            input("Press Enter to continue...")
+    except ProcessLookupError:
+        config.offline_storage = True
+        with open(_dir + "/lyrics.db.lock", "w") as f:
+            f.write(str(os.getpid()))
+            
+    conn = sqlite3.connect(_dir + "/lyrics.db", timeout=10)
     cursor = conn.cursor()
-    offline_usage = True
+    config.offline_usage = True

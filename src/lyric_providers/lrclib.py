@@ -14,10 +14,10 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
         if response.status_code == 200:
             body = response.json()
             if body["syncedLyrics"]:
-                d_delta = abs(body["duration"] - track_len/1000)
-                if track_len and d_delta > 3 or d_delta < -3:
-                    """The duration difference is too high. We consider this as a wrong match."""
-                    return 6 
+                """d_delta = abs(body["duration"] - track_len/1000)
+                if track_len and d_delta > 9 or d_delta < -9:
+                    #The duration difference is too high. We consider this as a wrong match.
+                    return 6 """
                 lyric_data = []
                 w_chars = {0: 0}
                 tmp_lyric_data = body["syncedLyrics"].split("\n")

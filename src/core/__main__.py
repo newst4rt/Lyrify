@@ -1,5 +1,5 @@
 from src.lyric_providers.lrclib import *
-import src.core.config as config
+from src.core.config import config
 if config.offline_storage is True:
         from src.sqlite3 import store_lyric_offline
 if config.offline_usage is True:

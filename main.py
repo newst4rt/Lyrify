@@ -1,41 +1,44 @@
 #!/usr/bin/env python
 from time import sleep
 from src.lyric_providers.lrclib import *
-import src.core.config as config
+from src.core.config import config
 from src.Commander.com import *
 
 def main():
-    id = None
-    delta = 3000
+    id = 0
     lyric_data = 204
 
     while True:
-        track_data = get_track_data(id)
+        track_data = mode.get_track_data(id)
+        _id = track_data[0] if isinstance(track_data, tuple) else track_data
 
-        if isinstance(track_data, tuple) and track_data[0] != id: 
-            id, track_len = track_data[0], track_data[2] # type: ignore
-            w_chars, lyric_data = printer.main_gxl(track_data)
-        elif isinstance(track_data, int): 
-            id = track_data
-            lyric_data = track_data
+        if _id != id:
+            if isinstance(track_data, tuple): 
+                id, track_len = _id, track_data[2] # type: ignore
+                w_chars, lyric_data = printer.main_gxl(track_data)
+
+            elif isinstance(track_data, int): 
+                id = track_data
+                lyric_data = track_data
+
+            if isinstance(lyric_data, int):
+                config.delta = 3000
+                printer.old_lyric_index = None
+                printer.error_print(lyric_data)
 
         if isinstance(lyric_data, tuple):
             sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
             try:
-                delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
+                config.delta = (lyric_data[sl_index+1]["startTimeMs"] - track_data[1]) # type: ignore
             except IndexError:
-                delta = (track_len - track_data[1]) # type: ignore
+                config.delta = (track_len - track_data[1]) # type: ignore
 
-            if delta > 3000:
-                delta = 3000
+            if config.delta > 3000:
+                config.delta = 3000
 
             printer.ex_print(lyric_data, w_chars, sl_index, id) # type: ignore
 
-        else:
-            delta = 3000
-            printer.error_print(lyric_data)
-
-        sleep(delta / 1000)
+        sleep(config.delta / 1000)
 
 if __name__ == "__main__":
     """ Command line argument parsing """
@@ -69,8 +72,8 @@ if __name__ == "__main__":
     
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
-    com.add_arg("-h", "--help", nargs=1, required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-h", "--help", required=None, help="This is a simple help message")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify'], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
@@ -86,7 +89,7 @@ if __name__ == "__main__":
     a_sub_com = SubCommander(sub_com)
     a_sub_com.add_text("\n  Default:\n", "optional_1", idt=3)
     a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", help="Set the color for highlighting lyrics (default: 23,255,23).")
-    a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation.")
+    a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation, romanizing or both.")
     a_sub_com.add_stylegroup("dxt_options")
 
 
@@ -103,23 +106,32 @@ if __name__ == "__main__":
             from src.spotify import oauth
             oauth.init()
 
-
-
     if config.os == "Linux":
         if args.mode:
             if "dbus" in args.mode:
-                from src.core.dbus import *  
-                dbus_player = args.mode[1] if len(args.mode) > 1 else "spotify"
-                init_dbus(dbus_player)
+                config.player = args.mode[1] if len(args.mode) > 1 else "spotify"
+                from src.core.dbus import Mpris
+                mode = Mpris(config.player)
             elif "spotify" in args.mode:
-                from src.spotify.api_request import *
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
         else:
-            from src.core.dbus import * 
-            init_dbus("spotify")
+            from src.core.dbus import Mpris
+            mode = Mpris(config.player)
     elif config.os == "Windows":
-        from src.spotify.api_request import *
+        if args.mode:
+            if "wmc" in args.mode:
+                import asyncio
+                from src.core.winrt_wmc import Wmc
+                config.player = args.mode[1] if len(args.mode) > 1 else "Spotify"
+                mode = asyncio.run(Wmc.create(config.player))
+            elif "spotify" in args.mode:
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
+        else:
+            from src.spotify.api_request import Spotify_API
+            mode = Spotify_API()
     
-
     if args.romanize:
         config.romanize = True
     

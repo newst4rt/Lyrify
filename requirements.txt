@@ -1,4 +1,6 @@
 requests
 googletrans==4.0.2
 dbus-python ; sys_platform == "linux"
+winrt.windows.media.control ; sys_platform == "windows"
+winrt.windows.foundation.collections ; sys_platform == "windows"
 uroman
