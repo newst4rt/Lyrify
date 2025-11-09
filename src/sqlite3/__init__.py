@@ -64,9 +64,9 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: 
         if lyric_row:
             lyric_data = json.loads(lyric_row[0])
             delta = abs(float(song_row[3]) - track_len/1000)
-            if delta > 1 or delta < -1:
-                """The duration difference is too high. We consider this as a wrong match."""
-                return song_row[0], lyric_row[1], 6, None
+            """if delta > 1 or delta < -1:
+                #The duration difference is too high. We consider this as a wrong match.
+                return song_row[0], lyric_row[1], 6, None"""
                 
             return song_row[0], lyric_row[1], tuple(lyric_data[1]), {int(k): v for k, v in lyric_data[0].items()} # OK
 
@@ -107,5 +107,7 @@ if __name__ == "src.sqlite3":
             f.write(str(os.getpid()))
             
     conn = sqlite3.connect(_dir + "/lyrics.db", timeout=10)
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.commit()
     cursor = conn.cursor()
     config.offline_usage = True
