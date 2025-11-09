@@ -23,6 +23,7 @@ def main():
 
             if isinstance(lyric_data, int):
                 config.delta = 3000
+                printer.old_lyric_index = None
                 printer.error_print(lyric_data)
 
         if isinstance(lyric_data, tuple):
