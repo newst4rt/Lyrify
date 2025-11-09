@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    0ec30dbeb6af69f452983b2cc19b67809e40a543 -->
  - Updated submodule @Commander
    <!-- ce2f21cd782ebbd36890db11d032da34b6827bb1 -->
+
+
+### Fixed
  - Fixed bug by using `--store-offline` on Windows.
    <!-- 47840bcb5cfb670c55fe253ebf0af223e29b3d59 -->
  - Fixed issues, removed useless lines, improved performance and logic in `main.py`.
@@ -37,9 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Fixed stuck when player restarted during runtime while playback is paused. 
    <!-- 3830196dfbc0b63b678d1f5e4699b9876cc793b2 -->
 
-
 ### Removed
-
 - Removed duration check between playback and lyrics <sup>*it makes status code 6 useless</sup>.
   <!-- 5b91d2c191bec54cd8d4e06d8efa51c75d752adf -->
 - Removed status code 6 in `docs/status_codes.md`.
@@ -72,13 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   01a6afc3a7344bdcf4bfae019ec1bc5d6d24560f
   -->
 
-### Removed
-
- - Removed `--mode dbus` argument in Windows.
-  <!-- 4c33b4277bf214fa40888ebb459aed5d7d40bfa7 -->
-
 ### Fixed
-
  - Fixed Bug in `w_chars`for displaying lyrics with Asian characters off-center.
    <!-- a89096ef30c12959c7d416bfa97c2d8975ec80a9 -->
  - Fixed possible crash if `w_chars` is None.
@@ -89,6 +84,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    <!-- 2428aba64e862cbadde335577feb855c85a66507 -->
  - Fixed potential issues in older Python versions caused by nested f-strings.
    <!-- b9df4f6f58c477f2119832cc41926800b00baf57 -->
+
+### Removed
+ - Removed `--mode dbus` argument in Windows.
+  <!-- 4c33b4277bf214fa40888ebb459aed5d7d40bfa7 -->
+
+
 
 
 ## [v0.4] - 2025-10-31
@@ -109,7 +110,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Changelog.
 - Updated Contributing.
 
-
 ### Fixed
 - Terminal cursor is now disabled during runtime.
 
@@ -123,13 +123,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    <!-- 017161360d9fba626ea35bba79eb82d9c53b2bef, 35b08f9239e96a5cfca24c7aae943dafd5a18e08 -->
  - Added `-0 --hide-sourcelyric`.
 <!-- c80c0c90a25ba7abc73d9368a18e27c25f6668bf, c9ce720d0fe88223e8ce7d4870b8d8216ac40b0d, 11aa67eca59bdc81a6ac587cc1de82995026039e -->
-### Fixed
- - Fixed bug related to handle keys from w_chars dictionary correctly.  
-   <!-- b41c2f2690297a18786a1a09d951b12759bdbebf  --> 
- - Fixed bug related to use `--mode dbus <player>`.
-   <!-- 27dd914f9ca3db0634518e707e588740388ed994 -->
- - Fixed program termination when an unavailable player is passed to `--mode dbus <player>`.
-   <!-- 8b8c83df5012bbf6b6e4e9b0ffcaa23c2e26b8a5 -->
 
 ### Changed
  - Offline storage parameter is now `-o` instead of `-0`.
@@ -139,6 +132,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated doc/status_code
     <!-- 8ea46f5e39e07fe7f45cac6e1344e9af9b237174 -->
 
+### Fixed
+ - Fixed bug related to handle keys from w_chars dictionary correctly.  
+   <!-- b41c2f2690297a18786a1a09d951b12759bdbebf  --> 
+ - Fixed bug related to use `--mode dbus <player>`.
+   <!-- 27dd914f9ca3db0634518e707e588740388ed994 -->
+ - Fixed program termination when an unavailable player is passed to `--mode dbus <player>`.
+   <!-- 8b8c83df5012bbf6b6e4e9b0ffcaa23c2e26b8a5 -->
+
 ## [v0.2] - 2025-10-21
 
 ### Added
@@ -147,16 +148,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added column `track_duration` to the SQLite3 database.
 - Added argument `--highlight-color`.
 
-### Fixed
- - Improved Readme.
- - Fixed a bug related to wide characters and text centering in the terminal.
- - Fixed a bug related to wide characters and translation.
-
-
-### Removed
-
- - Removed comments.
-
 ### Changed
 
 - Code Refactoring.
@@ -164,15 +155,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the behavior of the default print mode when translation is enabled – translation will be displayed below original lyric.
 - Updated text for `--help`.
 
+### Fixed
+ - Improved Readme.
+ - Fixed a bug related to wide characters and text centering in the terminal.
+ - Fixed a bug related to wide characters and translation.
+
+### Removed
+
+ - Removed comments.
+
+
+
 
 ## [v0.1] - 2025-10-17
 
 ### Added
-
 - Added new sections to Readme.
 - Added doc/status_codes.md.
 - Added logic for status code 6. The code appears when duration between lyric and current playback is mismatched.
-
 
 ### Fixed
  - Improved Readme.
@@ -180,7 +180,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Changed
-
 - Code Refactoring.
 
 
