@@ -106,6 +106,9 @@ if __name__ == "src.sqlite3":
                 _out = subprocess.check_output(["tasklist", "/FI", f"PID eq {pid}"])
                 if str(pid) not in str(_out):
                     raise ProcessLookupError
+            elif config.os == "Darwin":
+                os.kill(pid, 0)
+                
             config.offline_storage = False
             if config.terminal_mode == "Default":
                 print("\033[93:1m WARNING \033[0m: database is currently in use by another process. Saving lyrics during this session is disabled.\n")

@@ -131,6 +131,15 @@ if __name__ == "__main__":
         else:
             from src.spotify.api_request import Spotify_API
             mode = Spotify_API()
+
+    elif config.os == "Darwin":
+        if args.mode:
+            if "spotify" in args.mode:
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
+        else:
+            from src.spotify.api_request import Spotify_API
+            mode = Spotify_API()
     
     if args.romanize:
         config.romanize = True

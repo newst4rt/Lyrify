@@ -22,6 +22,9 @@ class Config():
         elif _os == "Windows":
             self.os = _os
             self.cls = "cls"
+        elif _os == "Darwin":
+            self.os = _os
+            self.cls = "clear"
 
         #delta = 3000
 
