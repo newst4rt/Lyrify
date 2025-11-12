@@ -107,8 +107,9 @@ if __name__ == "src.sqlite3":
                 if str(pid) not in str(_out):
                     raise ProcessLookupError
             config.offline_storage = False
-            print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is currently in use by another process. Saving lyrics during this session is disabled.\n")
-            input("Press Enter to continue...")
+            if config.terminal_mode == "Default":
+                print("\033[93:1m WARNING \033[0m: database is currently in use by another process. Saving lyrics during this session is disabled.\n")
+                input("Press Enter to continue...\n")
     except (ProcessLookupError, FileNotFoundError):
         config.offline_storage = True
         with open(_dir + "/lyrics.db.lock", "w") as f:
