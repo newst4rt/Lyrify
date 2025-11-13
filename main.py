@@ -184,11 +184,12 @@ if __name__ == "__main__":
         print('\033[?25l', end="")
         main()
     except Exception as e:
-        print('\033[?25h', end="")
         raise(e)
     except BaseException as e:
-        print('\033[?25h')
         exit()
+    finally:
+        print('\033[?25h')
+
 
         
 
