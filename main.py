@@ -2,7 +2,7 @@
 from time import sleep
 from src.lyric_providers.lrclib import *
 from src.core.config import config
-from src.Commander.com import *
+from src.core.com import *
 
 def main():
     id = 0

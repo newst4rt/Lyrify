@@ -8,7 +8,7 @@ class Config():
         self.translate = False
         self.romanize = False
         self.dest_lang = "orig"
-        self.highlight_rgbcolor = (23, 255, 23)
+        self.highlight_rgbcolor = (0, 255, 0)
         self.terminal_mode = "Default"
         self.hide_source = False
         self.player = "spotify"
@@ -24,7 +24,10 @@ class Config():
             self.cls = "cls"
         elif _os == "Darwin":
             self.os = _os
-            self.cls = "clear"
+            self.cls = "printf '\33c\\e[3J'"
+        else:
+            print("Unknown Operating System.\n\nExit...")
+            exit()
 
         #delta = 3000
 
