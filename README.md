@@ -118,7 +118,7 @@ git submodule update --init
         
 ### Initializing
 
-Lyrify uses MPRIS D-Bus at Linux to retrieve the current playback by default. There is no user configuration required for using D-Bus. In order to access playbacks from external devices or to use the application on Windows, utilize the Spotify API by passing your API credentials to Lyrify. Here's a simple instruction how to do that:
+Lyrify retrieves playback information through the system’s native API by default. In this state, user configuration are not required. Furthermore, it ofers the option to pass your API credentials from Spotify to get your current playback from any external devices. Here's a simple instruction how to do that:
 
  - *First, use this command to initialize the setup dialog.*
    ```bash
@@ -127,11 +127,11 @@ Lyrify uses MPRIS D-Bus at Linux to retrieve the current playback by default. Th
  - *Second, follow the instructions how to get your credentials.*
  - *After them, fill the terminal with the required data.*
 
-If everything goes well, a message with the text `Authentication succeeded` will be displayed. Lyrify has successfully applied the credential and is now ready to get in touch with your playback. To use it, simply add the argument `--mode spotify`.
+If everything goes well, a message with the text `Authentication succeeded` will be displayed. Lyrify has successfully applied your credential and is now ready to get in touch with your playback. To use it, simply add the argument `--mode spotify`.
 
 #### *Using an Alternative Music Player Instead of Spotify*
 
-Lyrify works with any music player that uses the MPRIS D-Bus interface or Windows-Runtime-API. To check whether your player is supported, follow one of these instructions, depending on your operating system:
+Any music player that uses the system's native media API should work. To check whether your player is supported, follow one of these instructions for your operating system below:
 
 ##### **LINUX**
  - Get the bus-name from your application. 
@@ -149,7 +149,7 @@ Lyrify works with any music player that uses the MPRIS D-Bus interface or Window
 - If a line includes your player’s keyword, append it after `--mode wmc`.
 <br></br>
 
-Using different player instead of Spotify may not work with all players. It mostly depends on how accurately the data are transmitted to the target interface. The functionality cannot be guaranteed.
+*Using different player instead of Spotify may not work with all players. It mostly depends on how accurately the music player transmits data to the target interface. The functionality cannot be guaranteed.*
 
 
 ### Start ~ Print Modes
@@ -166,14 +166,14 @@ There are three different methods to display lyrics on the terminal.
   python3 main.py stream
   ```
   
-- ***Interactive*** : *Display the lyric in just one row with dynamic refreshment.*
+- ***Interactive*** : *Show the lyrics in one line and refresh them dynamically.*
   ```bash
   python3 main.py interactive
   ```
 
 ### Status Handler
 
-Lyrify uses predefined status codes to report the user if something goes wrong. This feature make it easy to detect and handle issues during runtime. Codes and their description can be found [here](docs/status_codes.md).
+Predefined status codes are appearing if something goes wrong. This feature make it easy to detect and handle issues during runtime. Codes and their description can be found [here](docs/status_codes.md).
 
 
 ## Options
@@ -194,9 +194,6 @@ Options are organized into different categories to accommodate the various state
 
        *Use the Windows-Runtime-API to get the current playback from Spotify, optionally from another player.*
 
-    <!--  - **`--mode winrt `** &nbsp; <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=45></img></sup></sub>
-            *Get the playback from Spotify by using WinRT.*
-    -->
      - **`--mode spotify`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=40></img></a></sup></sub>
 
        *Use the public API from Spotify to get your current playback – a stable online connection is required. If the credentials has not been passed yet, an error occurs. To fix the issue use `--init spotify`.*

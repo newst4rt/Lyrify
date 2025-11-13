@@ -161,7 +161,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Fixed a bug related to wide characters and translation.
 
 ### Removed
-
  - Removed comments.
 
 
@@ -177,7 +176,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
  - Improved Readme.
  - Fixed bug related with SQLite3 and storing lyrics.
-
 
 ### Changed
 - Code Refactoring.
