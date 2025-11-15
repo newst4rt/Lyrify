@@ -1,5 +1,6 @@
 import sys
 import re
+import os
 
 class Commander():
 
@@ -51,19 +52,44 @@ class Commander():
         self.len_args = 0
         self.len_coms = 0
         self.len_caxt = 0
+        self.truecolor = self.check_truecolor()
+
+    def check_truecolor(self):
+        colorterm = os.environ.get("COLORTERM", "").lower()
+        if colorterm in ("truecolor", "24bit"):
+            return True
+        term = os.environ.get("TERM_PROGRAM")
+        if term and "Apple_Terminal" in term:
+            return False
+        else:
+            return True
 
     def com_color(self, value: str | tuple) -> str:
-        if isinstance(value, tuple):
-            _value = value[0].lstrip('#')
-            _fxt_code = self.styles.STYLE_MAP.get(value[1], 0)
-        else:
-            _value = value.lstrip('#')
-            _fxt_code = "0"
+            if isinstance(value, tuple):
+                _value = value[0].lstrip('#')
+                _fxt_code = self.styles.STYLE_MAP.get(value[1], 0)
+            else:
+                _value = value.lstrip('#')
+                _fxt_code = "0"
 
-        lv = len(_value)
+            lv = len(_value)
+            rgb = tuple(int(_value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+            if self.truecolor:
+                return f'\033[0m\033[{_fxt_code};38;2;{rgb[0]};{rgb[1]};{rgb[2]}m'    
+            else:
+                return f"\033[{_fxt_code};38;5;{self.conv_rgb_to_256(rgb)}m"
 
-        return f'\033[0m\033[{_fxt_code};38;2;{";".join(str(int(_value[i:i + lv // 3], 16)) for i in range(0, lv, lv // 3))}m'    
 
+    def conv_rgb_to_256(self, rgb: tuple):
+        #convert rgb to 256 color mode
+        r, g, b = rgb
+
+        R = min(5, round(r * 6 / 256))
+        G = min(5, round(g * 6 / 256))
+        B = min(5, round(b * 6 / 256))
+
+        return 16 + 36*R + 6*G + B
+    
     def add_arg(self, *args, **kwargs):        
         for x in args:
             if x.startswith("-"):
