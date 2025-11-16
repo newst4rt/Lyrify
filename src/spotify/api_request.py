@@ -1,6 +1,7 @@
 import base64
 import requests
 from .api_init import *
+from src.core.config import log_errors
 
 class Spotify_API():
     def get_track_data(self, past_id: str | int | None) -> tuple|int:
@@ -33,7 +34,11 @@ class Spotify_API():
 
             except requests.exceptions.ConnectionError:
                 return 503
-        
+            except ValueError as e:
+                if log_errors is True:
+                    with open("error.log", "a") as f:
+                        f.write(f'{past_id}\n{str(e)}\n')
+
         else:
             return 401
 

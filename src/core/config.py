@@ -1,5 +1,5 @@
 from platform import system
-
+log_errors = False
 class Config():
 
     def __init__(self):

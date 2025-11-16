@@ -64,7 +64,7 @@ if __name__ == "__main__":
             "title_brackets" : "#7E7E7E",
             "title_metavar" :  "#d8892e",
     }
-    
+
     description = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
     com = Commander()
     com.styles.update(style)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
     com.add_arg("-h", "--help", required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
@@ -134,12 +134,17 @@ if __name__ == "__main__":
 
     elif config.os == "Darwin":
         if args.mode:
-            if "spotify" in args.mode:
+            if "ascript" in args.mode:
+                config.player = args.mode[1] if len(args.mode) > 1 else "spotify"
+                from src.core.mac import AScript
+                mode = AScript(config.player)
+            elif "spotify" in args.mode:
                 from src.spotify.api_request import Spotify_API
                 mode = Spotify_API()
         else:
             from src.spotify.api_request import Spotify_API
             mode = Spotify_API()
+
     
     if args.romanize:
         config.romanize = True
