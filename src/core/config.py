@@ -24,7 +24,7 @@ class Config():
             self.cls = "cls"
         elif _os == "Darwin":
             self.os = _os
-            self.cls = "printf '\33c\\e[3J'"
+            self.cls = "printf '\33c\\e[3J\033[?25l'"
         else:
             print("Unknown Operating System.\n\nExit...")
             exit()
