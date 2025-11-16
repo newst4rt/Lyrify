@@ -131,7 +131,8 @@ class Commander():
                 self.raise_error(f'Bad argument [{_tv}]. You should pick between {x[y]["required"]}', "error")
         
         def _nargs(_narg):
-            if a_ix-(_tb[0] + _s_args) > _narg:
+            #if a_ix-(_tb[0] + _s_args) > _narg:
+            if len(_tv) > _narg:
                 self.raise_error(f'Too many arguments {_tv}. At most [{_narg}] argument{"s are" if _narg > 1 else " is"} allowed after [{sys.argv[_tb[0]+_s_args]}]', "error")
 
         def _compare(dict: dict):
