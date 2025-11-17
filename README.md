@@ -8,7 +8,7 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 
 [![License MIT](https://img.shields.io/badge/License-MIT-blue)](#)<br><br>
-[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#)&nbsp;&nbsp;[![Windows](https://img.shields.io/badge/Windows-003054)](#)&nbsp;&nbsp;[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)&nbsp;&nbsp;[![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#) 
+[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#)&nbsp;&nbsp;[![Windows](https://img.shields.io/badge/Windows-003054)](#)&nbsp;&nbsp;[![macOS](https://img.shields.io/badge/macOS-343d46?logoColor=F0F0F0)](#)&nbsp;&nbsp;[![Python](https://img.shields.io/badge/Python-%3E3.10-s?style=plastic&logo=python&logoColor=white&labelColor=3776AB&color=3a4c7a)](#)&nbsp;&nbsp;[![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#) 
 </div>
 
 ## Table of Contents
@@ -35,9 +35,9 @@ A lightweight Python application for displaying synchronized lyrics in the termi
 
 ### How Lyrify Started 
 
-It began with a similar application that no longer worked. Since there was no suitable replacement, I decided to look into what had changed to fix the issue myself.
+It began with a similar application that no longer worked. Since there was no suitable replacement, I decided to look into what had changed to fix the issue by myself.
 
-First, I discovered that Spotify provides a separate, undocumented endpoint to get lyrics from Musixmatch, and they changed the authentication method for using this. After digging deeper into my research, it turns out that using this endpoint with unauthorized applications can raise legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intended to avoid the API and sought a replacement and found Lrclib.net.
+First, I discovered that Spotify provides a separate, undocumented endpoint to get lyrics from Musixmatch, and they changed the authentication method for using it. After digging deeper into my research, it turns out that using the endpoint with unauthorized applications could raise to legal concerns (see [this](https://stackoverflow.com/a/73853859)). For this reason, I intended to avoid the API and sought a replacement and found Lrclib.net.
 
 Lrclib.net provides versatile and relatively qualitatively good data without requiring authentication. Moreover, the project is open source, and there is a GitHub repo ([here](https://github.com/tranxuanthang/lrclib)) available. All the aforementioned points made me decide to set Lrclib as my first choice — and I'm glad I did.
 
@@ -45,7 +45,7 @@ That was the moment when the project marked the beginning of **Lyrify**. It star
 
 ### Why Lyrify ?
 
-Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. Additionaly, the application follows a modular design with a dynamic load — only necessary components will be loaded into the program. It supports Linux and Windows and full width characters, including kanji, kana, and all other full-width letters. Furthermore, many customizable options and features are present like translating, romanizing or offline storage.
+Lyrify is built in Python3, and most of its modules rely on the Python standard library, which makes it lightweight in terms of dependencies. The application follows a modular design with a dynamic load — only necessary components will be loaded into the program. All common operating systems such as Linux, Windows and macOS are fully supported included full width characters like kanji, kana and aside from that, many customizable options are present to improve the user's experience. 
 
 <table align="right">
     <thead>
@@ -56,23 +56,16 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
     </thead>
     <tbody>
         <tr>
-            <td align="left"><i>LRCLIB.net API Support</i></td>
+            <td align="left"><i>LRCLIB.net API</i></td>
             <td align="center">$${\color{green}✓}$$</td> 
         </tr>
         <tr>
-            <td align="left"><i>Windows-Runtime-API Support</i></td>
-            <td align="center">$${\color{green}✓}$$</td> 
-        </tr>
         <tr>
-            <td align="left"><i>D-BUS - MPRIS Support</i></td>
-            <td align="center">$${\color{green}✓}$$</td>          
-        </tr>
-        <tr>
-            <td align="left"><i>Spotify API Support</i></td>
+            <td align="left"><i>Spotify API</i></td>
             <td align="center">$${\color{green}✓}$$</td>           
         </tr>
         <tr>
-            <td align="left"><i>Offline Storage</i></td>
+            <td align="left"><i>Store Lyrics Offline</i></td>
             <td align="center">$${\color{green}✓}$$</td>     
         </tr>
         <tr>
@@ -96,29 +89,28 @@ Lyrify is built in Python3, and most of its modules rely on the Python standard 
 
 ### Python Dependencies 
 
-- [dbus-python](https://pypi.org/project/dbus-python/)
+- [dbus-python](https://pypi.org/project/dbus-python/) 
+- [pywinrt](https://github.com/pywinrt/pywinrt)
 - [googletrans](https://github.com/ssut/py-googletrans)
 - [requests](https://github.com/psf/requests)
-- [pywinrt](https://github.com/pywinrt/pywinrt) 
 - [uroman](https://github.com/isi-nlp/uroman)
 - [Commander](https://github.com/newst4rt/Commander)
 
 
 ### Feature Request
 
-Lyrify is currently in development and still in its beta stage. New features may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.
+The application is currently in development. New features may be added over time. If your desired feature is not listed, feel free to open an issue. If it makes sense and I have time, I may add it.<br>
 
 ## Installation
 
 ```bash
 pip3 install -r requirements.txt
-git submodule update --init
 ```
 ## Get Started
         
 ### Initializing
 
-Lyrify retrieves playback information through the system’s native API by default. In this state, user configuration are not required. Furthermore, it ofers the option to pass your API credentials from Spotify to get your current playback from any external devices. Here's a simple instruction how to do that:
+Lyrify retrieves playback information through the system’s native API, by default – user configuration are not required. Furtheremore, the current playback can be retrieved by the Spotify-API with a required online connection. Here's a simple instruction how to do that:
 
  - *First, use this command to initialize the setup dialog.*
    ```bash
@@ -134,39 +126,49 @@ If everything goes well, a message with the text `Authentication succeeded` will
 Any music player that uses the system's native media API should work. To check whether your player is supported, follow one of these instructions for your operating system below:
 
 ##### **LINUX**
- - Get the bus-name from your application. 
+ - Get the bus-name from your application.
+
    ```bash
    python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus. list_names() if x.startswith('org.mpris.MediaPlayer2')]"
    ```
- - If the player appears, fill the name as positional argument by add them after `--mode dbus`
-
+    If the player appears, fill the name as positional argument by add them after `--mode dbus`
 
 ##### **WINDOWS**
 - Get all active sessions.
+
   ```bash
   python3 .\src\utils\winrt_sessions.py
   ```
-- If a line includes your player’s keyword, append it after `--mode wmc`.
-<br></br>
+  If a line includes your player’s keyword, append it after `--mode wmc`.
 
-*Using different player instead of Spotify may not work with all players. It mostly depends on how accurately the music player transmits data to the target interface. The functionality cannot be guaranteed.*
+##### **macOS**
+  - Just pass after `--mode ascript` the application name of the player. As example:  
+
+    ```bash
+    python3 main.py --mode ascript spotify 
+    ```
+    Usually, a popup appears asking for permission. If it doesn’t, and on the terminal remains status code 2, the player is either not running or supported.
+   
+<br>  
+
+Using a different player instead of Spotify may not work with all media players. It mostly depends on how accurately the data are transmitted to the target interface. The functionality cannot be guaranteed. 
 
 
 ### Start ~ Print Modes
 
 There are three different methods to display lyrics on the terminal. 
 
-- ***Default*** : *Display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
+- ***Default*** : *display lyrics in full-screen on your terminal with automatic scrolling and highlighting.*
   ```bash
   python3 main.py
   ```
 
-- ***Stream*** : *Print it as a stream to stdout.*
+- ***Stream*** : *print it as a stream to stdout.*
   ```bash
   python3 main.py stream
   ```
   
-- ***Interactive*** : *Show the lyrics in one line and refresh them dynamically.*
+- ***Interactive*** : *show the lyrics in one line and refresh them dynamically.*
   ```bash
   python3 main.py interactive
   ```
@@ -185,16 +187,21 @@ Options are organized into different categories to accommodate the various state
   Available across all print states.
   - #### **`-m --mode`**
 
-     *Choose from an interface how to get the playback.*
+     *Choose from an interface how to get the playback either from any media player or from Spotify by default.*
 
      - **`--mode [dbus|dbus <player>]`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></a></sup></sub>
        
-       *Use D-Bus MPRIS to get the current playback from Spotify or optionally from another player.* 
+       ***Linux**: get the current playback with D-BUS – MPRIS.* 
+
      - **`--mode [wmc|wmc <player>]`**   <sub><sup><a href=""><img src="https://img.shields.io/badge/Windows-003054" width=40></img></a></sup></sub> 
 
-       *Use the Windows-Runtime-API to get the current playback from Spotify, optionally from another player.*
+       ***Windows**: retrieve the current playback through the Windows-Runtime-API.*
 
-     - **`--mode spotify`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=40></img></a></sup></sub>
+     - **`--mode [ascript|ascript <player]`** <sub><sup><a href=""><img src="https://img.shields.io/badge/macOS-343d46?logoColor=F0F0F0" width=35></img></a></sup></sub>
+
+        ***macOS**: use AppleScript to get the current playback.*  
+
+     - **`--mode spotify`** <sub><sup><a href=""><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black&style=plastic" width=40></img></sup></sub> <sub><sup><img src="https://img.shields.io/badge/Windows-003054" width=40></img>  <img src="https://img.shields.io/badge/macOS-343d46?logoColor=F0F0F0" width=35></a></sup></sub>
 
        *Use the public API from Spotify to get your current playback – a stable online connection is required. If the credentials has not been passed yet, an error occurs. To fix the issue use `--init spotify`.*
   
@@ -224,7 +231,7 @@ Options are organized into different categories to accommodate the various state
   
   - #### **`-o --store-offline`**
   
-    *Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them — just listen to them one time, and Lyrify will store it.*
+    *Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them – just listen to them one time, and Lyrify will store it.*
 
 ### Default Options
   *Can only be used in the **default print mode**.*

@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7] 2025.11.17
+
+### Add
+
+  - Add macOS support.
+    <!-- 9cb3dd2cfa35c4b31dbb65ed660a6a2ad18b93ca -->
+  - Add AppleScript as new feature in `--mode`.
+    <!-- 346742d3890b98c7aea9ed2936db9273e6ded99f -->
+  - Add color256 support because macOS Terminal doesn't support truecolor
+    <!-- 4342471d60bc855b5eeb568db2212abb1b34ffd6 -->
+  - Add fallback to color256 if terminal doesn't support truecolor.
+    <!-- 5b843dfc0d196662a2b6188a19d831378c153633 -->
+  - Exit if operating system is unknown.
+    <!-- 5b843dfc0d196662a2b6188a19d831378c153633 -->
+  - Add `journal_mode=WAL` in SQLite3 to allow multiple concurrent read requests.
+    <!-- d4ce1ed783b121088818ac41823b750c5eda1819 -->
+
+### Change
+
+  - Remove Commander from submodules and add it into `src/core/com.py`.
+    <!-- 5b843dfc0d196662a2b6188a19d831378c153633 -->
+  - Warning message that database is in use appears now only in default mode 
+    <!-- 67a1a82c925e056f388b78c3a531b47f52ac95d8 --> 
+
+### Fix
+
+  - Fix clear sequence on macOS.
+    <!-- cdec392d5dc84b8fbf00d1e8eb113f7c0c67424d -->
+  - Fix disappearing cursor in terminal after crash.
+    <!-- aaf679c19fe4c566ff141642ce241e8b5b55fb25 -->
+  - Fix probably lockfile issues
+    <!-- 5c653bac14fd751bce2a561dd6b352dedd4425af --> 
+
+### Remove
+
+  - Remove .gitmodules
+    <!-- 5b843dfc0d196662a2b6188a19d831378c153633 -->
+  - Remove duration check between track and playback in `src/sqlite3/__init__.py`
+    <!-- d4ce1ed783b121088818ac41823b750c5eda1819 -->
+
+
 ## [v0.6]  - 2025-11-08
 
 ### Added
