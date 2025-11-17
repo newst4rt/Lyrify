@@ -1,10 +1,7 @@
 from src.lyric_providers.lrclib import *
 from src.core.config import config
-if config.offline_storage is True:
-        from src.sqlite3 import store_lyric_offline
-if config.offline_usage is True:
-        from src.sqlite3 import sqlite3_request
-
+if config.offline_storage is True or config.offline_usage is True:
+        from src.sqlite3 import db_manager
 
 
 def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, track_len: int | float) -> tuple:
@@ -13,7 +10,7 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, tra
     
     sql_id = -1
     if config.offline_usage:
-        sql_id, lang_code, lyric_data, w_chars = sqlite3_request(artist, title, dest_lang, track_len)
+        sql_id, lang_code, lyric_data, w_chars = db_manager.sqlite3_request(artist, title, dest_lang, track_len)
         
         #if lyric_data and not isinstance(lyric_data, int):
         if lyric_data not in (400,):
@@ -22,7 +19,7 @@ def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, tra
     # lyric_data = lrclib_request[1], w_chars = lrclib_request[0], duration = lrclib_request[2]
     lrclib_request = lrclib_api(artist, title, track_len)
     if config.offline_storage and lrclib_request not in (503,):
-        sql_id = store_lyric_offline(artist, title, lrclib_request, "orig", sql_id if sql_id else -1)
+        sql_id = db_manager.store_lyric_offline(artist, title, lrclib_request, "orig", sql_id if sql_id else -1)
 
     if isinstance(lrclib_request, tuple):
         return sql_id, "orig", lrclib_request[1], lrclib_request[0]
