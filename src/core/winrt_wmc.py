@@ -74,7 +74,7 @@ class Wmc():
         try:
             pb_info = self.session.get_playback_info()
             if pb_info.controls.is_play_enabled == False and pb_info.controls.is_pause_enabled == False: # Player is not running
-                raise()
+                raise(Exception)
         except Exception:
             self.session = self.get_session(self.player, self.manager)
             if self.session:

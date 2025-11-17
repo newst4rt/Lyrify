@@ -18,11 +18,40 @@ class default_print:
         self.old_track_id = -1
         self.passed_lyric_rgbcolor=(108, 108, 108)
         self.cls = config.cls
+        if self.check_truecolor():
+             self.highlight_aescolor = f"\033[38;2;{config.highlight_rgbcolor[0]};{config.highlight_rgbcolor[1]};{config.highlight_rgbcolor[2]}m"
+             self.passed_lyric_aescolor = f"\033[38;2;{self.passed_lyric_rgbcolor[0]};{self.passed_lyric_rgbcolor[1]};{self.passed_lyric_rgbcolor[2]}m"
+        else:
+             # 256-color mode 
+             self.highlight_aescolor = f"\033[38;5;{self.conv_rgb_to_256(config.highlight_rgbcolor)}m"
+             self.passed_lyric_aescolor = f"\033[38;5;{self.conv_rgb_to_256(self.passed_lyric_rgbcolor)}m"
+
+
         if (config.translate or config.romanize) and config.hide_source == False:
             self.multi_line = True
         else:
             self.multi_line = False
         
+    def check_truecolor(self):
+        colorterm = os.environ.get("COLORTERM", "").lower()
+        if colorterm in ("truecolor", "24bit"):
+            return True
+        term = os.environ.get("TERM_PROGRAM")
+        if term and "Apple_Terminal" in term:
+            return False
+        else:
+            return True
+        
+    def conv_rgb_to_256(self, rgb: tuple):
+        #convert rgb to 256 color mode
+        r, g, b = rgb
+
+        R = min(5, round(r * 6 / 256))
+        G = min(5, round(g * 6 / 256))
+        B = min(5, round(b * 6 / 256))
+
+        return 16 + 36*R + 6*G + B
+
 
     def get_terminal_size(self) -> tuple:
         terminal_size = shutil.get_terminal_size()
@@ -65,8 +94,7 @@ class default_print:
         return str(" "*padding + text)
 
     def fxt_helper(self, lyric_data: tuple, lyric_index: int, w_chars: dict, terminal_lines: int, terminal_columns: int) -> str:
-        highlight_aescolor = f"\033[38;2;{config.highlight_rgbcolor[0]};{config.highlight_rgbcolor[1]};{config.highlight_rgbcolor[2]}m"
-        passed_lyric_aescolor = f"\033[38;2;{self.passed_lyric_rgbcolor[0]};{self.passed_lyric_rgbcolor[1]};{self.passed_lyric_rgbcolor[2]}m"
+
 
         lxe_total = 2 if lyric_data[lyric_index]["lyric_line"] != "♬" and self.multi_line == True else 1
         it_lxe = 0
@@ -81,11 +109,11 @@ class default_print:
             else:
                 lxc_data = []
                 w_charc = 0 if lyric_index not in w_chars else w_chars[lyric_index]
-                lxc_data.append(f'{highlight_aescolor}{self.center_text(lyric_data[lyric_index]["lyric_line"], terminal_columns, w_charc)}\033[0m')
+                lxc_data.append(f'{self.highlight_aescolor}{self.center_text(lyric_data[lyric_index]["lyric_line"], terminal_columns, w_charc)}\033[0m')
                 if lyric_data[lyric_index]["lyric_line"] != "♬" and self.multi_line == True:
                     w_charc = 0 if lyric_index not in self.trans_w_chars else self.trans_w_chars[lyric_index]
                     _line = self.center_text(f'({self.trans_lyric_data[lyric_index]["lyric_line"]})', terminal_columns, w_charc)
-                    lxc_data.append(f'{highlight_aescolor}{_line}\033[0m')
+                    lxc_data.append(f'{self.highlight_aescolor}{_line}\033[0m')
                     #lxc_data.append(f'{highlight_aescolor}{f'({self.trans_lyric_data[lyric_index]["lyric_line"]})'.center(terminal_columns-w_charc)}\033[0m')
 
                 break
@@ -109,11 +137,11 @@ class default_print:
                 else:
                     lxc_data.insert(0, "")
                     if lxe_ix >= 0:
-                        lxc_data.insert(0, f'{passed_lyric_aescolor}{self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc)}\033[0m')
+                        lxc_data.insert(0, f'{self.passed_lyric_aescolor}{self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc)}\033[0m')
                         if lyric_data[lxe_ix]["lyric_line"] != "♬" and self.multi_line == True:
                             w_charc = 0 if lxe_ix not in self.trans_w_chars else self.trans_w_chars[lxe_ix]
                             _line = self.center_text(f'({self.trans_lyric_data[lxe_ix]["lyric_line"]})', terminal_columns, w_charc)
-                            lxc_data.insert(1, f'{passed_lyric_aescolor}{_line}\033[0m')
+                            lxc_data.insert(1, f'{self.passed_lyric_aescolor}{_line}\033[0m')
                        
                     else:
                         lxc_data.insert(0, "")

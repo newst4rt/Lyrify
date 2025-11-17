@@ -58,6 +58,8 @@ def lrclib_api(artist: str | tuple, title: str, track_len: int | float) -> tuple
         lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
         if isinstance(lrclib_request, tuple):
             return lrclib_request
+        else:
+            artist = artist[0]
     
     return lrclib_api_request(artist, title, track_len)
     

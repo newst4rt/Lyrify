@@ -2,7 +2,7 @@
 from time import sleep
 from src.lyric_providers.lrclib import *
 from src.core.config import config
-from src.Commander.com import *
+from src.core.com import *
 
 def main():
     id = 0
@@ -64,7 +64,7 @@ if __name__ == "__main__":
             "title_brackets" : "#7E7E7E",
             "title_metavar" :  "#d8892e",
     }
-    
+
     description = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
     com = Commander()
     com.styles.update(style)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     com.add_text(" Core Options: \n", "optional_2", 2, index=1)
     com.add_stylegroup("commands")
     com.add_arg("-h", "--help", required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify'], help="Select the mode how lyrics should be received.")
+    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select the mode how lyrics should be received.")
     com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
@@ -131,6 +131,20 @@ if __name__ == "__main__":
         else:
             from src.spotify.api_request import Spotify_API
             mode = Spotify_API()
+
+    elif config.os == "Darwin":
+        if args.mode:
+            if "ascript" in args.mode:
+                config.player = args.mode[1] if len(args.mode) > 1 else "spotify"
+                from src.core.mac import AScript
+                mode = AScript(config.player)
+            elif "spotify" in args.mode:
+                from src.spotify.api_request import Spotify_API
+                mode = Spotify_API()
+        else:
+            from src.spotify.api_request import Spotify_API
+            mode = Spotify_API()
+
     
     if args.romanize:
         config.romanize = True
@@ -175,11 +189,12 @@ if __name__ == "__main__":
         print('\033[?25l', end="")
         main()
     except Exception as e:
-        print('\033[?25h', end="")
         raise(e)
     except BaseException as e:
-        print('\033[?25h')
         exit()
+    finally:
+        print('\033[?25h')
+
 
         
 

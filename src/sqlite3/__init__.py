@@ -63,8 +63,8 @@ def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: 
         lyric_row = cursor.fetchone()
         if lyric_row:
             lyric_data = json.loads(lyric_row[0])
-            delta = abs(float(song_row[3]) - track_len/1000)
-            """if delta > 1 or delta < -1:
+            """delta = abs(float(song_row[3]) - track_len/1000)
+            if delta > 1 or delta < -1:
                 #The duration difference is too high. We consider this as a wrong match.
                 return song_row[0], lyric_row[1], 6, None"""
                 
@@ -89,19 +89,31 @@ if __name__ == "src.sqlite3":
     import os
     _dir = os.path.dirname(os.path.realpath(__file__))
     try:
-        with open(_dir + "/lyrics.db.lock") as f:
+        with open(_dir + "/lyrics.db.lock", "r") as f:
             pid = int(f.read().strip())
             if config.os == "Linux":
-                os.kill(pid, 0) # Check if process exist by sending a test signal
+                if os.path.dirname("/proc/" + str(pid)):
+                    with open("/proc/" + str(pid) + "/comm", "r") as _f:
+                        comm = _f.read().strip()
+                        if not comm == "python3":
+                            open(_dir + "/lyrics.db.lock", "w")
+                            raise ProcessLookupError
+                else:
+                    os.kill(pid, 0) # Check if process exist by sending a test signal
+                
             elif config.os == "Windows":
                 import subprocess
                 _out = subprocess.check_output(["tasklist", "/FI", f"PID eq {pid}"])
                 if str(pid) not in str(_out):
                     raise ProcessLookupError
+            elif config.os == "Darwin":
+                os.kill(pid, 0)
+                
             config.offline_storage = False
-            print("\033[31m!!! WARNING !!!\033[0m\n\nDatabase is currently in use by another process. Saving lyrics during this session is disabled.\n")
-            input("Press Enter to continue...")
-    except ProcessLookupError:
+            if config.terminal_mode == "Default":
+                print("\033[93:1m WARNING \033[0m: database is currently in use by another process. Saving lyrics during this session is disabled.\n")
+                input("Press Enter to continue...\n")
+    except (ProcessLookupError, FileNotFoundError):
         config.offline_storage = True
         with open(_dir + "/lyrics.db.lock", "w") as f:
             f.write(str(os.getpid()))
