@@ -74,7 +74,7 @@ if __name__ == "__main__":
     com.add_stylegroup("commands")
     com.add_arg("-h", "--help", required=None, help="This is a simple help message")
     com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select the mode how lyrics should be received.")
-    com.add_arg("-t", "--translate", metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
     com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
