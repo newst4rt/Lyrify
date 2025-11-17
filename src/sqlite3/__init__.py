@@ -3,49 +3,52 @@ import time
 from src.core.config import config
 
 def store_lyric_offline(artist: str | tuple, title: str, lyric_data: tuple | int, lang_code: str, sql_id: int =-1 ) -> int:
-    current_timestamp = time.time()
-    if isinstance(artist, tuple):
-        artist = str(artist[0])
-    synced_lyric_av = 1 if isinstance(lyric_data, tuple) else 0 if lyric_data == 404 else 2 
-    if sql_id == -1:
-        cursor.execute("INSERT INTO songs (title, artist, synced_lyric, available_translation, track_duration, timestamp) VALUES (?, ?, ?, ?, ?, ?)",(title, artist, synced_lyric_av, lang_code, lyric_data[2] if isinstance(lyric_data, tuple) else 0, current_timestamp))
-        conn.commit()
-        sql_id = cursor.lastrowid if cursor.lastrowid is not None else -1
-    else:
-        if synced_lyric_av == 1 and lang_code == "orig":
-            cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=?, timestamp=? WHERE id=?",(synced_lyric_av, "orig", time.time(), sql_id))
+    try:
+        current_timestamp = time.time()
+        if isinstance(artist, tuple):
+            artist = str(artist[0])
+        synced_lyric_av = 1 if isinstance(lyric_data, tuple) else 0 if lyric_data == 404 else 2 
+        if sql_id == -1:
+            cursor.execute("INSERT INTO songs (title, artist, synced_lyric, available_translation, track_duration, timestamp) VALUES (?, ?, ?, ?, ?, ?)",(title, artist, synced_lyric_av, lang_code, lyric_data[2] if isinstance(lyric_data, tuple) else 0, current_timestamp))
+            conn.commit()
+            sql_id = cursor.lastrowid if cursor.lastrowid is not None else -1
         else:
-            cursor.execute("UPDATE songs SET timestamp=? WHERE id=?",(time.time(), sql_id))
-        
-        conn.commit()
-        cursor.execute("SELECT available_translation FROM songs WHERE id=?", (sql_id,))
-        cursor_languages = cursor.fetchone()
-        if lang_code != "orig":
-            try:
-                available_languages = json.loads(cursor_languages[0])
-            except json.JSONDecodeError:
-                """This error occurs when the column only contains a string. """
-                available_languages = cursor_languages[0].split()
-            if available_languages and lang_code not in available_languages:
-                available_languages.append(lang_code)
-                cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=? WHERE id=?",(synced_lyric_av, json.dumps(available_languages, ensure_ascii=False, indent=4), sql_id))
+            if synced_lyric_av == 1 and lang_code == "orig":
+                cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=?, timestamp=? WHERE id=?",(synced_lyric_av, "orig", time.time(), sql_id))
+            else:
+                cursor.execute("UPDATE songs SET timestamp=? WHERE id=?",(time.time(), sql_id))
+            
+            conn.commit()
+            cursor.execute("SELECT available_translation FROM songs WHERE id=?", (sql_id,))
+            cursor_languages = cursor.fetchone()
+            if lang_code != "orig":
+                try:
+                    available_languages = json.loads(cursor_languages[0])
+                except json.JSONDecodeError:
+                    """This error occurs when the column only contains a string. """
+                    available_languages = cursor_languages[0].split()
+                if available_languages and lang_code not in available_languages:
+                    available_languages.append(lang_code)
+                    cursor.execute("UPDATE songs SET synced_lyric=?, available_translation=? WHERE id=?",(synced_lyric_av, json.dumps(available_languages, ensure_ascii=False, indent=4), sql_id))
+                    conn.commit()
+                else:
+                    return sql_id
+            
+        if synced_lyric_av == 1:
+            cursor.execute("SELECT id FROM lyrics WHERE song_id=? AND lang_code=?", (sql_id, lang_code))
+            lyric_row = cursor.fetchone()
+            if lyric_row:
+                cursor.execute("UPDATE lyrics SET lyric=? WHERE id=?",(json.dumps(lyric_data, ensure_ascii=False, indent=4), lyric_row[0]))
                 conn.commit()
             else:
-                return sql_id
-        
-    if synced_lyric_av == 1:
-        cursor.execute("SELECT id FROM lyrics WHERE song_id=? AND lang_code=?", (sql_id, lang_code))
-        lyric_row = cursor.fetchone()
-        if lyric_row:
-            cursor.execute("UPDATE lyrics SET lyric=? WHERE id=?",(json.dumps(lyric_data, ensure_ascii=False, indent=4), lyric_row[0]))
-            conn.commit()
+                cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data[0:2], ensure_ascii=False, indent=4))) # type: ignore
+                conn.commit()
+                
+            return sql_id
         else:
-            cursor.execute("INSERT INTO lyrics (song_id, lang_code, lyric) VALUES (?, ?, ?)",(sql_id, lang_code, json.dumps(lyric_data[0:2], ensure_ascii=False, indent=4))) # type: ignore
-            conn.commit()
-            
-        return sql_id
-    else:
-        return -1
+            return -1
+    finally:
+        conn.commit()
     
 def sqlite3_request(artist: str | tuple, title: str, lang_code: str, track_len: int | float) -> tuple:
     if isinstance(artist, tuple):
