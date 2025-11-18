@@ -13,12 +13,12 @@ class Database_Manager():
             with open(_dir + "/lyrics.db.lock", "r") as f:
                 pid = int(f.read().strip())
                 if config.os == "Linux":
-                    if os.path.dirname("/proc/" + str(pid)):
+                    if os.path.exists("/proc/" + str(pid)):
                         with open("/proc/" + str(pid) + "/comm", "r") as _f:
                             comm = _f.read().strip()
                             if not comm == "python3":
-                                open(_dir + "/lyrics.db.lock", "w")
-                                raise ProcessLookupError
+                                with open(_dir + "/lyrics.db.lock", "w"):
+                                    raise ProcessLookupError
                     else:
                         os.kill(pid, 0) # Check if process exist by sending a test signal
                     
