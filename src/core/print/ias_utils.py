@@ -8,7 +8,7 @@ from src.core.__main__ import get_lyric
 if config.translate:
     from src.translator.googletrans import translate_lyric
     if config.offline_storage:
-        from src.sqlite3 import store_lyric_offline
+        from src.sqlite3 import db_manager
 
 if config.romanize is True:
     from src.utils.romanizer_uroman import *
@@ -22,7 +22,7 @@ def main_gxl(track_data: tuple) -> tuple:
             if config.translate and config.dest_lang not in lang_code:
                 w_chars, lyric_data = translate_lyric(lyric_data, dest=config.dest_lang) # type: ignore
                 if config.offline_storage:
-                    sql_id = store_lyric_offline(artist, title, (w_chars, lyric_data), config.dest_lang, sql_id) # type: ignore
+                    sql_id = db_manager.store_lyric_offline(artist, title, (w_chars, lyric_data), config.dest_lang, sql_id) # type: ignore
 
             if config.romanize:
                  lyric_data, w_chars = rom.romanize_lyric(lyric_data, w_chars) # type: ignore

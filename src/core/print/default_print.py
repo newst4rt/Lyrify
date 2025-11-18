@@ -5,7 +5,7 @@ from src.core.__main__ import get_lyric
 if config.translate is True:
     from src.translator.googletrans import translate_lyric
     if config.offline_storage is True:
-        from src.sqlite3 import store_lyric_offline
+        from src.sqlite3 import db_manager
 if config.romanize is True:
     from src.utils.romanizer_uroman import *
     rom = Uroman()
@@ -169,7 +169,7 @@ class default_print:
                     if lang_code == "orig":
                         self.trans_w_chars, self.trans_lyric_data = translate_lyric(lyric_data, dest=config.dest_lang)
                         if config.offline_storage:
-                            sql_id = store_lyric_offline(artist, title, (self.trans_w_chars, self.trans_lyric_data), config.dest_lang, sql_id) # type: ignore
+                            sql_id = db_manager.store_lyric_offline(artist, title, (self.trans_w_chars, self.trans_lyric_data), config.dest_lang, sql_id) # type: ignore
                         if config.hide_source:
                             w_chars, lyric_data = self.trans_w_chars, self.trans_lyric_data
 

@@ -154,8 +154,7 @@ if __name__ == "__main__":
         config.dest_lang = "".join(args.translate)
 
     if args.store_offline:
-        config.offline_storage = True
-        config.offline_usage = True
+        from src.sqlite3 import Database_Manager
 
     if args.hide_sourcelyrics:
         if args.translate or args.romanize:
