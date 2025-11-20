@@ -30,6 +30,8 @@ class AScript():
                     stderr=subprocess.STDOUT,  
                     text=True                   
                 ).strip().split(",")
+                if "spotify:ad:" in data[0]:
+                    return "📣"
                 return data[0], float(data[1]) * 1_000.0, float(_data[0]), str(_data[1].replace(" ", "+")), str(_data[2].replace(" ", "+"))
             else:
                 time_pos = float(data[1]) * 1_000.0

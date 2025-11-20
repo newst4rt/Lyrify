@@ -19,21 +19,22 @@ class Mpris():
                 return 2
             self.player_metadata = dbus.Interface(player_bus, "org.freedesktop.DBus.Properties")
             return 1
-
+     
     def get_track_data(self, past_id: str | int | None):
         for _ in range(0, 2):
             try:
                 player_metadata_track = self.player_metadata.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-                ix = str(player_metadata_track["mpris:trackid"]).rindex("/")
+                artist = str(player_metadata_track["xesam:artist"][0])
+                title = str(player_metadata_track["xesam:title"])
+                ix = artist+title
                 if past_id != ix:
-                    artist = str(player_metadata_track["xesam:artist"][0])
-                    title = str(player_metadata_track["xesam:title"])
+                    
                     track_len = float(player_metadata_track["mpris:length"]) #microseconds
                     position_µs = float(self.player_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
                     if track_len == position_µs:
                         return 3
                         #raise Exception(f"The current player {dbus_player} is not supported. There is an issue with getting the current track position.")
-                    return str(player_metadata_track["mpris:trackid"][ix+1:]), float(position_µs / 1_000.0), float(track_len / 1_000.0), str(artist.replace(" ", "+")), str(title.replace(" ", "+"))
+                    return ix, float(position_µs / 1_000.0), float(track_len / 1_000.0), str(artist.replace(" ", "+")), str(title.replace(" ", "+"))
                 
                 else:
                     position_µs = float(self.player_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
@@ -41,6 +42,11 @@ class Mpris():
 
             except (dbus.exceptions.DBusException, AttributeError) as e:
                     self.init_dbus(self.player)
+            except KeyError:
+                 title = str(player_metadata_track["xesam:title"])
+                 # amazon music, spotify ad.
+                 if title in ("Amazon Music", "Advertisement"):  
+                    return "📣"
         else:
             return 2
 

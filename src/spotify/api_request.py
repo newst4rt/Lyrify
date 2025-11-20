@@ -34,7 +34,12 @@ class Spotify_API():
 
             except requests.exceptions.ConnectionError:
                 return 503
-            except ValueError as e:
+            except (ValueError, TypeError) as e:
+                if body and "currently_playing_type" in body and body["currently_playing_type"] == "ad":
+                    return "📣"
+
+
+
                 if log_errors is True:
                     with open("error.log", "a") as f:
                         f.write(f'{past_id}\n{str(e)}\n')

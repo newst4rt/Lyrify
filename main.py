@@ -17,14 +17,16 @@ def main():
                 id, track_len = _id, track_data[2] # type: ignore
                 w_chars, lyric_data = printer.main_gxl(track_data)
 
-            elif isinstance(track_data, int): 
+            elif isinstance(track_data, (int,str)): 
                 id = track_data
                 lyric_data = track_data
 
-            if isinstance(lyric_data, int):
+            if isinstance(lyric_data, (int,str)):
                 config.delta = 3000
                 printer.old_lyric_index = None
                 printer.error_print(lyric_data)
+            
+            continue
 
         if isinstance(lyric_data, tuple):
             sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
