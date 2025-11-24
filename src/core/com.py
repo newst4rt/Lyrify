@@ -128,25 +128,38 @@ class Commander():
 
         def _required(_req):
             if not any(b in _tv for b in _req):
-                self.raise_error(f'Bad argument [{_tv}]. You should pick between {x[y]["required"]}', "error")
+                self.raise_error(f'Bad argument [{_tv}]. You should pick between {x[y]["required"]}.', "error")
         
         def _nargs(_narg):
             #if a_ix-(_tb[0] + _s_args) > _narg:
             if len(_tv) > _narg:
-                self.raise_error(f'Too many arguments {_tv}. At most [{_narg}] argument{"s are" if _narg > 1 else " is"} allowed after [{sys.argv[_tb[0]+_s_args]}]', "error")
+                self.raise_error(f'Too many arguments {_tv} after [{sys.argv[_tb[0]+_s_args]}]. At most, only [{_narg}] argument{"s are" if _narg > 1 else " is"} allowed.', "error")
 
         def _compare(dict: dict):
             _val = tuple(dict.values())[0]
+            _key = tuple(dict.keys())[0]
             if _req := _val.get("required", 0):
                 _required(_req)
             
-            if _narg := _val.get("nargs", 0):
-                _nargs(_narg)
+            
+            _nargs(_val.get("nargs", 0) ) # If nargs option doesn't exist, set it to zero 
 
             return True
 
         _parse_args = {}
         _s_args = 1
+
+
+        for x in sys.argv[1:]: # check if passed args exist in options 
+            if x.startswith("-"):
+                for y in self.com_args:
+                    if isinstance(y, dict):
+                        _keys = list(y.keys())[0]
+                        if x in _keys:
+                            break
+                else:
+                    self.raise_error(f'bad argument {x}', "error")
+            
         for x in self.com_args: 
             if isinstance(x, dict):
                 for y in x:
@@ -341,7 +354,7 @@ class Commander():
                     break
 
             com_idt = 1
-            for x in range(_xcount, len(_options)): #space aligning between columns and apply indentation
+            for x in range(_xcount, len(_options)): #space alignement between columns. apply indentation
                 if isinstance(_options[x], list):
                     # add_arg
                     len_args  = self.len_args if _options[x][0].strip().startswith("-") else self.len_coms
