@@ -1,8 +1,18 @@
 ## Status Codes
 
 
+A list of appearing emojis:
 
-A list of status codes that may appear when something goes wrong:
+
+| Code | Reason |
+| --- | --- |
+| ↻ | Processing ...  |
+| 📣 | An ad is currently playing. |
+
+<br>
+Status codes that may appear when something goes wrong:
+<br></br>
+
 
 <table align="center">
     <thead>
