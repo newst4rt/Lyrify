@@ -3,7 +3,7 @@
 <h1>Lyrify<br></h1>
 A lightweight Python application for displaying synchronized lyrics in the terminal, optionally with translation and offline storage, via the <a href="https://lrclib.net">Lrclib API</a>.
 <br></br>
-<img src="https://github.com/user-attachments/assets/d426b46b-cafb-42d7-8d0f-4b12d475f397" width="650"></img>
+<img src="https://github.com/user-attachments/assets/4eb25559-4c81-4266-93d4-8ffa54b76c06" width="70%"></img>
 <br></br>
 
 
