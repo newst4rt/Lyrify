@@ -44,7 +44,10 @@ def main():
 
 if __name__ == "__main__":
     """ Command line argument parsing """
-    style = {"commands_args" :  ("#5898E7", "bold"),
+    style = {"prog_name" : ("#3a99ff", "bold"),
+            "usage_prefix": ("#FFFCE7", "bold"),
+        
+            "commands_args" :  ("#5898E7", "bold"),
             "commands_help" : ("#CBCBCB"),
             "commands_req" : "#88e6fd",
             "commands_metavar" : "#ecbc84",
@@ -67,32 +70,33 @@ if __name__ == "__main__":
             "title_metavar" :  "#d8892e",
     }
 
-    description = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
+    description = """Lyrify - Display synchronized lyrics from your current playback by using lrclib.net"""
     com = Commander()
     com.styles.update(style)
     com.com_title = ("Lyrify", description)
     
-    com.add_text(" Core Options: \n", "optional_2", 2, index=1)
-    com.add_stylegroup("commands")
+    com.add_text("Core Options: \n", "optional_2")
     com.add_arg("-h", "--help", required=None, help="Display this help message.")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select mode.")
+    com.add_arg("-m", "--mode", nargs=[2, 1], required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select mode.")
     com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics. (Use ISO-639 as language code)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
     com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
 
-    com.add_stylegroup("options")
+    com.add_stylegroup("options", indent=2 , index=1)
     sub_com = SubCommander(com)
-    sub_com.add_com("stream", metavar="[--help]", help="Stream Mode", index=0)
-    sub_com.add_com("interactive", metavar="[--help]", help="Interactive Mode", index=0)
-    sub_com.add_text("Commands: \n", "commands_args", 1, index=0)
-    sub_com.add_text("", index=3)
+    sub_com.add_text("Commands: \n", "commands_args")
+    sub_com.add_com("stream", metavar="[--help]", help="Stream Mode")
+    sub_com.add_com("interactive", metavar="[--help]", help="Interactive Mode")
+    sub_com.add_text("")
+    sub_com.add_stylegroup("commands", indent=2, index=0)
+
 
     a_sub_com = SubCommander(sub_com)
-    a_sub_com.add_text("\n  Default:\n", "optional_1", idt=3)
+    a_sub_com.add_text("\nDefault:\n", "optional_1")
     a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", nargs=1, help="Set color for highlighting lyrics (default: 23,255,23).")
     a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation, romanizing or both.")
-    a_sub_com.add_stylegroup("dxt_options")
+    a_sub_com.add_stylegroup("dxt_options", index=2, indent=3)
 
 
     args = a_sub_com.parse_args()
