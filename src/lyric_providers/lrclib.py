@@ -8,6 +8,7 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
         return unicodedata.east_asian_width(ch) in ("W", "F")
 
     """ Get Lyrics from lrclib.net """
+    artist = quote(artist)
     url = f"https://lrclib.net/api/get?artist_name={quote(artist)}&track_name={quote(title)}&duration={int(track_len/1000)}"
     header = {"User-Agent": "requests/*"}
     try:
@@ -55,12 +56,13 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
         return 503
 
 def lrclib_api(artist: str | tuple, title: str, track_len: int | float) -> tuple|int:
-    if isinstance(artist, tuple) and len(artist) > 1:
-        lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
-        if isinstance(lrclib_request, tuple):
-            return lrclib_request
-        else:
-            artist = artist[0]
+    if isinstance(artist, tuple): 
+        if len(artist) > 1:
+            lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
+            if isinstance(lrclib_request, tuple):
+                return lrclib_request
+            
+        artist = artist[0]
     
     return lrclib_api_request(artist, title, track_len)
     
