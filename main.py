@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
             "dxt_options_args" :  ("#e5e996", "bold"),
             "dxt_options_req" : "#e5e996" ,
-            "dxt_options_metavar" : ("#e5e996") ,
+            "dxt_options_metavar" : ("#d9dd99") ,
             "dxt_options_pipe" : ("#7E7E7E", "bold"),
 
             "title_args" : ("#67c236", "bold"),
@@ -70,14 +70,14 @@ if __name__ == "__main__":
             "title_metavar" :  "#d8892e",
     }
 
-    description = """Lyrify - Display synchronized lyrics from your current playback by using lrclib.net"""
+    description = """Lyrify - Display synchronized lyrics from any music player."""
     com = Commander()
     com.styles.update(style)
     com.com_title = ("Lyrify", description)
     
     com.add_text("Core Options: \n", "optional_2")
     com.add_arg("-h", "--help", required=None, help="Display this help message.")
-    com.add_arg("-m", "--mode", nargs=[2, 1], required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select mode.")
+    com.add_arg("-m", "--mode", nargs=[2, 1], required=['dbus', 'spotify'] if config.os == "Linux" else ['wmc', 'spotify'] if config.os == "Windows" else ["ascript", 'spotify'] if config.os == "Darwin" else ["spotify"], help="Select mode.")
     com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics. (Use ISO-639 as language code)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
@@ -94,9 +94,9 @@ if __name__ == "__main__":
 
     a_sub_com = SubCommander(sub_com)
     a_sub_com.add_text("\nDefault:\n", "optional_1")
-    a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", nargs=1, help="Set color for highlighting lyrics (default: 23,255,23).")
+    a_sub_com.add_arg("-s", "--style", metavar="<file>", nargs=1, help="Apply a style file.")
     a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation, romanizing or both.")
-    a_sub_com.add_stylegroup("dxt_options", index=2, indent=3)
+    a_sub_com.add_stylegroup("dxt_options", index=2, indent=2)
 
 
     args = a_sub_com.parse_args()
@@ -168,13 +168,10 @@ if __name__ == "__main__":
         else:
             com.raise_error("--hide-sourcelyric option can only be used in default mode in combination with --translate, --romanize, or both.")
 
-    if args.highlight_color:
-        try:
-            _hc_color = tuple(int(c) for c in args.highlight_color[0].split(","))
-            if len(_hc_color) != 3 or any(x > 0 or x < 255 for x in _hc_color):
-                config.highlight_rgbcolor = _hc_color # type: ignore
-        except ValueError:
-            com.raise_error("Highlight color must be in the format R,G,B with values between 0 and 255.")
+    if args.style:
+        config.read_style(args.style[0])
+    else:
+        config.read_style()
 
 
     if args.interactive:
