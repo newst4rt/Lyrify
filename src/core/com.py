@@ -417,10 +417,10 @@ class Commander():
                     _len_args = len(_options[x][0])
                     if len(_options[x]) == 3:
                         _lt = len(_options[x][1])
-                        _options[x][0] = f'{" "*com_idt}{_options[x][0]}{" "*(len_args-_len_args)}'
+                        _options[x][0] = f'{" "*com_idt}{_options[x][0]}{" "*(len_args-_len_args+1)}'
                         _options[x][1] = f'{_options[x][1]}{" "*(len_axt-_lt)}'
                     elif len(_options[x]) == 2:
-                        _options[x][0] = f'{" "*com_idt}{_options[x][0]}{" "*(len_args-_len_args+len_axt)}'
+                        _options[x][0] = f'{" "*com_idt}{_options[x][0]}{" "*(len_args-_len_args+len_axt+1)}'
                     else:
                         _options[x][0] = f'{" "*com_idt}{_options[x][0]}'
 
