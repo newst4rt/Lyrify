@@ -7,8 +7,10 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
     def is_cjk(ch) -> bool:
         return unicodedata.east_asian_width(ch) in ("W", "F")
 
-    """ Get Lyrics from lrclib.net """
-    url = f'https://lrclib.net/api/get?artist_name={quote(artist, safe="+")}&track_name={quote(title, safe="+")}&duration={int(track_len/1000)}'
+    """ Get Lyrics from lrclib.net 
+    We don't use the query string duration due to that some APIs are not transmitting a correct track length value
+    """
+    url = f'https://lrclib.net/api/get?artist_name={quote(artist, safe="+")}&track_name={quote(title, safe="+")}'
     header = {"User-Agent": "requests/*"}
     try:
         response = requests.get(url, headers=header)
