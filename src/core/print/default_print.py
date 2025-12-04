@@ -25,15 +25,15 @@ class default_print:
         self.old_track_id = -1
         self.cls = config.cls
         if self.check_truecolor():
-            self.highlight_aescolor = f"\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;2;{";".join(str(int(config.highlight_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m"
-            self.passed_aescolor = f"\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;2;{";".join(str(int(config.passed_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m"
-            self.future_aescolor = f"\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;2;{";".join(str(int(config.future_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m"
+            self.highlight_aescolor = f'\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;2;{";".join(str(int(config.highlight_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
+            self.passed_aescolor = f'\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;2;{";".join(str(int(config.passed_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
+            self.future_aescolor = f'\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;2;{";".join(str(int(config.future_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
 
         else:
             # 256-color mode 
-            self.highlight_aescolor = f"\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.highlight_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m"
-            self.passed_aescolor = f"\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.passed_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m"
-            self.future_aescolor = f"\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.future_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m"
+            self.highlight_aescolor = f'\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.highlight_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
+            self.passed_aescolor = f'\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.passed_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
+            self.future_aescolor = f'\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.future_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
 
         if (config.translate or config.romanize) and config.hide_source == False:
             self.multi_line = True
@@ -70,13 +70,13 @@ class default_print:
         os.system(self.cls)
         for x in range(0, terminal_size.lines-2):
             if x == int(terminal_size.lines/2):
-                print(f"{text.center(terminal_size.columns)}")
+                print(f'{text.center(terminal_size.columns)}')
             else:
                 print("")
                 
     def error_print(self, text: str | int) -> None:
         if isinstance(text, int):
-            self.center_print(f"🚫 {text} 🚫") 
+            self.center_print(f'🚫 {text} 🚫') 
         else:
             self.center_print(text) 
 

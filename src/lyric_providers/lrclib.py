@@ -8,7 +8,7 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
         return unicodedata.east_asian_width(ch) in ("W", "F")
 
     """ Get Lyrics from lrclib.net """
-    url = f"https://lrclib.net/api/get?artist_name={quote(artist, safe="+")}&track_name={quote(title, safe="+")}&duration={int(track_len/1000)}"
+    url = f'https://lrclib.net/api/get?artist_name={quote(artist, safe="+")}&track_name={quote(title, safe="+")}&duration={int(track_len/1000)}'
     header = {"User-Agent": "requests/*"}
     try:
         response = requests.get(url, headers=header)
