@@ -11,7 +11,7 @@ def ex_print(lyric_data: tuple | str | int, w_chars: dict | None = None, lyric_i
 
     if text == old_text:
         return
-    sys.stdout.write(f"{text}\n")
+    sys.stdout.write(f'{text}\n')
     sys.stdout.flush()
     old_text = text
 

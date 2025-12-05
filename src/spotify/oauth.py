@@ -34,7 +34,7 @@ def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str) -> str:
 
     port = int(REDIRECT_URI.split(":")[2].split("/")[0])
     with socketserver.TCPServer(("", port), SpotifyAuthHandler) as httpd:
-        print(f"Open Spotify Login in the Browser ...")
+        print(f'Open Spotify Login in the Browser ...')
         #httpd.timeout = 15
         webbrowser.open(auth_url)
         httpd.handle_request()
@@ -42,12 +42,12 @@ def request_user_authorization(CLIENT_ID: str, REDIRECT_URI: str) -> str:
 
 
 def get_tokens(auth_code: str, CLIENT_ID: str, CLIENT_SECRET: str, REDIRECT_URI: str) -> tuple|int:
-    basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
+    basic_auth = base64.b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode()).decode("utf-8")
     params = {"code": auth_code,
               "redirect_uri": REDIRECT_URI,
               "grant_type": "authorization_code"}
     headers = {"Content-Type": "application/x-www-form-urlencoded", 
-            "Authorization": f"Basic {basic_auth}"}
+            "Authorization": f'Basic {basic_auth}'}
 
     response = requests.post("https://accounts.spotify.com/api/token", data=params, headers=headers)
     if response.status_code == 200:
