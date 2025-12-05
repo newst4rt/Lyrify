@@ -79,7 +79,7 @@ class Commander():
             if self.truecolor:
                 return f'\033[0m\033[{_fxt_code};38;2;{rgb[0]};{rgb[1]};{rgb[2]}m'    
             else:
-                return f"\033[{_fxt_code};38;5;{self.conv_rgb_to_256(rgb)}m"
+                return f'\033[{_fxt_code};38;5;{self.conv_rgb_to_256(rgb)}m'
 
 
     def conv_rgb_to_256(self, rgb: tuple):
@@ -220,7 +220,7 @@ class Commander():
         for x in args:
             _check = x.replace("-", "")
             if not _check.isalnum():
-                raise Exception(f"Error: [{x}]; an argument should only contain alphanumeric characters.")
+                raise Exception(f'Error: [{x}]; an argument should only contain alphanumeric characters.')
 
         for k,v in kwargs.items():
             if k == "nargs":
@@ -232,16 +232,16 @@ class Commander():
                             break
                     else:
                         continue
-                raise Exception(f"Error: [{v}]; nargs should be an integer value.")
+                raise Exception(f'Error: [{v}]; nargs should be an integer value.')
                 
             elif k == "required":
                 if isinstance(v, list):
                     for x in v:
                         if not x.isalnum():
-                            raise Exception(f"Error: [{v}]; an required element should only contain alphanumeric characters.")
+                            raise Exception(f'Error: [{v}]; an required element should only contain alphanumeric characters.')
                 elif isinstance(v, str):
                     if not v.isalnum():
-                            raise Exception(f"Error: [{v}]; an required element should only contain alphanumeric characters.")
+                            raise Exception(f'Error: [{v}]; an required element should only contain alphanumeric characters.')
                 pass
             elif k == "help":
                 pass
@@ -256,33 +256,33 @@ class Commander():
         if format == "title":
             for x in self.styles.base:
                 try:
-                    setattr(self, f"rgb_{x[1:]}", self.com_color(getattr(self.styles, format + x))) 
+                    setattr(self, f'rgb_{x[1:]}', self.com_color(getattr(self.styles, format + x))) 
                 except Exception:
-                    setattr(self, f"t_rgb_{x[1:]}", self.com_color(getattr(self.styles, "base" + x)))  
+                    setattr(self, f't_rgb_{x[1:]}', self.com_color(getattr(self.styles, "base" + x)))  
 
             l_input = list(input)
             for x in range(0, len(l_input)):
                 if l_input[x] in ("[", "(", "{"):
-                    l_input[x] = f"{self.rgb_brackets}{l_input[x]}{self.rgb_args}"
+                    l_input[x] = f'{self.rgb_brackets}{l_input[x]}{self.rgb_args}'
                 elif l_input[x] in ("]", ")", "}"):
-                    l_input[x] = f"{self.rgb_brackets}{l_input[x]}"
+                    l_input[x] = f'{self.rgb_brackets}{l_input[x]}'
                 elif l_input[x] in " ":
                     if opt == None:
-                        l_input[x] = f"{self.rgb_req} "
+                        l_input[x] = f'{self.rgb_req} '
                     else:
-                        l_input[x] = f"{self.rgb_metavar} "
+                        l_input[x] = f'{self.rgb_metavar} '
 
                 elif l_input[x] in "|":
-                    l_input[x] = f"{self.rgb_pipe}|{self.rgb_req}"
+                    l_input[x] = f'{self.rgb_pipe}|{self.rgb_req}'
                     
             return "".join(l_input)
 
         else:
             for x in self.styles.base:
                 try:
-                    setattr(self, f"rgb_{x[1:]}", self.com_color(getattr(self.styles, format + x))) 
+                    setattr(self, f'rgb_{x[1:]}', self.com_color(getattr(self.styles, format + x))) 
                 except Exception:
-                    setattr(self, f"rgb_{x[1:]}", self.com_color(getattr(self.styles, "base" + x)))  
+                    setattr(self, f'rgb_{x[1:]}', self.com_color(getattr(self.styles, "base" + x)))  
 
             for y in range(0, len(input)):
                 if y == 0:
@@ -299,13 +299,13 @@ class Commander():
                     _tmp = list(input[y])
                     for z in range(0, len(_tmp)):
                         if _tmp[z] in ("[", "(", "{"):
-                            _tmp[z] = f"{self.rgb_brackets}{_tmp[z]}{self.rgb_req}"
+                            _tmp[z] = f'{self.rgb_brackets}{_tmp[z]}{self.rgb_req}'
                         elif _tmp[z] in ("]", ")", "}"):
-                            _tmp[z] = f"{self.rgb_brackets}{_tmp[z]}"
+                            _tmp[z] = f'{self.rgb_brackets}{_tmp[z]}'
                         elif _tmp[z] in ("|"):
-                            _tmp[z] = f"{self.rgb_pipe}{_tmp[z]}{self.rgb_req}"
+                            _tmp[z] = f'{self.rgb_pipe}{_tmp[z]}{self.rgb_req}'
                         elif z == 0:
-                            _tmp[z] = f"{self.rgb_metavar}{_tmp[z]}"
+                            _tmp[z] = f'{self.rgb_metavar}{_tmp[z]}'
 
                     input[y] = "".join(_tmp)
 
@@ -376,9 +376,9 @@ class Commander():
 
 
         rgb_pnxe = self.com_color(getattr(self.styles, "prog_name"))
-        _prog_name = f"{rgb_pnxe}{self.com_title[0]}"
+        _prog_name = f'{rgb_pnxe}{self.com_title[0]}'
         rgb_dtxt = self.com_color(getattr(self.styles, "description"))
-        _description = f"{rgb_dtxt}{self.com_title[1]}"
+        _description = f'{rgb_dtxt}{self.com_title[1]}'
         print_out, _options = {}, []
         _count, _xcount, ticker = 0, 0, 0 
         style_options, index = None, 0

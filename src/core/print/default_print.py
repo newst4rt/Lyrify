@@ -17,7 +17,8 @@ class default_print:
                 "bold": 1,
                 "italic": 3,
                 "underline": 4,
-                "normal": 0
+                "normal": 0,
+                "crossed_out": 9
         }
         
         self.old_lyric_index = -1

@@ -33,7 +33,7 @@ class Mpris():
                     position_µs = float(self.player_metadata.Get("org.mpris.MediaPlayer2.Player", "Position")) #microseconds
                     if track_len == position_µs:
                         return 3
-                        #raise Exception(f"The current player {dbus_player} is not supported. There is an issue with getting the current track position.")
+                        #raise Exception(f'The current player {dbus_player} is not supported. There is an issue with getting the current track position.')
                     return ix, float(position_µs / 1_000.0), float(track_len / 1_000.0), str(artist.replace(" ", "+")), str(title.replace(" ", "+"))
                 
                 else:

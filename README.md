@@ -235,10 +235,8 @@ Options are organized into different categories to accommodate the various state
 
 ### Default Options
   *Can only be used in the **default print mode**.*
-  - #### `-c --highlight-color`
-    *Define how lyrics should be highlighted as RGB color.*
-
-    > **`--highlight-color 255,200,0`** 
+  - #### `-s --style`
+    *Use a style configuration file for changing lyrics' color. For more information take a look [here](docs/style.md)*
 
   - #### `-0 --hide-sourcelyrics`
     *Hide the displayed source lyrics when translation or romanizing is enabled.* 
