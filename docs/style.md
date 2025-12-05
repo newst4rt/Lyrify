@@ -7,7 +7,7 @@ The style file options were added with the update to version 0.8 and offer a var
 </div>
 <br></br>
 
-There are two options available for each section – color and font style. By default, the configuration file is stored in `src/style.config` and is loaded automatically at every startup, except the argument `-s, --style` has not been passed. The configuration file looks like this:
+There are two options available for each section – color and font style. By default, the configuration file is stored in `src/style.config` and is loaded automatically at every startup except the argument `-s, --style` has not been passed. The configuration file looks like this:
 
 ```
 [DEFAULT]
@@ -25,6 +25,6 @@ Colors must be provided as hex values, while font styles are defined as strings.
 | bold        | **Hello World !**
 | italic      | *Hello World !*
 | underline   | <ins>Hello World !</ins>
-| crossed_out | ~~Hello World !~~ 
+| cross_out | ~~Hello World !~~ 
 
-A different style configuration file can be applied by using the `-s, --style` argument.
+A different configuration file can be applied by using the `-s, --style` argument.

@@ -58,7 +58,7 @@ Status codes that may appear when something goes wrong:
         <tr>
             <td align="left"><b>400</b></td>
             <td align="left">Lyrics for the track have not been found in the SQLite3 database and on lrclib.net.
-            <b>Hint</b>: Lyrify stores the timestamp of the unavailable track in the database and will perform a request on lrclib.net 24 hours after the initial execution to check whether synced lyrics have become available. The code will be displayed once the synced lyrics are not found on lrclib.net.</td> 
+            <b>Hint</b>: Lyrify stores the timestamp of the unavailable track in the database and performs a new request to lrclib.net only when the track reappears in the playback after 24 hours; otherwise, 404 will be displayed. </td> 
             <td align="left">sqlite3</td>     
         </tr>
         <tr>
