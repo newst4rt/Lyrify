@@ -82,6 +82,7 @@ if __name__ == "__main__":
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
     com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
+    com.add_arg("-p", "--print-players", help="Display all running music players.")
 
     com.add_stylegroup("options", indent=2 , index=1)
     sub_com = SubCommander(com)
@@ -107,6 +108,19 @@ if __name__ == "__main__":
         else:
             a_sub_com.print_help()
 
+    if args.print_players:
+        if config.os == "Linux":
+            import dbus
+            bus = dbus.SessionBus()
+            [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus. list_names() if x.startswith('org.mpris.MediaPlayer2')]
+        elif config.os == "Windows":
+            from src.core.winrt_wmc import PPlayers
+            _player = PPlayers()
+            _player.player()
+        elif config.os == "Darwin":
+            print("Open Finder, click Applications and use the names in the list.")
+        exit()
+        
     if args.init:
         if "spotify" in args.init:
             from src.spotify import oauth
