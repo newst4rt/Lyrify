@@ -8,12 +8,12 @@ REFRESH_TOKEN = None
 access_token = None
 
 def get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET) -> dict|int:
-    basic_auth = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode("utf-8")
+    basic_auth = base64.b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode()).decode("utf-8")
     params = {"grant_type": "refresh_token",
               "refresh_token": REFRESH_TOKEN
               }
     headers = {"Content-Type": "application/x-www-form-urlencoded", 
-            "Authorization": f"Basic {basic_auth}"}
+            "Authorization": f'Basic {basic_auth}'}
     try:
         response = requests.post("https://accounts.spotify.com/api/token", data=params, headers=headers)
         if response.status_code == 200:

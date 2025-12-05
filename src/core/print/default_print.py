@@ -13,19 +13,28 @@ if config.romanize is True:
 class default_print:
 
     def __init__(self):
+        self.STYLE_MAP = {
+                "bold": 1,
+                "italic": 3,
+                "underline": 4,
+                "normal": 0,
+                "cross_out": 9
+        }
+        
         self.old_lyric_index = -1
         self.old_terminal_size = -1
         self.old_track_id = -1
-        self.passed_lyric_rgbcolor=(108, 108, 108)
         self.cls = config.cls
         if self.check_truecolor():
-             self.highlight_aescolor = f"\033[38;2;{config.highlight_rgbcolor[0]};{config.highlight_rgbcolor[1]};{config.highlight_rgbcolor[2]}m"
-             self.passed_lyric_aescolor = f"\033[38;2;{self.passed_lyric_rgbcolor[0]};{self.passed_lyric_rgbcolor[1]};{self.passed_lyric_rgbcolor[2]}m"
-        else:
-             # 256-color mode 
-             self.highlight_aescolor = f"\033[38;5;{self.conv_rgb_to_256(config.highlight_rgbcolor)}m"
-             self.passed_lyric_aescolor = f"\033[38;5;{self.conv_rgb_to_256(self.passed_lyric_rgbcolor)}m"
+            self.highlight_aescolor = f'\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;2;{";".join(str(int(config.highlight_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
+            self.passed_aescolor = f'\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;2;{";".join(str(int(config.passed_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
+            self.future_aescolor = f'\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;2;{";".join(str(int(config.future_color[0][i:i + 2], 16)) for i in range(1, 7, 2))}m'
 
+        else:
+            # 256-color mode 
+            self.highlight_aescolor = f'\033[{0 if len(config.highlight_color) <= 1 else self.STYLE_MAP.get(config.highlight_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.highlight_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
+            self.passed_aescolor = f'\033[{0 if len(config.passed_color) <= 1 else self.STYLE_MAP.get(config.passed_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.passed_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
+            self.future_aescolor = f'\033[{0 if len(config.future_color) <= 1 else self.STYLE_MAP.get(config.future_color[1], 0)};38;5;{self.conv_rgb_to_256(tuple(int(config.future_color[0][i:i + 2], 16) for i in range(1, 7, 2)))}m'
 
         if (config.translate or config.romanize) and config.hide_source == False:
             self.multi_line = True
@@ -62,13 +71,13 @@ class default_print:
         os.system(self.cls)
         for x in range(0, terminal_size.lines-2):
             if x == int(terminal_size.lines/2):
-                print(f"{text.center(terminal_size.columns)}")
+                print(f'{text.center(terminal_size.columns)}')
             else:
                 print("")
                 
     def error_print(self, text: str | int) -> None:
         if isinstance(text, int):
-            self.center_print(f"🚫 {text} 🚫") 
+            self.center_print(f'🚫 {text} 🚫') 
         else:
             self.center_print(text) 
 
@@ -99,7 +108,7 @@ class default_print:
         lxe_total = 2 if lyric_data[lyric_index]["lyric_line"] != "♬" and self.multi_line == True else 1
         it_lxe = 0
 
-        """Precalculation how many lines fit in our terminal."""
+        """Precalculation how many lines fit in the terminal."""
         while True:
             lxe_pos = 3 if lyric_index+it_lxe >= len(lyric_data) and self.multi_line else 2 if lyric_index+it_lxe >= len(lyric_data) or lyric_data[lyric_index+it_lxe]["lyric_line"] == "♬" or self.multi_line == False else 3
             lxe_neg = 3 if lyric_index+((it_lxe+1)*-1) < 0 and self.multi_line else 2 if lyric_index+((it_lxe+1)*-1) < 0 or lyric_data[lyric_index+((it_lxe+1)*-1)]["lyric_line"] == "♬" or self.multi_line == False else 3
@@ -125,10 +134,11 @@ class default_print:
                 if y > 0:
                     lxc_data.append("")
                     if lxe_ix < len(lyric_data):
-                        lxc_data.append(self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc))
+                        lxc_data.append(f'{self.future_aescolor}{self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc)}\033[0m')
                         if lyric_data[lxe_ix]["lyric_line"] != "♬" and self.multi_line == True:
                             w_charc = 0 if lxe_ix not in self.trans_w_chars else self.trans_w_chars[lxe_ix]
-                            lxc_data.append(self.center_text(f'({self.trans_lyric_data[lxe_ix]["lyric_line"]})', terminal_columns, w_charc))
+                            _line = self.center_text(f'({self.trans_lyric_data[lxe_ix]["lyric_line"]})', terminal_columns, w_charc)
+                            lxc_data.append(f'{self.future_aescolor}{_line}\033[0m')
                     else:
                         lxc_data.append("")
                         if lyric_data[lyric_index+(x*-1)]["lyric_line"] != "♬" and self.multi_line == True:
@@ -137,11 +147,11 @@ class default_print:
                 else:
                     lxc_data.insert(0, "")
                     if lxe_ix >= 0:
-                        lxc_data.insert(0, f'{self.passed_lyric_aescolor}{self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc)}\033[0m')
+                        lxc_data.insert(0, f'{self.passed_aescolor}{self.center_text(lyric_data[lxe_ix]["lyric_line"], terminal_columns, w_charc)}\033[0m')
                         if lyric_data[lxe_ix]["lyric_line"] != "♬" and self.multi_line == True:
                             w_charc = 0 if lxe_ix not in self.trans_w_chars else self.trans_w_chars[lxe_ix]
                             _line = self.center_text(f'({self.trans_lyric_data[lxe_ix]["lyric_line"]})', terminal_columns, w_charc)
-                            lxc_data.insert(1, f'{self.passed_lyric_aescolor}{_line}\033[0m')
+                            lxc_data.insert(1, f'{self.passed_aescolor}{_line}\033[0m')
                        
                     else:
                         lxc_data.insert(0, "")

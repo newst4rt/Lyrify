@@ -123,32 +123,17 @@ If everything goes well, a message with the text `Authentication succeeded` will
 
 #### *Using an Alternative Music Player Instead of Spotify*
 
-Any music player that uses the system's native media API should work. To check whether your player is supported, follow one of these instructions for your operating system below:
+Any music player that uses the system's native media API should work. To check whether your player is supported, follow these instruction:
 
-##### **LINUX**
- - Get the bus-name from your application.
-
-   ```bash
-   python3 -c "import dbus; bus = dbus.SessionBus(); [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus. list_names() if x.startswith('org.mpris.MediaPlayer2')]"
-   ```
-    If the player appears, fill the name as positional argument by add them after `--mode dbus`
-
-##### **WINDOWS**
-- Get all active sessions.
-
-  ```bash
-  python3 .\src\utils\winrt_sessions.py
-  ```
-  If a line includes your player’s keyword, append it after `--mode wmc`.
-
-##### **macOS**
-  - Just pass after `--mode ascript` the application name of the player. As example:  
-
+ - Display all running music players.
     ```bash
-    python3 main.py --mode ascript spotify 
+    python3 main.py --print-players 
     ```
-    Usually, a popup appears asking for permission. If it doesn’t, and on the terminal remains status code 2, the player is either not running or supported.
-   
+ - Pass the session name as second argument after the `--mode` parameter.
+   ```bash
+   python3 main.py --mode [dbus|wmc|ascript] <session> 
+   ```
+
 <br>  
 
 Using a different player instead of Spotify may not work with all media players. It mostly depends on how accurately the data are transmitted to the target interface. The functionality cannot be guaranteed. 
@@ -233,12 +218,13 @@ Options are organized into different categories to accommodate the various state
   
     *Lyrify maintains an SQLite3 database to store downloaded lyrics and translations in its local storage. It reduces transactions between the different endpoints, and it's compatible to use them offline. By applying `--store-offline`, you no longer have to worry about getting the lyrics of your favorite songs. You will always get them – just listen to them one time, and Lyrify will store it.*
 
+  - #### **`-p --print-players`**
+    *Display all running music players. More info [here](#using-an-alternative-music-player-instead-of-spotify)*
+
 ### Default Options
   *Can only be used in the **default print mode**.*
-  - #### `-c --highlight-color`
-    *Define how lyrics should be highlighted as RGB color.*
-
-    > **`--highlight-color 255,200,0`** 
+  - #### `-s --style`
+    *Use a style configuration file for changing lyrics' color. For more information take a look [here](docs/style.md)*
 
   - #### `-0 --hide-sourcelyrics`
     *Hide the displayed source lyrics when translation or romanizing is enabled.* 

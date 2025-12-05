@@ -9,7 +9,7 @@ def translate_lyric(lyric_data, dest='en') -> str:
                 result = await translator.translate(text, dest=dest)
                 return result
             except ValueError:
-                print(f"{dest} wrong iso-639 code parameter.")
+                print(f'{dest} wrong iso-639 code parameter.')
                 exit()
 
     def is_cjk(ch) -> bool:

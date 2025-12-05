@@ -100,3 +100,14 @@ class Wmc():
         
         else:
             return past_id, float(self.delta_timesync)
+        
+class PPlayers():
+    async def print_session(self):
+        manager = await GlobalSystemMediaTransportControlsSessionManager.request_async()
+        sessions = manager.get_sessions()
+        return sessions
+    
+    def player(self):
+        sessions = asyncio.run(self.print_session())
+        for x in sessions:
+            print(x.source_app_user_model_id)

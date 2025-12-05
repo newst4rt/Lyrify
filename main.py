@@ -17,14 +17,16 @@ def main():
                 id, track_len = _id, track_data[2] # type: ignore
                 w_chars, lyric_data = printer.main_gxl(track_data)
 
-            elif isinstance(track_data, int): 
+            elif isinstance(track_data, (int,str)): 
                 id = track_data
                 lyric_data = track_data
 
-            if isinstance(lyric_data, int):
+            if isinstance(lyric_data, (int,str)):
                 config.delta = 3000
                 printer.old_lyric_index = None
                 printer.error_print(lyric_data)
+            
+            continue
 
         if isinstance(lyric_data, tuple):
             sl_index = sync_cxe.get_syncedlyric_index(lyric_data, track_data[1]) # type: ignore
@@ -42,7 +44,10 @@ def main():
 
 if __name__ == "__main__":
     """ Command line argument parsing """
-    style = {"commands_args" :  ("#5898E7", "bold"),
+    style = {"prog_name" : ("#3a99ff", "bold"),
+            "usage_prefix": ("#FFFCE7", "bold"),
+        
+            "commands_args" :  ("#5898E7", "bold"),
             "commands_help" : ("#CBCBCB"),
             "commands_req" : "#88e6fd",
             "commands_metavar" : "#ecbc84",
@@ -55,7 +60,7 @@ if __name__ == "__main__":
 
             "dxt_options_args" :  ("#e5e996", "bold"),
             "dxt_options_req" : "#e5e996" ,
-            "dxt_options_metavar" : ("#e5e996") ,
+            "dxt_options_metavar" : ("#d9dd99") ,
             "dxt_options_pipe" : ("#7E7E7E", "bold"),
 
             "title_args" : ("#67c236", "bold"),
@@ -65,32 +70,34 @@ if __name__ == "__main__":
             "title_metavar" :  "#d8892e",
     }
 
-    description = """Lyrify - Display synchronized lyrics from your current playback using lrclib.net"""
+    description = """Lyrify - Display synchronized lyrics from any music player."""
     com = Commander()
     com.styles.update(style)
     com.com_title = ("Lyrify", description)
     
-    com.add_text(" Core Options: \n", "optional_2", 2, index=1)
-    com.add_stylegroup("commands")
-    com.add_arg("-h", "--help", required=None, help="This is a simple help message")
-    com.add_arg("-m", "--mode", nargs=2, required=['dbus', 'spotify'] if config.os == "Linux" else ['spotify', 'wmc'] if config.os == "Windows" else ['spotify', "ascript"] if config.os == "Darwin" else ["spotify"], help="Select the mode how lyrics should be received.")
-    com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics to your desired language (e.g. 'de' for German, 'en' for English, 'fr' for French, etc.)")
+    com.add_text("Core Options: \n", "optional_2")
+    com.add_arg("-h", "--help", required=None, help="Display this help message.")
+    com.add_arg("-m", "--mode", nargs=[2, 1], required=['dbus', 'spotify'] if config.os == "Linux" else ['wmc', 'spotify'] if config.os == "Windows" else ["ascript", 'spotify'] if config.os == "Darwin" else ["spotify"], help="Select mode.")
+    com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics. (Use ISO-639 as language code)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
     com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
     com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
+    com.add_arg("-p", "--print-players", help="Display all running music players.")
 
-    com.add_stylegroup("options")
+    com.add_stylegroup("options", indent=2 , index=1)
     sub_com = SubCommander(com)
-    sub_com.add_com("stream", metavar="[--help]", help="Stream Mode", index=0)
-    sub_com.add_com("interactive", metavar="[--help]", help="Interactive Mode", index=0)
-    sub_com.add_text("Commands: \n", "commands_args", 1, index=0)
-    sub_com.add_text("", index=3)
+    sub_com.add_text("Commands: \n", "commands_args")
+    sub_com.add_com("stream", metavar="[--help]", help="Stream Mode")
+    sub_com.add_com("interactive", metavar="[--help]", help="Interactive Mode")
+    sub_com.add_text("")
+    sub_com.add_stylegroup("commands", indent=2, index=0)
+
 
     a_sub_com = SubCommander(sub_com)
-    a_sub_com.add_text("\n  Default:\n", "optional_1", idt=3)
-    a_sub_com.add_arg("-c", "--highlight-color", metavar="R,G,B", help="Set the color for highlighting lyrics (default: 23,255,23).")
+    a_sub_com.add_text("\nDefault:\n", "optional_1")
+    a_sub_com.add_arg("-s", "--style", metavar="<file>", nargs=1, help="Apply a style file.")
     a_sub_com.add_arg("-0", "--hide-sourcelyrics", help="Hide source lyrics when using translation, romanizing or both.")
-    a_sub_com.add_stylegroup("dxt_options")
+    a_sub_com.add_stylegroup("dxt_options", index=2, indent=2)
 
 
     args = a_sub_com.parse_args()
@@ -101,6 +108,19 @@ if __name__ == "__main__":
         else:
             a_sub_com.print_help()
 
+    if args.print_players:
+        if config.os == "Linux":
+            import dbus
+            bus = dbus.SessionBus()
+            [print(x.replace('org.mpris.MediaPlayer2.', '')) for x in bus. list_names() if x.startswith('org.mpris.MediaPlayer2')]
+        elif config.os == "Windows":
+            from src.core.winrt_wmc import PPlayers
+            _player = PPlayers()
+            _player.player()
+        elif config.os == "Darwin":
+            print("Open Finder, click Applications and use the names in the list.")
+        exit()
+        
     if args.init:
         if "spotify" in args.init:
             from src.spotify import oauth
@@ -162,13 +182,10 @@ if __name__ == "__main__":
         else:
             com.raise_error("--hide-sourcelyric option can only be used in default mode in combination with --translate, --romanize, or both.")
 
-    if args.highlight_color:
-        try:
-            _hc_color = tuple(int(c) for c in args.highlight_color[0].split(","))
-            if len(_hc_color) != 3 or any(x > 0 or x < 255 for x in _hc_color):
-                config.highlight_rgbcolor = _hc_color # type: ignore
-        except ValueError:
-            com.raise_error("Highlight color must be in the format R,G,B with values between 0 and 255.")
+    if args.style:
+        config.read_style(args.style[0])
+    else:
+        config.read_style()
 
 
     if args.interactive:

@@ -1,13 +1,16 @@
 import requests
 import unicodedata
+from urllib.parse import quote
 
 def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple|int:
     """ Prepare for wide characters"""
     def is_cjk(ch) -> bool:
         return unicodedata.east_asian_width(ch) in ("W", "F")
 
-    """ Get Lyrics from lrclib.net """
-    url = f"https://lrclib.net/api/get?artist_name={artist}&track_name={title}"
+    """ Get Lyrics from lrclib.net 
+    We don't use the query string duration due to that some APIs are not transmitting a correct track length value
+    """
+    url = f'https://lrclib.net/api/get?artist_name={quote(artist, safe="+")}&track_name={quote(title, safe="+")}'
     header = {"User-Agent": "requests/*"}
     try:
         response = requests.get(url, headers=header)
@@ -54,12 +57,13 @@ def lrclib_api_request(artist: str, title: str, track_len: int | float) -> tuple
         return 503
 
 def lrclib_api(artist: str | tuple, title: str, track_len: int | float) -> tuple|int:
-    if isinstance(artist, tuple) and len(artist) > 1:
-        lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
-        if isinstance(lrclib_request, tuple):
-            return lrclib_request
-        else:
-            artist = artist[0]
+    if isinstance(artist, tuple): 
+        if len(artist) > 1:
+            lrclib_request = lrclib_api_request(",".join(artist), title, track_len)
+            if isinstance(lrclib_request, tuple):
+                return lrclib_request
+            
+        artist = artist[0]
     
     return lrclib_api_request(artist, title, track_len)
     

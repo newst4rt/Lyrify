@@ -6,10 +6,10 @@ from src.core.config import log_errors
 class Spotify_API():
     def get_track_data(self, past_id: str | int | None) -> tuple|int:
         global access_token
-        url = f"https://api.spotify.com/v1/me/player"
+        url = f'https://api.spotify.com/v1/me/player'
         for _ in range(0, 2):
             try:
-                header = {"Authorization": f"Bearer {access_token}"}
+                header = {"Authorization": f'Bearer {access_token}'}
                 response = requests.get(url, headers=header)
                 if response.status_code == 200:
                     body = response.json()
@@ -34,7 +34,12 @@ class Spotify_API():
 
             except requests.exceptions.ConnectionError:
                 return 503
-            except ValueError as e:
+            except (ValueError, TypeError) as e:
+                if body and "currently_playing_type" in body and body["currently_playing_type"] == "ad":
+                    return "📣"
+
+
+
                 if log_errors is True:
                     with open("error.log", "a") as f:
                         f.write(f'{past_id}\n{str(e)}\n')

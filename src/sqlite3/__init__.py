@@ -24,7 +24,7 @@ class Database_Manager():
                     
                 elif config.os == "Windows":
                     import subprocess
-                    _out = subprocess.check_output(["tasklist", "/FI", f"PID eq {pid}"])
+                    _out = subprocess.check_output(["tasklist", "/FI", f'PID eq {pid}'])
                     if str(pid) not in str(_out):
                         raise ProcessLookupError
                 elif config.os == "Darwin":
@@ -120,7 +120,7 @@ class Database_Manager():
 
             elif song_row and str(song_row[1]) in ["0", "2"]:
                 """It looks like there is no synced lyric available for this song. We will check again after 24 hours to see if lrclib has provided an update for it."""
-                if song_row and (time.time() - float(song_row[3]) < 86400): # 86400 seconds = 1 day
+                if song_row and (time.time() - float(song_row[4]) < 86400): # 86400 seconds = 1 day
                     return -1, song_row[2], 404 if song_row[1] == "0" else 424, None # We use 404/424 as status code
                 else:
                     return song_row[0], song_row[2], 400 , None # We use 400 in Row 3 to trigger lrclib_api_request
