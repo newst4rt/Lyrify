@@ -1,17 +1,17 @@
 # Utilities for interactive and stream print 
-from src.core.config import config
+from lyrify.core.config import config
 if config.terminal_mode == "stream":
-    from src.core.print.stream_print import *
+    from lyrify.core.print.stream_print import *
 elif config.terminal_mode == "interactive":
-    from src.core.print.interactive_print import *
-from src.core.__main__ import get_lyric
+    from lyrify.core.print.interactive_print import *
+from lyrify.core.__main__ import get_lyric
 if config.translate:
-    from src.translator.googletrans import translate_lyric
+    from lyrify.translator.googletrans import translate_lyric
     if config.offline_storage:
-        from src.sqlite3 import db_manager
+        from lyrify.db_sqlite import db_manager
 
 if config.romanize is True:
-    from src.utils.romanizer_uroman import *
+    from lyrify.utils.romanizer_uroman import *
     rom = Uroman()
 
 def main_gxl(track_data: tuple) -> tuple:

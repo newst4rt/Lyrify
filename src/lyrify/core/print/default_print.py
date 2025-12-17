@@ -1,13 +1,13 @@
 import os
 import shutil
-from src.core.config import config
-from src.core.__main__ import get_lyric
+from lyrify.core.config import config
+from lyrify.core.__main__ import get_lyric
 if config.translate is True:
-    from src.translator.googletrans import translate_lyric
+    from lyrify.translator.googletrans import translate_lyric
     if config.offline_storage is True:
-        from src.sqlite3 import db_manager
+        from lyrify.db_sqlite import db_manager
 if config.romanize is True:
-    from src.utils.romanizer_uroman import *
+    from lyrify.utils.romanizer_uroman import *
     rom = Uroman()
 
 class default_print:

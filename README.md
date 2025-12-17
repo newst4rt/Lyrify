@@ -104,7 +104,7 @@ The application is currently in development. New features may be added over time
 ## Installation
 
 ```bash
-pip3 install -r requirements.txt
+pip3 install .
 ```
 ## Get Started
         

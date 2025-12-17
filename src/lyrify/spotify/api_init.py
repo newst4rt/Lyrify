@@ -44,5 +44,5 @@ def check_credentials() -> None:
         access_token = get_access_token(REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET)
 
     
-if __name__ == "src.spotify.api_init":
+if __name__ == "spotify.api_init":
     check_credentials()

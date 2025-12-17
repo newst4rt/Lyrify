@@ -2,7 +2,7 @@ import json
 import time
 import sqlite3
 import os
-from src.core.config import config
+from lyrify.core.config import config
 
 class Database_Manager():
 

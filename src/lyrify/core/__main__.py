@@ -1,7 +1,7 @@
-from src.lyric_providers.lrclib import *
-from src.core.config import config
+from lyrify.lyric_providers.lrclib import *
+from lyrify.core.config import config
 if config.offline_storage is True or config.offline_usage is True:
-        from src.sqlite3 import db_manager
+        from lyrify.db_sqlite import db_manager
 
 
 def get_lyric(artist: str | tuple | None, title: str | None, dest_lang: str, track_len: int | float) -> tuple:

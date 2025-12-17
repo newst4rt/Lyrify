@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Lyrify"
+version = "0.8"
+description = "A cross-platform Python application for displaying synchronized lyrics in the terminal."
+authors = [
+    { name = "newst4rt", email = "130695d3-10e7-4c33-afc0-ca333ec1d1c0@newst4rt.anonaddy.me" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests",
+    "googletrans==4.0.2",
+    "dbus-python; sys_platform == 'linux'",
+    "winrt.windows.media.control; sys_platform == 'windows'",
+    "winrt.windows.foundation.collections; sys_platform == 'windows'",
+    "uroman"
+]
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"lyrify" = ["db_sqlite/lyrics.db"]
+
+[project.scripts]
+lyrify = "main:main"

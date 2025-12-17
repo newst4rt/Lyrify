@@ -1,7 +1,7 @@
 import base64
 import requests
 from .api_init import *
-from src.core.config import log_errors
+from lyrify.core.config import log_errors
 
 class Spotify_API():
     def get_track_data(self, past_id: str | int | None) -> tuple|int:
