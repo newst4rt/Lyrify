@@ -1,4 +1,5 @@
 from platform import system
+from importlib.resources import files
 log_errors = False
 class Config():
 
@@ -33,9 +34,11 @@ class Config():
 
         #delta = 3000
 
-    def read_style(self, file = "src/style.config"):
+    def read_style(self, file = "lyrify/style.config"):
         mode = None
-        with open(file) as f:
+        import os
+        file = files(os.path.dirname(file)).joinpath(os.path.basename(file))
+        with file.open("r") as f:
             data = f.readlines()
             if data[0].startswith("[") and data[0].endswith("]"):
                     mode = data[0][0].strip()[1:-1]
