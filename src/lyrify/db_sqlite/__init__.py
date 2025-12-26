@@ -8,7 +8,25 @@ class Database_Manager():
 
     def __init__(self):
 
-        _dir = os.path.dirname(os.path.realpath(__file__))
+        _src = os.path.dirname(os.path.realpath(__file__))
+
+        if config.os == "Linux":
+            _dir = os.path.expanduser("~/.local/share/lyrify")
+        elif config.os == "Windows":
+            _dir = os.path.join(os.path.expanduser("~"), "AppData", "Local", "lyrify")
+        elif config.os == "Darwin":
+             _dir = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "lyrify")
+        else:
+            print("Unknown Operating System... Exit")
+            exit()
+
+        if not os.path.exists(_dir):
+            os.makedirs(_dir)
+
+        if not os.path.isfile(_dir + "/lyrics.db"):
+            import shutil
+            shutil.copyfile(_src + "/lyrics.db", _dir + "/lyrics.db")
+
         try:
             with open(_dir + "/lyrics.db.lock", "r") as f:
                 pid = int(f.read().strip())
