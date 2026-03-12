@@ -120,6 +120,7 @@ Lyrify retrieves playback information through the system’s native API, by defa
  - *After them, fill the terminal with the required data.*
 
 If everything goes well, a message with the text `Authentication succeeded` will be displayed. Lyrify has successfully applied your credential and is now ready to get in touch with your playback. To use it, simply add the argument `--mode spotify`.
+***Spotify changed its access and platform security on Wednesday, 11 February 2026. A premium account is now required to use their API.***
 
 #### *Using an Alternative Music Player Instead of Spotify*
 
