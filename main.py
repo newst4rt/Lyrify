@@ -80,7 +80,7 @@ if __name__ == "__main__":
     com.add_arg("-m", "--mode", nargs=[2, 1], required=['dbus', 'spotify'] if config.os == "Linux" else ['wmc', 'spotify'] if config.os == "Windows" else ["ascript", 'spotify'] if config.os == "Darwin" else ["spotify"], help="Select mode.")
     com.add_arg("-t", "--translate", nargs=1, metavar="language_code", help = "Translate lyrics. (Use ISO-639 as language code)")
     com.add_arg("-r", "--romanize", help = "Romanize lyrics.")
-    com.add_arg("-i", "--init", required=["spotify"], help = "Initialize the API configuration for the target music player.")
+    com.add_arg("-i", "--init", nargs=1, required=["spotify"], help = "Initialize the API configuration for the target music player.")
     com.add_arg("-o", "--store-offline", help = "Store lyrics for offline usage.")
     com.add_arg("-p", "--print-players", help="Display all running music players.")
 
