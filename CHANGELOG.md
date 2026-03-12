@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.2] 2026.03.12
+
+### Added
+ - Update README to reflect Spotify's new API requirements.
+   <!-- 6c0511ae6db4c5aacc12c35ed8b63fb6fb8bdde1 -->
+### Fixed
+ - Fixed broken --init argument, accept now a required value.
+    <!-- 3de030479aad5d3a4c9b9b8c1e6b1eaed690cd3b -->
+ - Fixed broken Windows compatibility by adding new packages to requirements.txt.
+    <!-- 61126f337b1fb710737f62c3d3627c6de1e47459 -->
+ - Fixed missing packages in requirements.txt by rename the packages.
+    <!-- 61126f337b1fb710737f62c3d3627c6de1e47459 -->
+ - Fixed issue in requirements.txt by rename the value from sys_platform from "windows" to "win32".
+    <!-- 61126f337b1fb710737f62c3d3627c6de1e47459 -->
+
+
+## [v0.8.1] 2025.12.17
+
+### Fixed
+ - Fixed issue with -r, --romanize that prevent from displaying romanized lyrics.
+ <!-- 95e62043308dd0ccb376685d979851b61b485b3d -->
+
 ## [v0.8] 2025.12.05
 
 ### Added
